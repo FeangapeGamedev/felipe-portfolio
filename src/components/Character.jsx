@@ -5,32 +5,46 @@ import * as THREE from "three";
 
 export const Character = ({ targetPosition }) => {
   const characterRef = useRef();
-  const speed = 5; // Movement speed
+  const speed = 0.3; // 🔹 Movement speed
+  const lerpFactor = 0.1; // 🔹 Controls smoothness (lower = smoother movement)
+  const stopThreshold = 0.05; // 🔹 Lower = more precise stop, higher = stops earlier
 
   useFrame(() => {
     if (targetPosition && characterRef.current) {
-      const characterPos = characterRef.current.translation(); // Get Rapier position
-      const character = new THREE.Vector3(characterPos.x, 0, characterPos.z); // Keep Y fixed
+      // Get current position
+      const characterPos = characterRef.current.translation();
+      let posX = characterPos.x;
+      let posZ = characterPos.z;
+      let newPosX = targetPosition.x;
+      let newPosZ = targetPosition.z;
 
-      const direction = new THREE.Vector3(
-        targetPosition.x - character.x,
-        0,
-        targetPosition.z - character.z
-      );
+      // Compute movement direction
+      let diffX = Math.abs(posX - newPosX);
+      let diffZ = Math.abs(posZ - newPosZ);
+      let distance = Math.sqrt(diffX * diffX + diffZ * diffZ);
 
-      const distance = character.distanceTo(targetPosition);
+      if (distance > stopThreshold) { 
+        let moveDistance = Math.min(speed, distance);
+        let targetPos = new THREE.Vector3(
+          posX + (moveDistance * (diffX / distance)) * (posX > newPosX ? -1 : 1),
+          0.5, // 🔹 Keep Y locked
+          posZ + (moveDistance * (diffZ / distance)) * (posZ > newPosZ ? -1 : 1)
+        );
 
-      if (distance > 0.1) {
-        direction.normalize();
-        characterRef.current.setLinvel({ x: direction.x * speed, y: 0, z: direction.z * speed }, true);
-      } else {
-        characterRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+        // 🔹 Apply lerp for smoother movement (including stopping phase)
+        let currentPos = new THREE.Vector3(posX, 0.5, posZ);
+        currentPos.lerp(targetPos, lerpFactor);
+
+        characterRef.current.setTranslation(
+          { x: currentPos.x, y: 0.5, z: currentPos.z }, 
+          true
+        );
       }
     }
   });
 
   return (
-    <RigidBody ref={characterRef} colliders="cuboid" position={[0, 1, 0]} mass={1} type="dynamic">
+    <RigidBody ref={characterRef} colliders="cuboid" position={[0, 0.5, 0]} mass={1} type="dynamic">
       <mesh castShadow>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color="#69da96" />
