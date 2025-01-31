@@ -4,7 +4,7 @@ import "../styles/Navbar.css"; // ✅ Import external styles
 const Navbar = () => {
   return (
     <div className="navbar">
-      <span className="text-2xl">Felipe A. Garcia</span>
+      <span className="">Felipe A. Garcia</span>
       <nav>
         <ul className="text-xs">
           <li><a href="#about">About</a></li>

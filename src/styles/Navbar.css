@@ -8,7 +8,7 @@
   top: 0;
   left: 0;
   width: 99%;
-  background: linear-gradient(to bottom, #1a1a1a, #333);
+  background: linear-gradient(to bottom, black 10%, rgba(0, 0, 0, 0.1) 50%, black 90%);
   color: white;
   font-size: 1.5rem;
   font-weight: 400;
@@ -34,6 +34,10 @@
     color: white;
     text-decoration: none;
     transition: color 0.2s ease-in-out;
+  }
+
+  .navbar span {
+    font-size: 45px;
   }
   
   .navbar a:hover {
