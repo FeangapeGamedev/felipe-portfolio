@@ -7,7 +7,6 @@ import Inventory from "./sections/Inventory";
 function App() {
   const [showInventory, setShowInventory] = useState(false);
 
-  // Toggle inventory when "I" is pressed
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key.toLowerCase() === "i") {
@@ -24,13 +23,14 @@ function App() {
   return (
     <>
       {showInventory && <Inventory onClose={() => setShowInventory(false)} />}
-      <Navbar onAboutClick={() => setShowInventory(true)} />
+      <Navbar onAboutClick={() => setShowInventory((prev) => !prev)} />
       <Canvas shadows>
         <color attach="background" args={["#2b2b2b"]} />
-        <Experience />
+        <Experience isPaused={showInventory} /> {/* Pass pause state */}
       </Canvas>
     </>
   );
 }
+
 
 export default App;
