@@ -8,7 +8,7 @@
   top: 0;
   left: 0;
   width: 99%;
-  background: linear-gradient(to bottom, black 10%, rgba(0, 0, 0, 0.1) 50%, black 90%);
+  background: linear-gradient(to bottom, #2b2b2b 10%, rgba(255, 255, 255, 0.1) 50%, #2b2b2b 90%);
   color: white;
   font-size: 1.5rem;
   font-weight: 400;

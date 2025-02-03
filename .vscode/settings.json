@@ -3,10 +3,13 @@
         "drei",
         "GLTF",
         "Khronos",
+        "lerp",
         "Linvel",
         "metalness",
+        "Pereira",
         "raycaster",
         "SSAO",
-        "unproject"
+        "unproject",
+        "Wwise"
     ]
 }

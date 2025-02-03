@@ -1,18 +1,17 @@
 import React from "react";
 import "../styles/Navbar.css"; // ✅ Import external styles
 
-const Navbar = () => {
+const Navbar = ({ onAboutClick }) => {
   return (
     <div className="navbar">
-      <span className="">Felipe A. Garcia</span>
+      <span>
+        Felipe A. Garcia <br /> Game Developer Portfolio
+      </span>
       <nav>
         <ul className="text-xs">
-          <li><a href="#about">About</a></li>
+          <li><a href="#" onClick={(e) => { e.preventDefault(); onAboutClick(); }}>About</a></li>
           <li><a href="#projects">Projects</a></li>
-          <li><a href="#skills">Skills</a></li>
-          <li><a href="#education">Education</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href=""></a></li>
         </ul>
       </nav>
     </div>
