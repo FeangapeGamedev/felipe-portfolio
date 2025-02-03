@@ -24,20 +24,26 @@
   font-family: "Iceland", serif;
 }
   
-  .navbar ul {
-    display: flex;
-    gap: 2rem;
-    text-transform: uppercase;
-  }
+.navbar ul {
+  display: flex;
+  flex-direction: row; /* Ensure items are in a row */
+  gap: 2rem;
+  text-transform: uppercase;
+  margin-left: auto; /* Pushes links to the right */
+  padding-right: 4rem; /* Adjust right padding to control position */
+  list-style: none; /* Ensure there are no bullet points */
+  align-items: center; /* Aligns items vertically */
+}
+
   
-  .navbar a {
+ .navbar a {
     color: white;
     text-decoration: none;
     transition: color 0.2s ease-in-out;
   }
 
   .navbar span {
-    font-size: 45px;
+    font-size: 35px;
   }
   
   .navbar a:hover {

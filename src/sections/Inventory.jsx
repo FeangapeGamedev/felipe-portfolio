@@ -14,13 +14,10 @@ const skills = [
 const Inventory = ({ onClose }) => {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const aboutMe = (
-    <>
-      <p><strong>Felipe Andres Garcia Pereira</strong></p>
-      <p>Game Designer | Unity Specialist | Versatile Game Developer</p>
-      <p>3+ years of experience in Unity development, game design, and programming.</p>
-      <p>Skilled in creating engaging gameplay, VR development, and UI/UX design.</p>
-      <p>Proficient in C#, C++, Unreal Blueprints, and various game development tools.</p>
-    </>
+    <p>
+      I am versatile Game Designer with strong programming and 3D modeling skills, dedicated to crafting immersive and engaging player experiences.
+      I love playing and creating games, designing deep systems, gameplay, and storytelling. My favorite genres are RPGs, stealth, survival, and adventure games, where mechanics and narratives come together to create unforgettable moments.
+    </p>
   );
 
   return (
@@ -34,25 +31,34 @@ const Inventory = ({ onClose }) => {
       {/* Main Section: Avatar & Skills */}
       <div className="inventory-main">
         {/* Avatar Frame (Clickable to Show About Me) */}
-        <div className="avatar-frame" onClick={() => setSelectedSkill(null)}>
-          <img src="/profile.jpg" alt="Avatar" className="avatar-img" />
+        <div className="frame-container">
+          <p className="frame-title">Avatar</p>
+          <div className="avatar-frame" onClick={() => setSelectedSkill(null)}>
+            <img src="/profile.jpg" alt="Avatar" className="avatar-img" />
+          </div>
         </div>
 
         {/* Skills Section */}
-        <div className="skills-frame">
-          <div className="skills-grid">
-            {skills.map((skill) => (
-              <div key={skill.name} className="skill-item" onClick={() => setSelectedSkill(skill)}>
-                {skill.icon}
-              </div>
-            ))}
+        <div className="frame-container">
+          <p className="frame-title">Skills</p>
+          <div className="skills-frame">
+            <div className="skills-grid">
+              {skills.map((skill) => (
+                <div key={skill.name} className="skill-item" onClick={() => setSelectedSkill(skill)}>
+                  {skill.icon}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Description Box */}
-      <div className="description-frame">
-        {selectedSkill ? <p>{selectedSkill.description}</p> : aboutMe}
+      <div className="frame-container">
+        <p className="frame-title">Description</p>
+        <div className="description-frame">
+          {selectedSkill ? <p>{selectedSkill.description}</p> : aboutMe}
+        </div>
       </div>
     </div>
   );

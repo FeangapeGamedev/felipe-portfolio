@@ -1,138 +1,157 @@
 /* Inventory Container - Centers the window */
 .inventory-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 800px;
-    height: 640px;
-    background: #1a1a1a;
-    border: 8px solid #555;
-    padding: 10px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
-    font-family: "Press Start 2P", sans-serif;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  /* Upper Ribbon */
-  .inventory-ribbon {
-    width: 100%;
-    background: #333;
-    padding: 10px;
-    font-size: 14px;
-    color: #ddd;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 4px solid #777;
-    font-family: "Press Start 2P", sans-serif;
-    position: relative;
-  }
-  
-  /* Close Button - Positioned in the upper right corner */
-  .close-button {
-    background: #a00;
-    color: white;
-    border: 2px solid #600;
-    padding: 5px 10px;
-    font-size: 12px;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .close-button:hover {
-    background: #f00;
-  }
-  
-  /* Main Layout - Avatar and Skills */
-  .inventory-main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 60%;
-    padding: 10px;
-    gap: 10px;
-  }
-  
-  /* Avatar Frame (Left) */
-  .avatar-frame {
-    width: 40%;
-    height: 100%;
-    border: 5px solid #888;
-    background: #222;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
-  }
-  
-  .avatar-img {
-    width: 80%;
-    height: auto;
-    object-fit: cover;
-  }
-  
-  /* Skills Section (Right) */
-  .skills-frame {
-    width: 55%;
-    border: 4px solid #777;
-    padding: 10px;
-    background: #222;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    justify-content: center;
-  }
-  
-  .skill-item {
-    width: 60px;
-    height: 60px;
-    background: #444;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border: 3px solid #777;
-    font-size: 20px;
-    text-align: center;
-  }
-  
-  .skill-item:hover {
-    background: #666;
-    border-color: #999;
-  }
-  
-  .description-frame {
-    width: 95%;
-    padding: 15px;
-    background: #222;
-    border: 4px solid #777;
-    height: 25%;
-    text-align: center;
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; /* Ensures multiple lines stack properly */
-    overflow: hidden; /* Prevents overflowing text */
-  }
-  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: auto;
+  min-height: 640px;
+  background: #1a1a1a;
+  border: 8px solid #555;
+  padding: 0;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+  font-family: "Press Start 2P", sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 1000;
+}
 
-  
+/* Upper Ribbon */
+.inventory-ribbon {
+  width: 100%;
+  background: #333;
+  padding: 8px;
+  font-size: 14px;
+  color: #ddd;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 4px solid #777;
+  font-family: "Press Start 2P", sans-serif;
+  position: relative;
+}
+
+/* Close Button - Positioned in the upper right corner */
+.close-button {
+  background: #a00;
+  color: white;
+  border: 2px solid #600;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.close-button:hover {
+  background: #f00;
+}
+
+/* Main Layout - Avatar and Skills */
+.inventory-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  padding: 10px;
+  gap: 20px;
+}
+
+/* Frame Container for sections */
+.frame-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.frame-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  text-align: center;
+  color: #ccc;
+}
+
+/* Avatar Frame (Left) - Now a Square */
+.avatar-frame {
+  width: 140px;
+  height: 140px;
+  border: 5px solid #888;
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Skills Section (Right) */
+.skills-frame {
+  width: 90%;
+  border: 4px solid #777;
+  padding: 10px;
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  justify-content: center;
+}
+
+.skill-item {
+  width: 60px;
+  height: 60px;
+  background: #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 3px solid #777;
+  font-size: 20px;
+  text-align: center;
+}
+
+.skill-item:hover {
+  background: #666;
+  border-color: #999;
+}
+
+/* Bottom Description Box */
+.description-frame {
+  width: 90%;
+  padding: 15px;
+  background: #222;
+  border: 4px solid #777;
+  height: auto;
+  min-height: 20%;
+  text-align: center;
+  margin-top: 30px; /* Increased margin to move it lower */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: normal;
+  text-transform: none;
+  line-height: 1.5;
+}
