@@ -11,6 +11,10 @@ function App() {
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
+    console.log("showContact state:", showContact); // ✅ Debug log
+  }, [showContact]);
+
+  useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key.toLowerCase() === "i") {
         setShowInventory((prev) => !prev);
@@ -28,11 +32,11 @@ function App() {
       <>
         {showInventory && <Inventory onClose={() => setShowInventory(false)} />}
         {showContact && <Contact onClose={() => setShowContact(false)} />}
-        <Navbar 
+        <Navbar
           onAboutClick={() => setShowInventory((prev) => !prev)}
           onContactClick={() => setShowContact((prev) => !prev)}
         />
-        
+
         <Canvas shadows>
           <color attach="background" args={["#2b2b2b"]} />
           <Scene isPaused={showInventory || showContact} />

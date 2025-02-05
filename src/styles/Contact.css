@@ -1,0 +1,92 @@
+/* Contact Container */
+.contact-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; /* Smaller than inventory */
+    height: auto;
+    min-height: 450px; /* Adjusted height */
+    background: #1a1a1a;
+    border: 8px solid #555;
+    padding: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+    font-family: "Press Start 2P", sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 1000;
+  }
+  
+  /* Contact Header - Styled Like Ribbon */
+  .contact-header {
+    width: 100%;
+    background: #333;
+    padding: 8px;
+    font-size: 14px;
+    color: #ddd;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid #777;
+    position: relative;
+  }
+  
+  /* Close Button */
+  .close-button {
+    background: #a00;
+    color: white;
+    border: 2px solid #600;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  
+  .close-button:hover {
+    background: #ff0000;
+    border-color: #cc0000;
+  }
+  
+  /* Form Layout */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    padding: 15px;
+  }
+  
+  /* Input Fields */
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    background: #222;
+    color: white;
+    border: 3px solid #777;
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 14px;
+    font-family: "Press Start 2P", sans-serif;
+  }
+  
+  /* Send Button */
+  .contact-form button {
+    background: #ff9800;
+    color: white;
+    border: 3px solid #b66a00;
+    padding: 10px;
+    font-size: 16px;
+    font-family: "Press Start 2P", sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  
+  .contact-form button:hover {
+    background: #e68900;
+    border-color: #995500;
+  }
+  
