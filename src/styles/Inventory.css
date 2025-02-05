@@ -6,7 +6,7 @@
   transform: translate(-50%, -50%);
   width: 900px; /* Slightly wider for better spacing */
   height: auto;
-  min-height: 650px; /* Adjusted height */
+  min-height: 700px; /* Adjusted height */
   background: #1a1a1a;
   border: 8px solid #555;
   padding: 10px;
@@ -79,13 +79,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
+/* Hover Effect for Avatar */
+.avatar-frame:hover {
+  transform: scale(1.1);
+  background: #333;
+}
+
+/* Avatar Image */
 .avatar-img {
   width: 90%;
   height: 90%;
   object-fit: cover;
 }
+
 
 /* Active Skills */
 .active-skills-container {
@@ -118,7 +127,7 @@
   justify-content: center;
 }
 
-/* Tool Items */
+/* Tool Items - Hover Enlarge Effect */
 .tool-item {
   width: 90px;
   height: 90px;
@@ -127,8 +136,16 @@
   justify-content: center;
   align-items: center;
   border: 3px solid #777;
+  transition: transform 0.2s ease, background 0.2s ease;
+  cursor: pointer;
 }
 
+.tool-item:hover {
+  transform: scale(1.1);
+  background: #333;
+}
+
+/* Tool Icons */
 .tool-icon {
   width: 80%;
   height: 80%;

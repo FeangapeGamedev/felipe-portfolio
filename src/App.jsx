@@ -7,17 +7,16 @@ import Inventory from "./sections/Inventory";
 import Contact from "./sections/Contact";
 
 function App() {
-  const [showInventory, setShowInventory] = useState(false);
-  const [showContact, setShowContact] = useState(false);
+  const [activeSection, setActiveSection] = useState(null); // Manages which section is open
 
   useEffect(() => {
-    console.log("showContact state:", showContact); // ✅ Debug log
-  }, [showContact]);
+    console.log("Active section:", activeSection); // ✅ Debug log
+  }, [activeSection]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key.toLowerCase() === "i") {
-        setShowInventory((prev) => !prev);
+        setActiveSection((prev) => (prev === "inventory" ? null : "inventory"));
       }
     };
 
@@ -30,16 +29,17 @@ function App() {
   return (
     <Router>
       <>
-        {showInventory && <Inventory onClose={() => setShowInventory(false)} />}
-        {showContact && <Contact onClose={() => setShowContact(false)} />}
+        {activeSection === "inventory" && <Inventory onClose={() => setActiveSection(null)} />}
+        {activeSection === "contact" && <Contact onClose={() => setActiveSection(null)} />}
+
         <Navbar
-          onAboutClick={() => setShowInventory((prev) => !prev)}
-          onContactClick={() => setShowContact((prev) => !prev)}
+          onAboutClick={() => setActiveSection(activeSection === "inventory" ? null : "inventory")}
+          onContactClick={() => setActiveSection(activeSection === "contact" ? null : "contact")}
         />
 
         <Canvas shadows>
           <color attach="background" args={["#2b2b2b"]} />
-          <Scene isPaused={showInventory || showContact} />
+          <Scene isPaused={activeSection !== null} />
         </Canvas>
       </>
     </Router>

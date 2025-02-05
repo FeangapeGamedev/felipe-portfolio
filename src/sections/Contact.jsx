@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
-import "../styles/Contact.css"; // ✅ Make sure this file exists
+import "../styles/Contact.css"; 
 
 const Contact = ({ onClose }) => {
-    console.log("Contact component mounted!"); // ✅ Debug log
     const formRef = useRef();
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -24,7 +23,7 @@ const Contact = ({ onClose }) => {
                     from_name: form.name,
                     to_name: "Felipe A. Garcia",
                     from_email: form.email,
-                    to_email: "your-email@example.com", // ✅ Replace with your email
+                    to_email: "feangape.gamedev@gmail.com",
                     message: form.message,
                 },
                 import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
@@ -49,6 +48,7 @@ const Contact = ({ onClose }) => {
                 Contact Me
                 <button onClick={onClose} className="close-button">✖</button>
             </div>
+            
             <form ref={formRef} onSubmit={handleSubmit} className="contact-form">
                 <label htmlFor="contact-name">Full Name</label>
                 <input
@@ -58,7 +58,7 @@ const Contact = ({ onClose }) => {
                     value={form.name}
                     onChange={handleChange}
                     required
-                    placeholder="John Doe"
+                    placeholder="Enter your name"
                 />
 
                 <label htmlFor="contact-email">Email</label>
@@ -69,7 +69,7 @@ const Contact = ({ onClose }) => {
                     value={form.email}
                     onChange={handleChange}
                     required
-                    placeholder="email@example.com"
+                    placeholder="Enter your email"
                 />
 
                 <label htmlFor="contact-message">Your Message</label>
@@ -80,13 +80,47 @@ const Contact = ({ onClose }) => {
                     onChange={handleChange}
                     required
                     rows="4"
-                    placeholder="Say something..."
+                    placeholder="Enter your message"
                 />
 
                 <button type="submit" disabled={loading}>
                     {loading ? "Sending..." : "Send Message"}
                 </button>
             </form>
+
+            <div className="contact-divider"></div>
+
+            <div className="contact-bottom-section">
+                {/* Resume Section */}
+                <div className="contact-frame contact-resume">
+                    <span>Download Resume</span>
+                    <div className="resume-container" onClick={() => window.open("/your-resume.pdf", "_blank")}>
+                        <div className="resume-icon"></div>
+                    </div>
+                </div>
+
+                {/* Social Media Section */}
+                <div className="contact-frame contact-social">
+                    <span>Social Media</span>
+                    <div className="social-icons-container">
+                        {/* LinkedIn */}
+                        <div 
+                            className="social-box linkedin-box" 
+                            onClick={() => window.open("https://www.linkedin.com/in/your-profile", "_blank")}
+                        >
+                            <div className="social-icon linkedin-icon"></div>
+                        </div>
+
+                        {/* Facebook */}
+                        <div 
+                            className="social-box facebook-box" 
+                            onClick={() => window.open("https://www.facebook.com/your-profile", "_blank")}
+                        >
+                            <div className="social-icon facebook-icon"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

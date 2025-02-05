@@ -5,19 +5,33 @@ const Navbar = ({ onAboutClick, onContactClick }) => {
   return (
     <div className="navbar">
       <span>
-        Felipe A. Garcia <br /> Game Developer Portfolio
+        Felipe Garcia <br /> Game Designer
       </span>
       <nav>
         <ul className="text-xs">
-          <li><a href="#" onClick={(e) => { e.preventDefault(); onAboutClick(); }}>About</a></li>
-          <li><a href="#projects">Projects</a></li>
           <li>
-            <a href="#"
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                onAboutClick();
+              }}
+            >
+              About
+            </a>
+          </li>
+          <li>
+            <a href="#projects">Projects</a>
+          </li>
+          <li>
+            <a
+              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 console.log("Contact button clicked!"); // ✅ Debug log
                 onContactClick();
-              }}>
+              }}
+            >
               Contact
             </a>
           </li>
