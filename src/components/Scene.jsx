@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import { useGLTF, OrthographicCamera } from "@react-three/drei";
+import { OrthographicCamera } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { Room } from "./Room";
 import { CharacterController } from "./CharacterController";
 import { Character } from "./Character";
 
-export const Scene = () => {
+export const Scene = ({ isPaused }) => {  // ✅ Accept isPaused as a prop
   const [targetPosition, setTargetPosition] = useState(null);
-
-  const handleFloorClick = (event) => {
-    event.stopPropagation();
-    if (event.point) {
-      setTargetPosition(event.point);
-    }
-  };
 
   return (
     <group>
@@ -31,9 +24,9 @@ export const Scene = () => {
 
       {/* Physics world */}
       <Physics>
-        <Room width={15} depth={15} height={5} onClick={handleFloorClick} /> {/* Room with Walls + Floor */}
+        <Room width={15} depth={15} height={5} />
         <Character targetPosition={targetPosition} />
-        <CharacterController setTargetPosition={setTargetPosition} />
+        <CharacterController isPaused={isPaused} setTargetPosition={setTargetPosition} /> {/* ✅ Pass isPaused */}
       </Physics>
     </group>
   );

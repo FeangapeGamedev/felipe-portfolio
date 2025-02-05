@@ -110,7 +110,7 @@
 
 /* Resume Frame */
 .contact-resume {
-  width: 40%; /* Smaller frame */
+  width: 50%; /* Smaller frame */
   display: flex;
   flex-direction: column; /* Stack label above the square */
   align-items: center;
