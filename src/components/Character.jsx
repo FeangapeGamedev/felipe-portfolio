@@ -11,32 +11,31 @@ export const Character = ({ targetPosition }) => {
 
   useFrame(() => {
     if (targetPosition && characterRef.current) {
-      // Get current position
       const characterPos = characterRef.current.translation();
       let posX = characterPos.x;
       let posZ = characterPos.z;
       let newPosX = targetPosition.x;
       let newPosZ = targetPosition.z;
 
-      // Compute movement direction
-      let diffX = Math.abs(posX - newPosX);
-      let diffZ = Math.abs(posZ - newPosZ);
-      let distance = Math.sqrt(diffX * diffX + diffZ * diffZ);
+      // Compute movement vector
+      let directionX = newPosX - posX;
+      let directionZ = newPosZ - posZ;
+      let distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
 
-      if (distance > stopThreshold) { 
+      if (distance > stopThreshold) {
         let moveDistance = Math.min(speed, distance);
         let targetPos = new THREE.Vector3(
-          posX + (moveDistance * (diffX / distance)) * (posX > newPosX ? -1 : 1),
+          posX + (directionX / distance) * moveDistance,
           0.5, // 🔹 Keep Y locked
-          posZ + (moveDistance * (diffZ / distance)) * (posZ > newPosZ ? -1 : 1)
+          posZ + (directionZ / distance) * moveDistance
         );
 
-        // 🔹 Apply lerp for smoother movement (including stopping phase)
+        // Smooth movement using Lerp
         let currentPos = new THREE.Vector3(posX, 0.5, posZ);
         currentPos.lerp(targetPos, lerpFactor);
 
         characterRef.current.setTranslation(
-          { x: currentPos.x, y: 0.5, z: currentPos.z }, 
+          { x: currentPos.x, y: 0.5, z: currentPos.z },
           true
         );
       }
