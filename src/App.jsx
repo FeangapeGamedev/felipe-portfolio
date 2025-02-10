@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { Scene } from "./components/Scene";
-import { CharacterController } from "./components/CharacterController"; // ✅ Ensure this is correctly imported
+import { CharacterController } from "./components/CharacterController";
 import Navbar from "./sections/Navbar";
 import Inventory from "./sections/Inventory";
 import Contact from "./sections/Contact";
+import Projects from "./sections/Projects"; // ✅ Import Projects
 
 function App() {
-  const [activeSection, setActiveSection] = useState(null); // ✅ Controls which UI is active
+  const [activeSection, setActiveSection] = useState(null);
 
   useEffect(() => {
     console.log("Active section:", activeSection); // ✅ Debug log
@@ -27,7 +28,6 @@ function App() {
     };
   }, []);
 
-  // ✅ Define `isPaused` to disable movement when a popup is open
   const isPaused = activeSection !== null;
 
   return (
@@ -35,15 +35,17 @@ function App() {
       <>
         {activeSection === "inventory" && <Inventory onClose={() => setActiveSection(null)} />}
         {activeSection === "contact" && <Contact onClose={() => setActiveSection(null)} />}
-
+        {activeSection === "projects" && <Projects onClose={() => setActiveSection(null)} />} 
         <Navbar
           onAboutClick={() => setActiveSection(activeSection === "inventory" ? null : "inventory")}
           onContactClick={() => setActiveSection(activeSection === "contact" ? null : "contact")}
+          onProjectsClick={() => setActiveSection(activeSection === "projects" ? null : "projects")} 
         />
 
         <Canvas shadows>
           <color attach="background" args={["#2b2b2b"]} />
-          <Scene isPaused={activeSection !== null} /> {/* ✅ Pass isPaused into Scene */}
+          <Scene isPaused={isPaused} />
+          <CharacterController isPaused={isPaused} setTargetPosition={() => {}} />
         </Canvas>
       </>
     </Router>

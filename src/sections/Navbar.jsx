@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/Navbar.css"; // ✅ Import external styles
 
-const Navbar = ({ onAboutClick, onContactClick }) => {
+const Navbar = ({ onAboutClick, onContactClick, onProjectsClick }) => {
   return (
     <div className="navbar">
       <span>
@@ -21,7 +21,16 @@ const Navbar = ({ onAboutClick, onContactClick }) => {
             </a>
           </li>
           <li>
-            <a href="#projects">Projects</a>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("Projects button clicked!"); // ✅ Debug log
+                onProjectsClick();
+              }}
+            >
+              Projects
+            </a>
           </li>
           <li>
             <a
