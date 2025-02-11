@@ -1,0 +1,157 @@
+/* Full-screen Background Overlay (Only for Project Details) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75); /* ✅ Dark transparent overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* Project Details Container */
+.project-details-container {
+    width: 1200px; /* ✅ Twice as large as other popups */
+    height: 800px;
+    background: #1a1a1a;
+    border: 8px solid #555;
+    padding: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+    font-family: "Press Start 2P", sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+/* Header */
+.project-details-header {
+    width: 99%;
+    background: #333;
+    padding: 8px;
+    font-size: 14px;
+    color: #ddd;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid #777;
+}
+
+/* Header Buttons (Back & Close) */
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.back-button {
+    background: #444;
+    color: white;
+    border: 2px solid #777;
+    padding: 6px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.back-button:hover {
+    background: #666;
+    border-color: #999;
+}
+
+.close-button {
+    background: #a00;
+    color: white;
+    border: 2px solid #600;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.close-button:hover {
+    background: #ff0000;
+    border-color: #cc0000;
+}
+
+/* 🔹 Main Content Area - Fix Alignment */
+.project-details-content {
+    display: flex;
+    width: 100%; /* ✅ Take full width */
+    height: 100%;
+    flex-grow: 1;
+    padding: 0; /* ✅ Remove padding that caused shifting */
+}
+
+/* 🔹 Left Panel - Fixed Width */
+.categories-menu {
+    width: 280px; /* ✅ Fixed width */
+    background: #222;
+    border-right: 4px solid #777;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0; /* ✅ Prevents shrinking */
+}
+
+/* Category Item */
+.category-item {
+    background: #333;
+    padding: 10px;
+    border: 2px solid #777;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.category-item:hover {
+    background: #555;
+    border-color: #999;
+}
+
+.category-item.active {
+    background: #ff9800;
+    border-color: #b66a00;
+    color: black;
+}
+
+/* 🔹 Right Panel - Now Expands Fully */
+.content-display {
+    flex-grow: 1; /* ✅ Expands to fill remaining space */
+    padding: 20px;
+    text-align: left;
+    font-size: 14px;
+    background: #222;
+    border-left: 4px solid #777;
+    min-height: 600px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+/* Scrollable Content */
+.scrollable-content {
+    width: 100%;
+    max-height: 600px; /* ✅ Ensures scrolling when content is long */
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Custom Scrollbar */
+.scrollable-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background: #777;
+    border-radius: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background: #333;
+}

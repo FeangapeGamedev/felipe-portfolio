@@ -23,15 +23,16 @@
 /* Header */
 .projects-header {
     width: 100%;
-    background: #333;
-    padding: 8px;
-    font-size: 14px;
-    color: #ddd;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 4px solid #777;
+  background: #333;
+  padding: 8px;
+  font-size: 14px;
+  color: #ddd;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 4px solid #777;
+  position: relative;
 }
 
 /* Close Button */
