@@ -1,82 +1,68 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Scene } from "./components/Scene";
-import { CharacterController } from "./components/CharacterController";
 import Navbar from "./sections/Navbar";
 import Inventory from "./sections/Inventory";
 import Contact from "./sections/Contact";
 import Projects from "./sections/Projects";
-import ProjectDetails from "./sections/ProjectDetails"; // ✅ Import Project Details
+import ProjectDetails from "./sections/ProjectDetails";
 
 function App() {
-  const [activeSection, setActiveSection] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null); // ✅ Track selected project
-
-  useEffect(() => {
-    console.log("Active section:", activeSection);
-  }, [activeSection]);
-
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (event.key.toLowerCase() === "i") {
-        setActiveSection((prev) => (prev === "inventory" ? null : "inventory"));
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, []);
+  const [activeSection, setActiveSection] = useState("game"); // ✅ Default state is "game"
+  const [selectedProject, setSelectedProject] = useState(null);
 
   return (
-    <Router>
-      <>
-        {/* ✅ Inventory Window (Closes when Project Details is Open) */}
-        {activeSection === "inventory" && !selectedProject && <Inventory onClose={() => setActiveSection(null)} />}
-        
-        {/* ✅ Contact Window (Closes when Project Details is Open) */}
-        {activeSection === "contact" && !selectedProject && <Contact onClose={() => setActiveSection(null)} />}
-        
-        {/* ✅ Projects Window (Closes when Project Details is Open) */}
-        {activeSection === "projects" && !selectedProject && (
-          <Projects 
-            onClose={() => setActiveSection(null)} // ✅ Close Projects window
-            onProjectClick={(project) => {
-              setActiveSection(null); // ✅ Closes all other popups
-              setSelectedProject(project); // ✅ Opens Project Details
-            }}
-          />
-        )}
-
-        {/* ✅ Project Details Window (Closes all other popups when opened) */}
-        {selectedProject && (
-          <ProjectDetails
-            project={selectedProject}
-            onClose={() => setSelectedProject(null)} // ✅ Close Project Details
-            onBack={() => {
-              setSelectedProject(null);
-              setActiveSection("projects"); // ✅ Go back to Projects List
-            }}
-          />
-        )}
-
-        {/* ✅ Navbar */}
-        <Navbar
-          onAboutClick={() => setActiveSection(activeSection === "inventory" ? null : "inventory")}
-          onProjectsClick={() => setActiveSection(activeSection === "projects" ? null : "projects")}
-          onContactClick={() => setActiveSection(activeSection === "contact" ? null : "contact")}
+    <>
+      {/* 🔹 Project Details Popup - Now Uses `activeSection` */}
+      {activeSection === "project-details" && selectedProject && (
+        <ProjectDetails
+          project={selectedProject}
+          onClose={() => {
+            setSelectedProject(null);
+            setActiveSection("game"); // ✅ Close should return to game
+          }}
+          onBack={() => {
+            setSelectedProject(null);
+            setActiveSection("projects"); // ✅ Back should return to Projects list
+          }}
         />
+      )}
 
-        {/* ✅ Scene & Character Controller */}
-        <Canvas shadows>
-          <color attach="background" args={["#2b2b2b"]} />
-          <Scene isPaused={activeSection !== null || selectedProject !== null} />
-          <CharacterController isPaused={activeSection !== null || selectedProject !== null} setTargetPosition={() => { }} />
-        </Canvas>
-      </>
-    </Router>
+      {/* 🔹 Other UI Popups */}
+      {activeSection === "inventory" && <Inventory onClose={() => setActiveSection("game")} />}
+      {activeSection === "contact" && <Contact onClose={() => setActiveSection("game")} />}
+      {activeSection === "projects" && (
+        <Projects
+          onClose={() => {
+            console.log("❌ Closing Projects, returning to game...");
+            setActiveSection("game");
+          }}
+          onProjectClick={(project) => {
+            console.log(`📂 Project ${project.title} clicked!`); // ✅ Debug log
+            setSelectedProject(project);
+            setActiveSection("project-details"); // ✅ Now correctly opens ProjectDetails
+          }}
+        />
+      )}
+
+      {/* 🔹 Navbar - Ensures functions are passed correctly */}
+      <Navbar
+        onInventoryClick={() => setActiveSection(activeSection === "inventory" ? "game" : "inventory")} // ✅ About opens Inventory
+        onProjectsClick={() => setActiveSection(activeSection === "projects" ? "game" : "projects")}
+        onContactClick={() => setActiveSection("contact")}
+      />
+
+      {/* 🔹 Main Canvas */}
+      <Canvas shadows>
+        <Scene
+          isPaused={activeSection !== "game"} // ✅ Disables interaction when UI is open
+          onProjectSelect={(project) => {
+            setSelectedProject(project);
+            setActiveSection("projectDetails"); // ✅ Now properly handled
+          }}
+        />
+      </Canvas>
+    </>
   );
 }
 

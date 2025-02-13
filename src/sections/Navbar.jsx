@@ -1,31 +1,32 @@
 import React from "react";
 import "../styles/Navbar.css"; // ✅ Import external styles
 
-const Navbar = ({ onAboutClick, onContactClick, onProjectsClick }) => {
+const Navbar = ({ onInventoryClick, onProjectsClick, onContactClick }) => {
   return (
     <div className="navbar">
-      <span>
-        Felipe Garcia <br /> Game Designer
-      </span>
+      <span>Felipe Garcia <br /> Game Designer</span>
       <nav>
         <ul className="text-xs">
           <li>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                onAboutClick();
+            <a 
+              href="#" 
+              className="about-button" // ✅ Keep class as "about-button"
+              onClick={(e) => { 
+                e.preventDefault(); 
+                console.log("🔍 About (Inventory) Button Clicked!"); // ✅ Log for clarity
+                onInventoryClick(); // ✅ Still calls inventory function
               }}
             >
               About
             </a>
           </li>
           <li>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log("Projects button clicked!"); // ✅ Debug log
+            <a 
+              href="#" 
+              className="projects-button"
+              onClick={(e) => { 
+                e.preventDefault(); 
+                console.log("🔍 Projects Button Clicked!");
                 onProjectsClick();
               }}
             >
@@ -33,11 +34,12 @@ const Navbar = ({ onAboutClick, onContactClick, onProjectsClick }) => {
             </a>
           </li>
           <li>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log("Contact button clicked!"); // ✅ Debug log
+            <a 
+              href="#" 
+              className="contact-button"
+              onClick={(e) => { 
+                e.preventDefault(); 
+                console.log("🔍 Contact Button Clicked!");
                 onContactClick();
               }}
             >
