@@ -43,7 +43,7 @@ export const Character = ({ targetPosition }) => {
   });
 
   return (
-    <RigidBody ref={characterRef} colliders="cuboid" position={[0, 0.5, 0]} mass={1} type="dynamic">
+    <RigidBody ref={characterRef} colliders="cuboid" position={[0, 0.5, 0]} mass={1} type="dynamic" name="character">
       <mesh castShadow>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color="#69da96" />
