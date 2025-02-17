@@ -40,7 +40,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
       <ambientLight intensity={0.7} color="#ffffff" />
       <directionalLight position={[10, 10, 10]} intensity={0.8} castShadow />
 
-      <Physics>
+      <Physics debug>
         {currentRoom === "Introduction_room" && <Intro_room width={15} depth={15} height={5} />}
         {currentRoom === "Project_room" && <Project_room width={15} depth={15} height={5} />}
         {currentRoom === "Game_room" && <Game_room width={15} depth={15} height={5} />}
@@ -71,6 +71,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
               color="red" // Color for the door
               shape="sphere" // Shape for the door
               label="Press Space to move to next area" // Custom label for the door
+              setTargetPosition={setTargetPosition} // Pass the setTargetPosition function
             />
           </>
         )}
@@ -86,6 +87,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
               isPaused={isPaused} // Pass the isPaused prop
               color="blue" // Color for the first capsule
               label="Press Space to view Project One" // Custom label for the first capsule
+              setTargetPosition={setTargetPosition} // Pass the setTargetPosition function
             />
 
             {/* ✅ Second Capsule with Collider */}
@@ -97,6 +99,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
               isPaused={isPaused} // Pass the isPaused prop
               color="purple" // Color for the second capsule
               label="Press Space to view Project Two" // Custom label for the second capsule
+              setTargetPosition={setTargetPosition} // Pass the setTargetPosition function
             />
 
             {/* ✅ Door with Collider to go back */}
@@ -109,6 +112,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
               color="red" // Color for the door
               shape="sphere" // Shape for the door
               label="Press Space to go back" // Custom label for the door
+              setTargetPosition={setTargetPosition} // Pass the setTargetPosition function
             />
 
             {/* ✅ Door with Collider to go forward */}
@@ -121,6 +125,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
               color="red" // Color for the door
               shape="sphere" // Shape for the door
               label="Press Space to move to next area" // Custom label for the door
+              setTargetPosition={setTargetPosition} // Pass the setTargetPosition function
             />
           </>
         )}
@@ -137,6 +142,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
               color="red" // Color for the door
               shape="sphere" // Shape for the door
               label="Press Space to go back" // Custom label for the door
+              setTargetPosition={setTargetPosition} // Pass the setTargetPosition function
             />
           </>
         )}

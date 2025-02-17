@@ -31,7 +31,7 @@ export const Intro_room = ({ width = 15, depth = 15, height = 5 }) => {
     <group>
       {/* Floor */}
       <RigidBody type="fixed" colliders="cuboid">
-        <mesh name="floor" userData={{ type: "floor" }} position={[0, -floorThickness / 2, 0]}>
+        <mesh name="floor" userData={{ type: "floor", raycastable: true }} position={[0, -floorThickness / 2, 0]}>
           <boxGeometry args={[width, floorThickness, depth]} />
           <primitive attach="material" object={floorMaterial} />
         </mesh>

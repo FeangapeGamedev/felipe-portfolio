@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
+import * as THREE from "three";
 
-const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, color, shape = "capsule", label = "Press Space to activate" }) => {
+const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, color, shape = "capsule", label = "Press Space to activate", setTargetPosition }) => {
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -36,9 +37,12 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, co
     >
       <mesh
         position={position}
+        userData={{ raycastable: true, isInteractive: true }}
         onClick={(event) => {
           event.stopPropagation();
           onClick();
+          // Move character to the interactable object
+          setTargetPosition(new THREE.Vector3(position[0], position[1], position[2]));
         }}
         onPointerOver={() => setIsHovered(true)}
         onPointerOut={() => setIsHovered(false)}
