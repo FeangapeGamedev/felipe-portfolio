@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 
-const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, color }) => {
+const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, color, shape = "capsule", label = "Press Space to activate" }) => {
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -43,7 +43,8 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, co
         onPointerOver={() => setIsHovered(true)}
         onPointerOut={() => setIsHovered(false)}
       >
-        <capsuleGeometry args={[0.3, 1, 10, 10]} />
+        {shape === "capsule" && <capsuleGeometry args={[0.3, 1, 10, 10]} />}
+        {shape === "sphere" && <sphereGeometry args={[0.5, 32, 32]} />}
         <meshStandardMaterial
           color={isHovered ? "yellow" : color}
           emissive={isHovered ? "yellow" : "black"}
@@ -52,7 +53,7 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, co
 
         {isNear && !isPaused && (
           <Html position={[0, 1.2, 0]}>
-            <div className="object-label">Press Space to activate</div>
+            <div className="object-label">{label}</div>
           </Html>
         )}
       </mesh>

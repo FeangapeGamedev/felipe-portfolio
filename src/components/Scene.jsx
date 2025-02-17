@@ -47,16 +47,30 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
           onProjectClick={onProjectSelect} // Pass the onProjectSelect function
           isPaused={isPaused} // Pass the isPaused prop
           color="blue" // Color for the first capsule
+          label="Press Space to view Project One" // Custom label for the first capsule
         />
 
         {/* ✅ Second Capsule with Collider */}
         <InteractiveObject
           id={2} // Pass the project ID for the second project
-          position={[4, 1, 0]} // Different position for the second capsule
+          position={[6, 1, 0]} // Different position for the second capsule
           onClick={() => console.log("Capsule 2 clicked!")}
           onProjectClick={onProjectSelect} // Pass the onProjectSelect function
           isPaused={isPaused} // Pass the isPaused prop
           color="brown" // Color for the second capsule
+          label="Press Space to view Project Two" // Custom label for the second capsule
+        />
+
+        {/* ✅ Door with Collider */}
+        <InteractiveObject
+          id={3} // Pass the door ID
+          position={[0, 1, -7]} // Position near the back wall
+          onClick={() => console.log("Door clicked!")}
+          onProjectClick={onDoorOpen} // Pass the onDoorOpen function
+          isPaused={isPaused} // Pass the isPaused prop
+          color="red" // Color for the door
+          shape="sphere" // Shape for the door
+          label="Press Space to move to next area" // Custom label for the door
         />
       </Physics>
     </group>
