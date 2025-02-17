@@ -10,6 +10,9 @@ import ProjectDetails from "./sections/ProjectDetails";
 function App() {
   const [activeSection, setActiveSection] = useState("game"); // ✅ Default state is "game"
   const [selectedProject, setSelectedProject] = useState(null);
+  const [disableBackButton, setDisableBackButton] = useState(false);
+
+  const isPaused = activeSection !== "game";
 
   return (
     <>
@@ -25,6 +28,7 @@ function App() {
             setSelectedProject(null);
             setActiveSection("projects"); // ✅ Back should return to Projects list
           }}
+          disableBackButton={disableBackButton} // Pass the disableBackButton prop
         />
       )}
 
@@ -41,6 +45,7 @@ function App() {
             console.log(`📂 Project ${project.title} clicked!`); // ✅ Debug log
             setSelectedProject(project);
             setActiveSection("project-details"); // ✅ Now correctly opens ProjectDetails
+            setDisableBackButton(false); // Enable back button for project list
           }}
         />
       )}
@@ -55,10 +60,12 @@ function App() {
       {/* 🔹 Main Canvas */}
       <Canvas shadows>
         <Scene
-          isPaused={activeSection !== "game"} // ✅ Disables interaction when UI is open
-          onProjectSelect={(project) => {
+          isPaused={isPaused} // ✅ Disables interaction when UI is open
+          onProjectSelect={(projectId) => {
+            const project = { id: projectId, title: `Project ${projectId}`, description: `Description for Project ${projectId}` };
             setSelectedProject(project);
-            setActiveSection("projectDetails"); // ✅ Now properly handled
+            setActiveSection("project-details"); // ✅ Now properly handled
+            setDisableBackButton(true); // Disable back button for collision logic
           }}
         />
       </Canvas>

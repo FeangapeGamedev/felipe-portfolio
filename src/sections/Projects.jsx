@@ -25,12 +25,19 @@ const Projects = ({ onClose, onProjectClick }) => {
     }
   ];
 
+  const handleProjectClick = (id) => {
+    const project = projects.find((project) => project.id === id);
+    if (project) {
+      onProjectClick(project);
+    }
+  };
+
   return (
-    <div className="projects-container"> {/* ✅ Removed the overlay */}
+    <div className="projects-container">
       {/* Header */}
       <div className="projects-header">
         Projects
-        <button onClick={onClose} className="close-button">✖</button> {/* ✅ Now properly closes */}
+        <button onClick={onClose} className="close-button">✖</button>
       </div>
 
       {/* Projects Grid */}
@@ -39,7 +46,7 @@ const Projects = ({ onClose, onProjectClick }) => {
           <div
             key={project.id}
             className="project-frame"
-            onClick={() => onProjectClick(project)} // ✅ Opens Project Details
+            onClick={() => onProjectClick(project)}
           >
             <img src={project.image} alt={project.title} className="project-image" />
             <span className="project-title">{project.title}</span>

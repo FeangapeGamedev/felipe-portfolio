@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "../styles/ProjectDetails.css"; // ✅ Ensure this file exists
+import "../styles/ProjectDetails.css"; // Ensure this file exists
 
-const ProjectDetails = ({ project, onClose, onBack }) => {
+const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
   const categories = [
     { id: "overview", label: "Overview" },
     { id: "gameplay", label: "Gameplay" },
@@ -25,7 +25,9 @@ const ProjectDetails = ({ project, onClose, onBack }) => {
         <div className="project-details-header">
           {project.title}
           <div className="header-buttons">
-            <button onClick={onBack} className="back-button">← Back</button>
+            {!disableBackButton && (
+              <button onClick={onBack} className="back-button">← Back</button>
+            )}
             <button onClick={onClose} className="close-button">✖</button>
           </div>
         </div>

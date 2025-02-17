@@ -1,14 +1,16 @@
 import { useThree, useFrame } from "@react-three/fiber";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import * as THREE from "three";
 
-export const CharacterController = ({ setTargetPosition, onInteract }) => {
+export const CharacterController = ({ isPaused, setTargetPosition, onInteract }) => {
   const { scene, camera, gl } = useThree();
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
   useEffect(() => {
     const onMouseDown = (event) => {
+      if (isPaused) return;
+
       // Convert mouse click to normalized device coordinates (-1 to +1)
       mouse.x = (event.clientX / gl.domElement.clientWidth) * 2 - 1;
       mouse.y = -(event.clientY / gl.domElement.clientHeight) * 2 + 1;
@@ -46,7 +48,21 @@ export const CharacterController = ({ setTargetPosition, onInteract }) => {
       // Cleanup event listener on unmount
       window.removeEventListener("mousedown", onMouseDown);
     };
-  }, [camera, gl, scene, setTargetPosition, onInteract]);
+  }, [camera, gl, scene, setTargetPosition, onInteract, isPaused]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (isPaused) return;
+
+      // Handle character movement and interaction logic here
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isPaused]);
 
   return null;
 };

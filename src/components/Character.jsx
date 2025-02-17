@@ -3,7 +3,7 @@ import { RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-export const Character = ({ targetPosition }) => {
+export const Character = ({ targetPosition, isPaused }) => {
   const characterRef = useRef();
   const [isColliding, setIsColliding] = useState(false);
   const speed = 0.3; // 🔹 Movement speed
@@ -15,42 +15,42 @@ export const Character = ({ targetPosition }) => {
   }, [targetPosition]);
 
   useFrame(() => {
-    if (targetPosition && characterRef.current) {
-      const characterPos = characterRef.current.translation();
-      let posX = characterPos.x;
-      let posZ = characterPos.z;
-      let newPosX = targetPosition.x;
-      let newPosZ = targetPosition.z;
+    if (isPaused || !targetPosition || !characterRef.current) return;
 
-      // Compute movement vector
-      let directionX = newPosX - posX;
-      let directionZ = newPosZ - posZ;
-      let distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
+    const characterPos = characterRef.current.translation();
+    let posX = characterPos.x;
+    let posZ = characterPos.z;
+    let newPosX = targetPosition.x;
+    let newPosZ = targetPosition.z;
 
-      // Reduce speed as the character approaches the target
-      let currentSpeed = speed;
-      if (distance < stopThreshold) {
-        currentSpeed = speed * (distance / stopThreshold);
-      }
+    // Compute movement vector
+    let directionX = newPosX - posX;
+    let directionZ = newPosZ - posZ;
+    let distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
 
-      // Move if distance is greater than a small threshold and is not colliding
-      if (distance > 0.01 && !isColliding) {
-        let moveDistance = Math.min(currentSpeed, distance);
-        let targetPos = new THREE.Vector3(
-          posX + (directionX / distance) * moveDistance,
-          0.5, // 🔹 Keep Y locked
-          posZ + (directionZ / distance) * moveDistance
-        );
+    // Reduce speed as the character approaches the target
+    let currentSpeed = speed;
+    if (distance < stopThreshold) {
+      currentSpeed = speed * (distance / stopThreshold);
+    }
 
-        // Smooth movement using Lerp
-        let currentPos = new THREE.Vector3(posX, 0.5, posZ);
-        currentPos.lerp(targetPos, lerpFactor);
+    // Move if distance is greater than a small threshold and is not colliding
+    if (distance > 0.01 && !isColliding) {
+      let moveDistance = Math.min(currentSpeed, distance);
+      let targetPos = new THREE.Vector3(
+        posX + (directionX / distance) * moveDistance,
+        0.5, // 🔹 Keep Y locked
+        posZ + (directionZ / distance) * moveDistance
+      );
 
-        characterRef.current.setTranslation(
-          { x: currentPos.x, y: 0.5, z: currentPos.z },
-          true
-        );
-      }
+      // Smooth movement using Lerp
+      let currentPos = new THREE.Vector3(posX, 0.5, posZ);
+      currentPos.lerp(targetPos, lerpFactor);
+
+      characterRef.current.setTranslation(
+        { x: currentPos.x, y: 0.5, z: currentPos.z },
+        true
+      );
     }
   });
 

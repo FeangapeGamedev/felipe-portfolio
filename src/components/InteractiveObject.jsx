@@ -1,9 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
-import { RigidBody, CapsuleCollider } from "@react-three/rapier";
+import { RigidBody } from "@react-three/rapier";
 
-const InteractiveObject = ({ position, onClick }) => {
+const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused }) => {
   const [isNear, setIsNear] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (isNear && event.code === "Space" && !isPaused) {
+        onProjectClick(id); // Call the onProjectClick function with the id
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isNear, onProjectClick, id, isPaused]);
 
   return (
     <RigidBody
@@ -25,14 +40,19 @@ const InteractiveObject = ({ position, onClick }) => {
           event.stopPropagation();
           onClick();
         }}
+        onPointerOver={() => setIsHovered(true)}
+        onPointerOut={() => setIsHovered(false)}
       >
-        {/* ✅ Do NOT add another capsule here, just the geometry */}
         <capsuleGeometry args={[0.3, 1, 10, 10]} />
-        <meshStandardMaterial color="blue" />
+        <meshStandardMaterial
+          color={isHovered ? "yellow" : "blue"}
+          emissive={isHovered ? "yellow" : "black"}
+          emissiveIntensity={isHovered ? 0.5 : 0}
+        />
 
-        {isNear && (
+        {isNear && !isPaused && (
           <Html position={[0, 1.2, 0]}>
-            <div className="object-label">Click to interact</div>
+            <div className="object-label">Press Space to activate</div>
           </Html>
         )}
       </mesh>

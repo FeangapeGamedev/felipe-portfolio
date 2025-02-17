@@ -26,7 +26,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
         <Room width={15} depth={15} height={5} />
 
         {/* Character */}
-        <Character targetPosition={targetPosition} />
+        <Character targetPosition={targetPosition} isPaused={isPaused} />
         <CharacterController
           isPaused={isPaused}
           setTargetPosition={setTargetPosition}
@@ -41,11 +41,13 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
 
         {/* ✅ Capsule with Collider */}
         <InteractiveObject
+          id={1} // Pass the project ID
           position={[2, 1, 0]}
           onClick={() => console.log("Capsule clicked!")}
+          onProjectClick={onProjectSelect} // Pass the onProjectSelect function
+          isPaused={isPaused} // Pass the isPaused prop
         />
       </Physics>
-
     </group>
   );
 };
