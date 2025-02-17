@@ -1,30 +1,8 @@
 import React from "react";
 import "../styles/Projects.css";
+import { projects } from "../data/projectsData"; // Import the project details
 
 const Projects = ({ onClose, onProjectClick }) => {
-  const projects = [
-    {
-      id: 1,
-      title: "Project One",
-      description: "A cool project about...",
-      image: "/images/project1.jpg",
-      overview: "This is an overview of Project One.",
-      gameplay: "Gameplay details for Project One.",
-      technology: "Technology stack used in Project One.",
-      media: "Screenshots and videos for Project One."
-    },
-    {
-      id: 2,
-      title: "Project Two",
-      description: "Another awesome project...",
-      image: "/images/project2.jpg",
-      overview: "Overview of Project Two.",
-      gameplay: "How Project Two plays.",
-      technology: "Tech used in Project Two.",
-      media: "Screenshots/videos from Project Two."
-    }
-  ];
-
   const handleProjectClick = (id) => {
     const project = projects.find((project) => project.id === id);
     if (project) {
@@ -46,7 +24,7 @@ const Projects = ({ onClose, onProjectClick }) => {
           <div
             key={project.id}
             className="project-frame"
-            onClick={() => onProjectClick(project)}
+            onClick={() => handleProjectClick(project.id)}
           >
             <img src={project.image} alt={project.title} className="project-image" />
             <span className="project-title">{project.title}</span>

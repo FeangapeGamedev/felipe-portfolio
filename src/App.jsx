@@ -6,6 +6,7 @@ import Inventory from "./sections/Inventory";
 import Contact from "./sections/Contact";
 import Projects from "./sections/Projects";
 import ProjectDetails from "./sections/ProjectDetails";
+import { projects } from "./data/projectsData"; // Import the project details
 
 function App() {
   const [activeSection, setActiveSection] = useState("game"); // ✅ Default state is "game"
@@ -13,6 +14,13 @@ function App() {
   const [disableBackButton, setDisableBackButton] = useState(false);
 
   const isPaused = activeSection !== "game";
+
+  const handleProjectSelect = (projectId) => {
+    const project = projects.find(p => p.id === projectId);
+    setSelectedProject(project);
+    setActiveSection("project-details");
+    setDisableBackButton(true); // Disable back button for collision logic
+  };
 
   return (
     <>
@@ -61,12 +69,7 @@ function App() {
       <Canvas shadows>
         <Scene
           isPaused={isPaused} // ✅ Disables interaction when UI is open
-          onProjectSelect={(projectId) => {
-            const project = { id: projectId, title: `Project ${projectId}`, description: `Description for Project ${projectId}` };
-            setSelectedProject(project);
-            setActiveSection("project-details"); // ✅ Now properly handled
-            setDisableBackButton(true); // Disable back button for collision logic
-          }}
+          onProjectSelect={handleProjectSelect}
         />
       </Canvas>
     </>
