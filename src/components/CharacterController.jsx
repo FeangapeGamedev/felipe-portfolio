@@ -1,63 +1,52 @@
-import { useEffect, useRef } from "react";
-import { useThree } from "@react-three/fiber";
+import { useThree, useFrame } from "@react-three/fiber";
+import { useEffect } from "react";
 import * as THREE from "three";
 
-export const CharacterController = ({ setTargetPosition, isPaused }) => {
-  const { scene, camera } = useThree();
+export const CharacterController = ({ setTargetPosition, onInteract }) => {
+  const { scene, camera, gl } = useThree();
   const raycaster = new THREE.Raycaster();
-  const isPausedRef = useRef(isPaused);
+  const mouse = new THREE.Vector2();
 
   useEffect(() => {
-    isPausedRef.current = isPaused;
-  }, [isPaused]);
+    const onMouseDown = (event) => {
+      // Convert mouse click to normalized device coordinates (-1 to +1)
+      mouse.x = (event.clientX / gl.domElement.clientWidth) * 2 - 1;
+      mouse.y = -(event.clientY / gl.domElement.clientHeight) * 2 + 1;
 
-  useEffect(() => {
-    const handlePointerDown = (event) => {
-      if (isPausedRef.current) return;
-
-      const mouse = new THREE.Vector2(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
-      );
-
+      // Set the raycaster from camera to click point
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
 
-      if (intersects.length > 0) {
-        // Find the floor first before any other object
-        const floorHit = intersects.find((hit) => hit.object.userData?.type === "floor");
+      // Get intersections
+      const intersections = raycaster.intersectObjects(scene.children, true);
 
-        if (floorHit) {
-          const point = floorHit.point;
-          console.log("✅ Floor Clicked! Moving to:", point);
-          setTargetPosition(new THREE.Vector3(point.x, 0.5, point.z));
-          return;
+      // If there are intersections and the object is raycastable
+      if (intersections.length > 0 && intersections[0].object.userData.raycastable) {
+        const selectedObject = intersections[0].object;
+
+        // Check if the object is interactive
+        if (selectedObject.userData?.isInteractive) {
+          onInteract(selectedObject);
+        } else {
+          // Move character to clicked position
+          const point = intersections[0].point;
+          setTargetPosition(new THREE.Vector3(point.x, point.y, point.z));
         }
-
-        // Otherwise, handle other interactive objects
-        let clickedObject = intersects.find(obj => obj.object.userData?.raycastable !== false)?.object;
-        if (!clickedObject) {
-          console.log("❌ No valid object clicked.");
-          return;
-        }
-
-        console.log("🎯 Clicked Object:", clickedObject.name || clickedObject.userData?.type || "Unknown Object");
-
-        // Handle interactive objects
-        if (clickedObject.userData?.type === "interactive") {
-          setTargetPosition(clickedObject.position);
-          console.log("🚶 Moving towards interactive object...");
-        }
-      } else {
-        console.log("❌ No valid object clicked.");
+      }
+      // If there are intersections and the object is not raycastable, move to the next intersection
+      else if (intersections.length > 1 && !intersections[0].object.userData.raycastable) {
+        const point = intersections[1].point;
+        setTargetPosition(new THREE.Vector3(point.x, point.y, point.z));
       }
     };
 
-    window.addEventListener("mousedown", handlePointerDown);
+    // Attach event listener
+    window.addEventListener("mousedown", onMouseDown);
+
     return () => {
-      window.removeEventListener("mousedown", handlePointerDown);
+      // Cleanup event listener on unmount
+      window.removeEventListener("mousedown", onMouseDown);
     };
-  }, [scene, camera, setTargetPosition]);
+  }, [camera, gl, scene, setTargetPosition, onInteract]);
 
   return null;
 };

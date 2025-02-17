@@ -41,8 +41,8 @@ export const Room = ({ width = 15, depth = 15, height = 5 }) => {
       {[
         { pos: [0, height / 2, -depth / 2], rot: [0, 0, 0], size: [width, height, wallThickness], name: "back-wall", visible: true },
         { pos: [-width / 2, height / 2, 0], rot: [0, Math.PI / 2, 0], size: [depth, height, wallThickness], name: "left-wall", visible: true },
-        { pos: [width / 2, height / 2, 0], rot: [0, Math.PI / 2, 0], size: [depth, height, wallThickness], name: "right-wall", visible: false, raycastable: false }, // Invisible
-        { pos: [0, height / 2, depth / 2], rot: [0, Math.PI, 0], size: [width, height, wallThickness], name: "front-wall", visible: false, raycastable: false }, // Invisible
+        { pos: [width / 2, height / 2, 0], rot: [0, Math.PI / 2, 0], size: [depth, height, wallThickness], name: "right-wall", visible: false, raycastable: false }, 
+        { pos: [0, height / 2, depth / 2], rot: [0, Math.PI, 0], size: [width, height, wallThickness], name: "front-wall", visible: false, raycastable: false }, 
       ].map(({ pos, rot, size, name, visible, raycastable }, index) => (
         <RigidBody key={index} type="fixed" colliders="cuboid">
           <mesh position={pos} rotation={rot} name={name} userData={{ raycastable }}>

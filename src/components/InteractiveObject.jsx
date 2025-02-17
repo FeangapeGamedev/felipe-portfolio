@@ -6,7 +6,7 @@ const InteractiveObject = ({ position, onClick }) => {
   const [isNear, setIsNear] = useState(false);
 
   return (
-    <RigidBody 
+    <RigidBody
       type="fixed"
       onCollisionEnter={(event) => {
         if (event.other.rigidBodyObject?.name === "character") {
@@ -19,18 +19,20 @@ const InteractiveObject = ({ position, onClick }) => {
         }
       }}
     >
-      {/* Capsule Collider */}
-      <CapsuleCollider args={[0.5, 0.3]} /> {/* (height, radius) */}
-
-      <mesh position={position} onClick={onClick}>
-        {/* Capsule Shape */}
+      <mesh
+        position={position}
+        onClick={(event) => {
+          event.stopPropagation();
+          onClick();
+        }}
+      >
+        {/* ✅ Do NOT add another capsule here, just the geometry */}
         <capsuleGeometry args={[0.3, 1, 10, 10]} />
         <meshStandardMaterial color="blue" />
 
-        {/* Label appears only when the character is near */}
         {isNear && (
           <Html position={[0, 1.2, 0]}>
-            <div className="object-label"> Press "Enter" to View project</div>
+            <div className="object-label">Click to interact</div>
           </Html>
         )}
       </mesh>
