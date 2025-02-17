@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 
-const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused }) => {
+const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, color }) => {
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -45,7 +45,7 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused }) 
       >
         <capsuleGeometry args={[0.3, 1, 10, 10]} />
         <meshStandardMaterial
-          color={isHovered ? "yellow" : "blue"}
+          color={isHovered ? "yellow" : color}
           emissive={isHovered ? "yellow" : "black"}
           emissiveIntensity={isHovered ? 0.5 : 0}
         />
