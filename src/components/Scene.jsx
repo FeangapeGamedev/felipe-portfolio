@@ -63,7 +63,7 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
         />
 
         {/* Character */}
-        <Character key={characterKey} targetPosition={targetPosition} isPaused={isPaused} />
+        <Character key={characterKey} initialPosition={currentRoom.spawnPosition} targetPosition={targetPosition} isPaused={isPaused} />
         <CharacterController
           isPaused={isPaused}
           setTargetPosition={setTargetPosition}

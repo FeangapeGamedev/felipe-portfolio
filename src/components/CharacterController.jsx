@@ -21,14 +21,9 @@ export const CharacterController = ({ isPaused, setTargetPosition, onInteract })
       // Get intersections
       const intersections = raycaster.intersectObjects(scene.children, true);
 
-      // Log intersections for debugging
-      console.log('Intersections:', intersections);
-
       // Loop through intersections to find the first raycastable object
       for (let i = 0; i < intersections.length; i++) {
         const intersectedObject = intersections[i].object;
-
-        console.log(`Intersected object: ${intersectedObject.name}, Raycastable: ${intersectedObject.userData.raycastable}`);
 
         if (intersectedObject.userData.raycastable) {
           // Check if the object is interactive
@@ -37,7 +32,6 @@ export const CharacterController = ({ isPaused, setTargetPosition, onInteract })
           } else {
             // Move character to clicked position
             const point = intersections[i].point;
-            console.log(`Moving character to: ${point.x}, ${point.y}, ${point.z}`);
             setTargetPosition(new THREE.Vector3(point.x, point.y, point.z));
           }
           break; // Exit the loop once a raycastable object is found

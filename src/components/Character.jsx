@@ -3,12 +3,12 @@ import { RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-export const Character = ({ targetPosition, isPaused }) => {
+export const Character = ({ initialPosition, targetPosition, isPaused }) => {
   const characterRef = useRef();
   const [isColliding, setIsColliding] = useState(false);
-  const speed = 0.3; // 🔹 Movement speed
+  const speed = 0.5; // 🔹 Movement speed (adjusted for smoother movement)
   const lerpFactor = 0.1; // 🔹 Controls smoothness (lower = smoother movement)
-  const stopThreshold = 0.6; // 🔹 Distance to start reducing speed
+  const stopThreshold = 0.1; // 🔹 Distance to start reducing speed (adjusted for smoother stopping)
 
   useEffect(() => {
     setIsColliding(false); // Reset collision state when target position is updated
@@ -18,6 +18,7 @@ export const Character = ({ targetPosition, isPaused }) => {
     if (isPaused || !targetPosition || !characterRef.current) return;
 
     const characterPos = characterRef.current.translation();
+
     let posX = characterPos.x;
     let posZ = characterPos.z;
     let newPosX = targetPosition.x;
@@ -27,6 +28,11 @@ export const Character = ({ targetPosition, isPaused }) => {
     let directionX = newPosX - posX;
     let directionZ = newPosZ - posZ;
     let distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
+
+    // Stop movement if the character is very close to the target position
+    if (distance < 0.01) {
+      return;
+    }
 
     // Reduce speed as the character approaches the target
     let currentSpeed = speed;
@@ -70,7 +76,7 @@ export const Character = ({ targetPosition, isPaused }) => {
     <RigidBody
       ref={characterRef}
       colliders="cuboid"
-      position={[0, 0.5, 0]}
+      position={initialPosition} // Use initialPosition for initial position
       mass={1}
       type="dynamic"
       name="character"
