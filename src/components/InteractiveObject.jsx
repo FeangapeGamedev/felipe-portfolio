@@ -29,6 +29,10 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, co
     };
   }, [isNear, onProjectClick, id, isPaused]);
 
+  useEffect(() => {
+    setIsNear(false); // Reset isNear state when position changes
+  }, [position]);
+
   useFrame(() => {
     if (objectRef.current) {
       objectRef.current.setTranslation({ x: position[0], y: position[1], z: position[2] }, true);
