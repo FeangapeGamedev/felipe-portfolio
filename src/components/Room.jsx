@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RigidBody } from "@react-three/rapier";
 import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
+import InteractiveObject from "./InteractiveObject";
 
-export const Room = ({ width = 15, depth = 15, height = 5 }) => {
+export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handleDoorOpen }) => {
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
@@ -27,22 +28,28 @@ export const Room = ({ width = 15, depth = 15, height = 5 }) => {
     roughness: 0.9,
   });
 
+  useEffect(() => {
+    // Set the initial character position when the room is generated
+    const initialPosition = room.spawnPosition; // Use spawn position from room data
+    setTargetPosition(new THREE.Vector3(initialPosition[0], initialPosition[1], initialPosition[2]));
+  }, [room, setTargetPosition]);
+
   return (
     <group>
       {/* Floor */}
       <RigidBody type="fixed" colliders="cuboid">
         <mesh name="floor" userData={{ type: "floor", raycastable: true }} position={[0, -floorThickness / 2, 0]}>
-          <boxGeometry args={[width, floorThickness, depth]} />
+          <boxGeometry args={[room.width, floorThickness, room.depth]} />
           <primitive attach="material" object={floorMaterial} />
         </mesh>
       </RigidBody>
 
-      {/* Walls - Only Back & Left are Visible */}
+      {/* Walls */}
       {[
-        { pos: [0, height / 2, -depth / 2], rot: [0, 0, 0], size: [width, height, wallThickness], name: "back-wall", visible: true },
-        { pos: [-width / 2, height / 2, 0], rot: [0, Math.PI / 2, 0], size: [depth, height, wallThickness], name: "left-wall", visible: true },
-        { pos: [width / 2, height / 2, 0], rot: [0, Math.PI / 2, 0], size: [depth, height, wallThickness], name: "right-wall", visible: false, raycastable: false }, 
-        { pos: [0, height / 2, depth / 2], rot: [0, Math.PI, 0], size: [width, height, wallThickness], name: "front-wall", visible: false, raycastable: false }, 
+        { pos: [0, room.height / 2, -room.depth / 2], rot: [0, 0, 0], size: [room.width, room.height, wallThickness], name: "back-wall", visible: true, raycastable: true },
+        { pos: [-room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "left-wall", visible: true, raycastable: true },
+        { pos: [room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "right-wall", visible: false, raycastable: false },
+        { pos: [0, room.height / 2, room.depth / 2], rot: [0, Math.PI, 0], size: [room.width, room.height, wallThickness], name: "front-wall", visible: false, raycastable: false },
       ].map(({ pos, rot, size, name, visible, raycastable }, index) => (
         <RigidBody key={index} type="fixed" colliders="cuboid">
           <mesh position={pos} rotation={rot} name={name} userData={{ raycastable }}>
@@ -59,6 +66,22 @@ export const Room = ({ width = 15, depth = 15, height = 5 }) => {
             />
           </mesh>
         </RigidBody>
+      ))}
+
+      {/* Interactive Items */}
+      {room.items.map((item, index) => (
+        <InteractiveObject
+          key={index}
+          id={item.id}
+          position={item.position}
+          onClick={() => console.log(`${item.type} clicked!`)}
+          onProjectClick={item.type === "door" ? () => handleDoorOpen(item.direction) : onProjectSelect}
+          isPaused={isPaused}
+          color={item.color || "red"}
+          shape={item.type === "door" ? "door" : "sphere"} // Use "door" shape for doors
+          label={item.label}
+          setTargetPosition={setTargetPosition}
+        />
       ))}
     </group>
   );
