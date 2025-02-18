@@ -4,7 +4,7 @@ import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import InteractiveObject from "./InteractiveObject";
 
-export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handleDoorOpen }) => {
+export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handleDoorOpen, doorDirection }) => {
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
@@ -30,9 +30,10 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
 
   useEffect(() => {
     // Set the initial character position when the room is generated
-    const initialPosition = room.spawnPosition; // Use spawn position from room data
+    const initialPosition = doorDirection === "forward" ? room.spawnPositionForward : room.spawnPositionBackward;
+    console.log(`Initial character position: ${initialPosition}`);
     setTargetPosition(new THREE.Vector3(initialPosition[0], initialPosition[1], initialPosition[2]));
-  }, [room, setTargetPosition]);
+  }, [room, setTargetPosition, doorDirection]);
 
   return (
     <group>

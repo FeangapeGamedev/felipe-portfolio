@@ -11,8 +11,11 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
   const [targetPosition, setTargetPosition] = useState(null);
   const [currentRoomId, setCurrentRoomId] = useState(1); // Set initial room to Introduction Room
   const [characterKey, setCharacterKey] = useState(0); // Key to force re-render of the character
+  const [doorDirection, setDoorDirection] = useState("forward"); // Track the direction of the door
 
   const handleDoorOpen = (direction) => {
+    console.log(`Door opened in direction: ${direction}`);
+    setDoorDirection(direction); // Update the door direction
     const currentRoomIndex = roomData.findIndex(room => room.id === currentRoomId);
     let newRoomIndex = currentRoomIndex;
 
@@ -25,13 +28,9 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
     if (newRoomIndex !== currentRoomIndex) {
       setCurrentRoomId(roomData[newRoomIndex].id);
 
-      // Calculate the new target position with an offset
-      const newPosition = [...roomData[newRoomIndex].spawnPosition];
-      if (direction === "forward") {
-        newPosition[2] -= 2; // Move backward by 2 units from the door
-      } else if (direction === "backward") {
-        newPosition[2] += 2; // Move forward by 2 units from the door
-      }
+      // Calculate the new target position based on the direction
+      const newPosition = direction === "forward" ? roomData[newRoomIndex].spawnPositionForward : roomData[newRoomIndex].spawnPositionBackward;
+      console.log(`New target position: ${newPosition}`);
       setTargetPosition(new THREE.Vector3(newPosition[0], newPosition[1], newPosition[2]));
 
       // Force re-render of the character by updating the key
@@ -40,6 +39,9 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
   };
 
   const currentRoom = roomData.find(room => room.id === currentRoomId);
+
+  // Determine the initial position based on the door direction
+  const initialPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
 
   return (
     <group>
@@ -60,10 +62,11 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
           isPaused={isPaused}
           onProjectSelect={onProjectSelect}
           handleDoorOpen={handleDoorOpen}
+          doorDirection={doorDirection} // Pass the door direction to the Room component
         />
 
         {/* Character */}
-        <Character key={characterKey} initialPosition={currentRoom.spawnPosition} targetPosition={targetPosition} isPaused={isPaused} />
+        <Character key={characterKey} initialPosition={new THREE.Vector3(initialPosition[0], initialPosition[1], initialPosition[2])} targetPosition={targetPosition} isPaused={isPaused} />
         <CharacterController
           isPaused={isPaused}
           setTargetPosition={setTargetPosition}
