@@ -7,11 +7,12 @@ import { Character } from "./Character"; // Import the Character component
 import { roomData } from "../data/roomData";
 import * as THREE from "three";
 
-export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
+export const Scene = ({ isPaused, onProjectSelect }) => {
   const [targetPosition, setTargetPosition] = useState(null);
   const [currentRoomId, setCurrentRoomId] = useState(1); // Set initial room to Introduction Room
   const [characterKey, setCharacterKey] = useState(0); // Key to force re-render of the character
   const [doorDirection, setDoorDirection] = useState("forward"); // Track the direction of the door
+  const [initialPosition, setInitialPosition] = useState(null); // Store the initial position
 
   const handleDoorOpen = (direction) => {
     console.log(`Door opened in direction: ${direction}`);
@@ -40,8 +41,11 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
 
   const currentRoom = roomData.find(room => room.id === currentRoomId);
 
-  // Determine the initial position based on the door direction
-  const initialPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
+  useEffect(() => {
+    // Determine the initial position based on the door direction
+    const initialPos = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
+    setInitialPosition(new THREE.Vector3(initialPos[0], initialPos[1], initialPos[2]));
+  }, [currentRoomId, doorDirection]);
 
   return (
     <group>
@@ -66,14 +70,16 @@ export const Scene = ({ isPaused, onProjectSelect, onDoorOpen }) => {
         />
 
         {/* Character */}
-        <Character key={characterKey} initialPosition={new THREE.Vector3(initialPosition[0], initialPosition[1], initialPosition[2])} targetPosition={targetPosition} isPaused={isPaused} />
+        {initialPosition && (
+          <Character key={characterKey} initialPosition={initialPosition} targetPosition={targetPosition} isPaused={isPaused} />
+        )}
         <CharacterController
           isPaused={isPaused}
           setTargetPosition={setTargetPosition}
           onInteract={(object) => {
-            if (object.name === "project") {
+            if (object.type === "project") {
               onProjectSelect(object.userData.projectId);
-            } else if (object.name === "door") {
+            } else if (object.type === "door") {
               handleDoorOpen(object.userData.direction);
             }
           }}
