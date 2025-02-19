@@ -9,6 +9,8 @@ export const roomData = [
     depth: 15,
     height: 5,
     color: "lightblue",
+    wallTexture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+    floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     items: [
       {
         id: "door1",
@@ -29,6 +31,8 @@ export const roomData = [
     depth: 15,
     height: 5,
     color: "lightgreen",
+    wallTexture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
+    floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     items: [
       {
         id: "door2",
@@ -70,6 +74,8 @@ export const roomData = [
     depth: 15,
     height: 5,
     color: "lightcoral",
+    wallTexture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+    floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     items: [
       {
         id: "door4",

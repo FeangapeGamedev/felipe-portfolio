@@ -1,32 +1,63 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
-import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
+import { TGALoader } from 'three/addons/loaders/TGALoader.js';
 import InteractiveObject from "./InteractiveObject";
 
 export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handleDoorOpen, doorDirection }) => {
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
-  // Load textures
-  const colorMap = useLoader(THREE.TextureLoader, "/src/assets/models/plaster/textures/red_plaster_weathered_diff_4k.jpg");
-  const normalMap = useLoader(THREE.TextureLoader, "/src/assets/models/plaster/textures/red_plaster_weathered_nor_gl_4k.jpg");
-  const roughnessMap = useLoader(THREE.TextureLoader, "/src/assets/models/plaster/textures/red_plaster_weathered_arm_4k.jpg");
-  const floorTexture = useLoader(THREE.TextureLoader, "/src/assets/models/granite/textures/granite_tile_diff_4k.jpg");
+  const [wallTexture, setWallTexture] = useState(null);
+  const [floorTexture, setFloorTexture] = useState(null);
 
-  const wallMaterial = new THREE.MeshStandardMaterial({
-    map: colorMap,
-    normalMap: normalMap,
-    roughnessMap: roughnessMap,
+  useEffect(() => {
+    const loader = new TGALoader();
+
+    // Load wall texture
+    loader.load(
+      room.wallTexture,
+      (texture) => {
+        setWallTexture(texture);
+        console.log('Wall texture loaded');
+      },
+      undefined,
+      (error) => {
+        console.error('An error happened while loading wall texture', error);
+      }
+    );
+
+    // Load floor texture
+    loader.load(
+      room.floorTexture,
+      (texture) => {
+        setFloorTexture(texture);
+        console.log('Floor texture loaded');
+      },
+      undefined,
+      (error) => {
+        console.error('An error happened while loading floor texture', error);
+      }
+    );
+  }, [room.wallTexture, room.floorTexture]);
+
+  // Memoize materials to avoid recreating them on every render
+  const wallMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    map: wallTexture,
     metalness: 0,
     roughness: 1,
-  });
+  }), [wallTexture]);
 
-  const floorMaterial = new THREE.MeshStandardMaterial({
+  const floorMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     map: floorTexture,
     metalness: 0.1,
     roughness: 0.9,
-  });
+  }), [floorTexture]);
+
+  const transparentMaterial = useMemo(() => new THREE.MeshStandardMaterial({
+    opacity: 0,
+    transparent: true,
+  }), []);
 
   useEffect(() => {
     // Set the initial character position when the room is generated
@@ -41,7 +72,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
       <RigidBody type="fixed" colliders="cuboid">
         <mesh name="floor" userData={{ type: "floor", raycastable: true }} position={[0, -floorThickness / 2, 0]}>
           <boxGeometry args={[room.width, floorThickness, room.depth]} />
-          <primitive attach="material" object={floorMaterial} />
+          {floorTexture && <primitive attach="material" object={floorMaterial} />}
         </mesh>
       </RigidBody>
 
@@ -55,16 +86,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
         <RigidBody key={index} type="fixed" colliders="cuboid">
           <mesh position={pos} rotation={rot} name={name} userData={{ raycastable }}>
             <boxGeometry args={size} />
-            <meshStandardMaterial
-              map={visible ? colorMap : null} // ✅ Assign texture only to visible walls
-              normalMap={visible ? normalMap : null}
-              roughnessMap={visible ? roughnessMap : null}
-              metalness={0}
-              roughness={1}
-              visible={visible}
-              opacity={visible ? 1 : 0}
-              transparent={!visible} // ✅ Allows invisibility
-            />
+            {wallTexture && <primitive attach="material" object={visible ? wallMaterial : transparentMaterial} />}
           </mesh>
         </RigidBody>
       ))}
