@@ -44,6 +44,20 @@ export const roomData = [
         direction: "backward",
         label: "Go to Introduction Room",
       },
+      {
+        id: 1,
+        type: "project",
+        position: [-5, 0.5, 0], // Position the project on the left side
+        label: "Project One",
+        color: "blue",
+      },
+      {
+        id: 2,
+        type: "project",
+        position: [5, 0.5, 0], // Position the project on the right side
+        label: "Project Two",
+        color: "purple",
+      },
     ],
   },
   {
