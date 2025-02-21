@@ -3,12 +3,19 @@ import { Html, useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import vertexShader from "../shaders/vertexShader.glsl";
+import fragmentShader from "../shaders/fragmentShader.glsl";
 
 const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectClick, isPaused, label = "Press Space to activate", setTargetPosition, model }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const scene = model ? useGLTF(model, true).scene : null; // Use the model path from props if available
+
+  const shaderMaterial = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+  });
 
   useEffect(() => {
     if (objectRef.current) {
@@ -78,6 +85,7 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
         <primitive
           object={scene}
           scale={scale} // Apply the scale to the model
+          material={shaderMaterial} // Apply the shader material
           userData={{ raycastable: true, isInteractive: true }}
           onClick={(event) => {
             event.stopPropagation();
