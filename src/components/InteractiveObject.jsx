@@ -1,13 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Html } from "@react-three/drei";
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { Html, useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, color, shape = "capsule", label = "Press Space to activate", setTargetPosition }) => {
+const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectClick, isPaused, color, shape = "capsule", label = "Press Space to activate", setTargetPosition, model }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const scene = model ? useGLTF(model, true).scene : null; // Use the model path from props if available
 
   useEffect(() => {
     if (objectRef.current) {
@@ -39,12 +40,22 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, co
     }
   });
 
+  const handlePointerOver = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handlePointerOut = useCallback(() => {
+    setIsHovered(false);
+  }, []);
+
   return (
     <RigidBody
       ref={objectRef}
-      colliders={shape === "door" ? "ball" : "cuboid"} // Use ball colliders for doors
+      colliders="cuboid" // Add a cuboid collider
       type="fixed"
       position={position}
+      rotation={rotation}
+      scale={scale}
       onClick={onClick}
       onPointerDown={(e) => {
         e.stopPropagation();
@@ -63,35 +74,41 @@ const InteractiveObject = ({ id, position, onClick, onProjectClick, isPaused, co
         }
       }}
     >
-      <mesh
-        castShadow
-        userData={{ raycastable: true, isInteractive: true }}
-        onClick={(event) => {
-          event.stopPropagation();
-          onClick();
-          // Move character to the interactable object
-          setTargetPosition(new THREE.Vector3(position[0], position[1], position[2]));
-        }}
-        onPointerOver={() => setIsHovered(true)}
-        onPointerOut={() => setIsHovered(false)}
-      >
-        {shape === "door" ? (
-          <sphereGeometry args={[0.5, 32, 32]} /> // Use sphere geometry for doors
-        ) : (
-          <boxGeometry args={[1, 1, 1]} />
-        )}
-        <meshStandardMaterial
-          color={isHovered ? "yellow" : color}
-          emissive={isHovered ? "yellow" : "black"}
-          emissiveIntensity={isHovered ? 0.5 : 0}
+      {scene ? (
+        <primitive
+          object={scene}
+          scale={scale} // Apply the scale to the model
+          userData={{ raycastable: true, isInteractive: true }}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClick();
+            // Move character to the interactable object
+            setTargetPosition(new THREE.Vector3(position[0], position[1], position[2]));
+          }}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
         />
-
-        {isNear && !isPaused && (
-          <Html position={[0, 1.2, 0]}>
-            <div className="object-label">{label}</div>
-          </Html>
-        )}
-      </mesh>
+      ) : (
+        <mesh
+          userData={{ raycastable: true, isInteractive: true }}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClick();
+            // Move character to the interactable object
+            setTargetPosition(new THREE.Vector3(position[0], position[1], position[2]));
+          }}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
+        >
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      )}
+      {isNear && !isPaused && (
+        <Html position={[0, 1.2, 0]}>
+          <div className="object-label">{label}</div>
+        </Html>
+      )}
     </RigidBody>
   );
 };

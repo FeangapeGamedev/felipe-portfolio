@@ -6,9 +6,9 @@ import * as THREE from "three";
 export const Character = ({ initialPosition, targetPosition, isPaused }) => {
   const characterRef = useRef();
   const [isColliding, setIsColliding] = useState(false);
-  const speed = 0.5; // 🔹 Movement speed (adjusted for smoother movement)
-  const lerpFactor = 0.1; // 🔹 Controls smoothness (lower = smoother movement)
-  const stopThreshold = 0.1; // 🔹 Distance to start reducing speed (adjusted for smoother stopping)
+  const speed = 0.5; // Movement speed (adjusted for smoother movement)
+  const lerpFactor = 0.1; // Controls smoothness (lower = smoother movement)
+  const stopThreshold = 0.1; // Distance to start reducing speed (adjusted for smoother stopping)
 
   useEffect(() => {
     setIsColliding(false); // Reset collision state when target position is updated
@@ -45,7 +45,7 @@ export const Character = ({ initialPosition, targetPosition, isPaused }) => {
       let moveDistance = Math.min(currentSpeed, distance);
       let targetPos = new THREE.Vector3(
         posX + (directionX / distance) * moveDistance,
-        0.5, // 🔹 Keep Y locked
+        0.5, // Keep Y locked
         posZ + (directionZ / distance) * moveDistance
       );
 

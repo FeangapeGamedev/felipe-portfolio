@@ -48,20 +48,6 @@ export const CharacterController = ({ isPaused, setTargetPosition, onInteract })
     };
   }, [camera, gl, scene, setTargetPosition, onInteract, isPaused]);
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (isPaused) return;
-
-      // Handle character movement and interaction logic here
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isPaused]);
-
   return null;
 };
 

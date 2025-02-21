@@ -45,7 +45,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
     // Determine the initial position based on the door direction
     const initialPos = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
     setInitialPosition(new THREE.Vector3(initialPos[0], initialPos[1], initialPos[2]));
-  }, [currentRoomId, doorDirection]);
+  }, [currentRoomId, doorDirection, currentRoom.spawnPositionForward, currentRoom.spawnPositionBackward]);
 
   return (
     <group>
@@ -59,7 +59,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
       <ambientLight intensity={0.7} color="#ffffff" />
       <directionalLight position={[10, 10, 10]} intensity={0.8} castShadow />
 
-      <Physics debug>
+      <Physics>
         <Room
           room={currentRoom}
           setTargetPosition={setTargetPosition}

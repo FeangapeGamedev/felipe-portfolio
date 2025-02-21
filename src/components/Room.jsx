@@ -79,7 +79,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
       {/* Walls */}
       {[
         { pos: [0, room.height / 2, -room.depth / 2], rot: [0, 0, 0], size: [room.width, room.height, wallThickness], name: "back-wall", visible: true, raycastable: true },
-        { pos: [-room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "left-wall", visible: true, raycastable: true },
+        { pos: [-room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "left-wall", visible: false, raycastable: true },
         { pos: [room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "right-wall", visible: false, raycastable: false },
         { pos: [0, room.height / 2, room.depth / 2], rot: [0, Math.PI, 0], size: [room.width, room.height, wallThickness], name: "front-wall", visible: false, raycastable: false },
       ].map(({ pos, rot, size, name, visible, raycastable }, index) => (
@@ -97,6 +97,8 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
           key={index}
           id={item.id}
           position={item.position}
+          rotation={item.rotation}
+          scale={item.scale}
           onClick={() => console.log(`${item.type} clicked!`)}
           onProjectClick={item.type === "door" ? () => handleDoorOpen(item.direction) : onProjectSelect}
           isPaused={isPaused}
@@ -104,6 +106,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
           shape={item.type === "door" ? "door" : "sphere"} // Use "door" shape for doors
           label={item.label}
           setTargetPosition={setTargetPosition}
+          model={item.model} // Pass the model path to InteractiveObject
         />
       ))}
     </group>
