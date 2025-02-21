@@ -4,7 +4,7 @@ import { RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectClick, isPaused, color, shape = "capsule", label = "Press Space to activate", setTargetPosition, model }) => {
+const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectClick, isPaused, label = "Press Space to activate", setTargetPosition, model }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -101,7 +101,7 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
           onPointerOut={handlePointerOut}
         >
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color={color} />
+          <meshStandardMaterial color="red" /> {/* Default color for fallback */}
         </mesh>
       )}
       {isNear && !isPaused && (

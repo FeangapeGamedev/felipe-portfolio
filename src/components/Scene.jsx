@@ -61,6 +61,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
 
       <Physics>
         <Room
+          key={currentRoomId} // Add key to force re-render when room changes
           room={currentRoom}
           setTargetPosition={setTargetPosition}
           isPaused={isPaused}
