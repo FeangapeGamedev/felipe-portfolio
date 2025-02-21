@@ -9,8 +9,25 @@ export const roomData = [
     depth: 15,
     height: 5,
     color: "lightblue",
-    wallTexture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
+    walls: {
+      back: {
+        visible: true,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+      left: {
+        visible: false,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+      right: {
+        visible: false,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+      front: {
+        visible: false,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+    },
     items: [
       {
         id: "door1",
@@ -34,8 +51,25 @@ export const roomData = [
     depth: 15,
     height: 5,
     color: "lightgreen",
-    wallTexture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
+    walls: {
+      back: {
+        visible: true,
+        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
+      },
+      left: {
+        visible: true,
+        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
+      },
+      right: {
+        visible: false,
+        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
+      },
+      front: {
+        visible: false,
+        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
+      },
+    },
     items: [
       {
         id: "door2",
@@ -61,7 +95,7 @@ export const roomData = [
         id: 1,
         type: "project",
         position: [-5, 0.5, 0], // Position the project on the left side
-        rotation: [0, 0, 0], // Rotate the door to face the room
+        rotation: [0, 0, 0], // Rotate the project to face the room
         label: "Project One",
         color: "blue",
         model: null, // No model path, will use fallback
@@ -71,7 +105,7 @@ export const roomData = [
         id: 2,
         type: "project",
         position: [5, 0.5, 0], // Position the project on the right side
-        rotation: [0, 0, 0], // Rotate the door to face the room
+        rotation: [0, 0, 0], // Rotate the project to face the room
         label: "Project Two",
         color: "purple",
         model: null, // No model path, will use fallback
@@ -89,8 +123,25 @@ export const roomData = [
     depth: 15,
     height: 5,
     color: "lightcoral",
-    wallTexture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
+    walls: {
+      back: {
+        visible: true,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+      left: {
+        visible: true,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+      right: {
+        visible: false,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+      front: {
+        visible: false,
+        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
+      },
+    },
     items: [
       {
         id: "door4",

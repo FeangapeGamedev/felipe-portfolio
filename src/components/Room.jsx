@@ -8,24 +8,40 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
-  const [wallTexture, setWallTexture] = useState(null);
+  const [wallTextures, setWallTextures] = useState({});
   const [floorTexture, setFloorTexture] = useState(null);
 
   useEffect(() => {
     const loader = new TGALoader();
 
-    // Load wall texture
-    loader.load(
-      room.wallTexture,
-      (texture) => {
-        setWallTexture(texture);
-        console.log('Wall texture loaded');
-      },
-      undefined,
-      (error) => {
-        console.error('An error happened while loading wall texture', error);
-      }
+    // Load wall textures
+    const wallTexturePromises = Object.entries(room.walls).map(([wall, { texture }]) =>
+      new Promise((resolve, reject) => {
+        loader.load(
+          texture,
+          (loadedTexture) => {
+            resolve({ wall, texture: loadedTexture });
+          },
+          undefined,
+          (error) => {
+            reject(error);
+          }
+        );
+      })
     );
+
+    Promise.all(wallTexturePromises)
+      .then((textures) => {
+        const textureMap = textures.reduce((acc, { wall, texture }) => {
+          acc[wall] = texture;
+          return acc;
+        }, {});
+        setWallTextures(textureMap);
+        console.log('Wall textures loaded');
+      })
+      .catch((error) => {
+        console.error('An error happened while loading wall textures', error);
+      });
 
     // Load floor texture
     loader.load(
@@ -39,14 +55,19 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
         console.error('An error happened while loading floor texture', error);
       }
     );
-  }, [room.wallTexture, room.floorTexture]);
+  }, [room.walls, room.floorTexture]);
 
   // Memoize materials to avoid recreating them on every render
-  const wallMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-    map: wallTexture,
-    metalness: 0,
-    roughness: 1,
-  }), [wallTexture]);
+  const wallMaterials = useMemo(() => {
+    return Object.entries(wallTextures).reduce((acc, [wall, texture]) => {
+      acc[wall] = new THREE.MeshStandardMaterial({
+        map: texture,
+        metalness: 0,
+        roughness: 1,
+      });
+      return acc;
+    }, {});
+  }, [wallTextures]);
 
   const floorMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     map: floorTexture,
@@ -78,15 +99,15 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
 
       {/* Walls */}
       {[
-        { pos: [0, room.height / 2, -room.depth / 2], rot: [0, 0, 0], size: [room.width, room.height, wallThickness], name: "back-wall", visible: true, raycastable: true },
-        { pos: [-room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "left-wall", visible: false, raycastable: true },
-        { pos: [room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "right-wall", visible: false, raycastable: false },
-        { pos: [0, room.height / 2, room.depth / 2], rot: [0, Math.PI, 0], size: [room.width, room.height, wallThickness], name: "front-wall", visible: false, raycastable: false },
-      ].map(({ pos, rot, size, name, visible, raycastable }, index) => (
+        { pos: [0, room.height / 2, -room.depth / 2], rot: [0, 0, 0], size: [room.width, room.height, wallThickness], name: "back-wall", wall: "back" },
+        { pos: [-room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "left-wall", wall: "left" },
+        { pos: [room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "right-wall", wall: "right" },
+        { pos: [0, room.height / 2, room.depth / 2], rot: [0, Math.PI, 0], size: [room.width, room.height, wallThickness], name: "front-wall", wall: "front" },
+      ].map(({ pos, rot, size, name, wall }, index) => (
         <RigidBody key={index} type="fixed" colliders="cuboid">
-          <mesh position={pos} rotation={rot} name={name} userData={{ raycastable }}>
+          <mesh position={pos} rotation={rot} name={name} userData={{ raycastable: room.walls[wall].visible }}>
             <boxGeometry args={size} />
-            {wallTexture && <primitive attach="material" object={visible ? wallMaterial : transparentMaterial} />}
+            {wallTextures[wall] && <primitive attach="material" object={room.walls[wall].visible ? wallMaterials[wall] : transparentMaterial} />}
           </mesh>
         </RigidBody>
       ))}
