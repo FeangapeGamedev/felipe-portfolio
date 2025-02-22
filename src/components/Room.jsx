@@ -128,6 +128,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
           label={item.label}
           setTargetPosition={setTargetPosition}
           model={item.model} // Pass the model path to InteractiveObject
+          transparency={item.transparency} // Pass transparency to InteractiveObject
         />
       ))}
     </group>

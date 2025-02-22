@@ -6,7 +6,7 @@ import * as THREE from "three";
 import vertexShader from "../shaders/vertexShader.glsl";
 import fragmentShader from "../shaders/fragmentShader.glsl";
 
-const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectClick, isPaused, label = "Press Space to activate", setTargetPosition, model }) => {
+const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectClick, isPaused, label = "Press Space to activate", setTargetPosition, model, transparency = 1 }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -25,6 +25,8 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
     },
     vertexShader,
     fragmentShader,
+    transparent: true,
+    opacity: transparency, // Set transparency
   });
 
   useEffect(() => {
@@ -74,10 +76,12 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
             child.userData.originalMaterial = child.material;
           }
           child.material = isHovered ? shaderMaterial : child.userData.originalMaterial;
+          child.material.transparent = true;
+          child.material.opacity = transparency; // Apply transparency
         }
       });
     }
-  }, [scene, shaderMaterial, isHovered]);
+  }, [scene, shaderMaterial, isHovered, transparency]);
 
   if (!scene) {
     console.error(`Failed to load model for InteractiveObject with id: ${id}`);
@@ -137,7 +141,7 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
           onPointerOut={handlePointerOut}
         >
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="red" /> {/* Default color for fallback */}
+          <meshStandardMaterial color="red" transparent opacity={transparency} /> {/* Default color for fallback */}
         </mesh>
       )}
       {isNear && !isPaused && (

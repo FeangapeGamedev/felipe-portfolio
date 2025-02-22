@@ -90,6 +90,7 @@ export const roomData = [
         label: "Go to Introduction Room",
         model: "/src/assets/3dModels/door/scene.gltf",
         scale: [0.14, 0.12, 0.14], // Default scale
+        transparency: 0.2, // Add transparency option
       },
       {
         id: 1,
@@ -142,6 +143,7 @@ export const roomData = [
         label: "Go to Project Room",
         model: "src/assets/3dModels/SciFiDoor.glb", // No model path, will use fallback
         scale: [0.9, 0.9, 0.9], // Default scale
+        transparency: 0.2, // Add transparency option
       },
     ],
   },
