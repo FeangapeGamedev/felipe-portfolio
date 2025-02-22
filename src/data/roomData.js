@@ -4,7 +4,7 @@ export const roomData = [
     name: "Introduction Room",
     position: [0, 0, 0],
     spawnPositionForward: [0, 0, 4],
-    spawnPositionBackward: [0, 0, -4],
+    spawnPositionBackward: [-4, 0, -6],
     width: 15,
     depth: 15,
     height: 5,
@@ -32,7 +32,7 @@ export const roomData = [
       {
         id: "door1",
         type: "door",
-        position: [-1, 1.5, -7.2], // Position the door at the back wall
+        position: [-4, 1.5, -7.2], // Position the door at the back wall
         rotation: [0, -55, 0], // Rotate the door to face the room
         direction: "forward",
         label: "Go to Project Room",
@@ -45,7 +45,7 @@ export const roomData = [
     id: 2,
     name: "Project Room",
     position: [0, 0, 0],
-    spawnPositionForward: [0, 0, 4],
+    spawnPositionForward: [-4, 0, 6],
     spawnPositionBackward: [0, 0, -4],
     width: 15,
     depth: 15,
@@ -74,42 +74,32 @@ export const roomData = [
       {
         id: "door2",
         type: "door",
-        position: [0, 0.5, -7], // Position the door at the back wall
-        rotation: [0, 0, 0], // Rotate the door to face the room
+        position: [-1, 1.5, -7.2], // Position the door at the back wall
+        rotation: [0, -55, 0], // Rotate the door to face the room
         direction: "forward",
         label: "Go to Game Room",
-        model: null, // No model path, will use fallback
-        scale: [1, 1, 1], // Default scale
+        model: "/src/assets/3dModels/door/scene.gltf", // No model path, will use fallback
+        scale: [0.14, 0.12, 0.14], // Default scale
       },
       {
         id: "door3",
         type: "door",
-        position: [0, 0.5, 7], // Position the door at the front wall
-        rotation: [0, 0, 0], // Rotate the door to face the room
+        position: [-4, 1.5, 7.2], // Position the door at the front wall
+        rotation: [0, -55, 0], // Rotate the door to face the room
         direction: "backward",
         label: "Go to Introduction Room",
-        model: null, // No model path, will use fallback
-        scale: [1, 1, 1], // Default scale
+        model: "/src/assets/3dModels/door/scene.gltf", // No model path, will use fallback
+        scale: [0.14, 0.12, 0.14], // Default scale
       },
       {
         id: 1,
         type: "project",
-        position: [-5, 0.5, 0], // Position the project on the left side
-        rotation: [0, 0, 0], // Rotate the project to face the room
+        position: [-5, 0, -2], // Position the project on the left side
+        rotation: [0, -55, 0], // Rotate the project to face the room
         label: "Project One",
         color: "blue",
-        model: null, // No model path, will use fallback
-        scale: [1, 1, 1], // Default scale
-      },
-      {
-        id: 2,
-        type: "project",
-        position: [5, 0.5, 0], // Position the project on the right side
-        rotation: [0, 0, 0], // Rotate the project to face the room
-        label: "Project Two",
-        color: "purple",
-        model: null, // No model path, will use fallback
-        scale: [1, 1, 1], // Default scale
+        model: "/src/assets/3dModels/Construction.glb", // No model path, will use fallback
+        scale: [0.7, 0.7, 0.7], // Default scale
       },
     ],
   },
@@ -146,12 +136,12 @@ export const roomData = [
       {
         id: "door4",
         type: "door",
-        position: [0, 0.5, 7], // Position the door at the front wall
-        rotation: [0, 0, 0], // Rotate the door to face the room
+        position: [1, 1.5, 7.2], // Position the door at the front wall
+        rotation: [0, -55, 0], // Rotate the door to face the room
         direction: "backward",
         label: "Go to Project Room",
-        model: null, // No model path, will use fallback
-        scale: [1, 1, 1], // Default scale
+        model: "/src/assets/3dModels/door/scene.gltf", // No model path, will use fallback
+        scale: [0.14, 0.12, 0.14], // Default scale
       },
     ],
   },

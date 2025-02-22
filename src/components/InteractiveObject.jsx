@@ -10,9 +10,19 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const scene = model ? useGLTF(model, true).scene : null; // Use the model path from props if available
+
+  // Check if the model prop is valid
+  if (!model) {
+    console.error(`Model path is invalid for InteractiveObject with id: ${id}`);
+    return null;
+  }
+
+  const { scene } = useGLTF(model, true); // Load the model
 
   const shaderMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0.0 },
+    },
     vertexShader,
     fragmentShader,
   });
@@ -41,7 +51,8 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
     setIsNear(false); // Reset isNear state when position changes
   }, [position]);
 
-  useFrame(() => {
+  useFrame((state) => {
+    shaderMaterial.uniforms.time.value = state.clock.getElapsedTime();
     if (objectRef.current) {
       objectRef.current.setTranslation({ x: position[0], y: position[1], z: position[2] }, true);
     }
@@ -54,6 +65,24 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
   const handlePointerOut = useCallback(() => {
     setIsHovered(false);
   }, []);
+
+  useEffect(() => {
+    if (scene) {
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          if (!child.userData.originalMaterial) {
+            child.userData.originalMaterial = child.material;
+          }
+          child.material = isHovered ? shaderMaterial : child.userData.originalMaterial;
+        }
+      });
+    }
+  }, [scene, shaderMaterial, isHovered]);
+
+  if (!scene) {
+    console.error(`Failed to load model for InteractiveObject with id: ${id}`);
+    return null;
+  }
 
   return (
     <RigidBody
@@ -85,7 +114,6 @@ const InteractiveObject = ({ id, position, rotation, scale, onClick, onProjectCl
         <primitive
           object={scene}
           scale={scale} // Apply the scale to the model
-          material={shaderMaterial} // Apply the shader material
           userData={{ raycastable: true, isInteractive: true }}
           onClick={(event) => {
             event.stopPropagation();
