@@ -8,7 +8,6 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    color: "lightblue",
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
       back: {
@@ -50,7 +49,7 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    color: "lightgreen",
+    backgroundTexture: "/src/assets/textures/introRoomBackground.tga", // Add background texture
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
       back: {
@@ -113,7 +112,7 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    color: "lightcoral",
+    backgroundTexture: "/src/assets/textures/introRoomBackground.tga", // Add background texture
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
       back: {

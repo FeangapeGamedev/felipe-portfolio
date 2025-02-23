@@ -10,6 +10,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
 
   const [wallTextures, setWallTextures] = useState({});
   const [floorTexture, setFloorTexture] = useState(null);
+  const [backgroundTexture, setBackgroundTexture] = useState(null);
 
   useEffect(() => {
     const loader = new TGALoader();
@@ -55,7 +56,22 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
         console.error('An error happened while loading floor texture', error);
       }
     );
-  }, [room.walls, room.floorTexture]);
+
+    // Load background texture if provided
+    if (room.backgroundTexture) {
+      loader.load(
+        room.backgroundTexture,
+        (texture) => {
+          setBackgroundTexture(texture);
+          console.log('Background texture loaded');
+        },
+        undefined,
+        (error) => {
+          console.error('An error happened while loading background texture', error);
+        }
+      );
+    }
+  }, [room.walls, room.floorTexture, room.backgroundTexture]);
 
   // Memoize materials to avoid recreating them on every render
   const wallMaterials = useMemo(() => {
@@ -80,6 +96,22 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
     transparent: true,
   }), []);
 
+  const backgroundMaterial = useMemo(() => {
+    if (backgroundTexture) {
+      return new THREE.MeshStandardMaterial({
+        map: backgroundTexture,
+        metalness: 0,
+        roughness: 1,
+      });
+    } else {
+      return new THREE.MeshStandardMaterial({
+        color: 0x000000, // Default color if no texture is provided
+        metalness: 0,
+        roughness: 1,
+      });
+    }
+  }, [backgroundTexture]);
+
   useEffect(() => {
     // Set the initial character position when the room is generated
     const initialPosition = doorDirection === "forward" ? room.spawnPositionForward : room.spawnPositionBackward;
@@ -89,6 +121,12 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
 
   return (
     <group>
+      {/* Background Plane */}
+      <mesh position={[0, room.height / 2, -room.depth / 2 - 0.1]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[room.width, room.height]} />
+        <primitive attach="material" object={backgroundMaterial} />
+      </mesh>
+
       {/* Floor */}
       <RigidBody type="fixed" colliders="cuboid">
         <mesh name="floor" userData={{ type: "floor", raycastable: true }} position={[0, -floorThickness / 2, 0]}>

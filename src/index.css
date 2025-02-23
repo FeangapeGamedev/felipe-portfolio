@@ -2,13 +2,63 @@
 
 body {
   font-family: "Press Start 2P", sans-serif;
-  background-color: black;
+  background: linear-gradient(to bottom, 
+    #10203A,  /* Deep Midnight Blue */
+    #004466,  /* Vibrant Cyan-Blue */
+    #000000,  /* Deep Black */
+    #1A0000   /* Darkened Blood Red (Smaller Area) */
+  ); 
+  background-size: cover;
   color: white;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevents unnecessary scrolling */
+  overflow: hidden;
+  position: relative;
 }
 
+/* Subtle Noise Texture (For Classic Horror Feel) */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('src/assets/models/abstract-geometric-background-shapes-texture (1).jpg'); 
+  opacity: 0.15; /* Subtle VHS grain effect */
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Subtle, Static Grayish Fog */
+body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(120, 120, 120, 0.15) 15%, transparent 50%), 
+              linear-gradient(0deg, rgba(50, 50, 50, 0.3), rgba(26, 26, 26, 0.6));
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Cyan Glow in the Center */
+body::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80vw;
+  height: 80vh;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.15) 10%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Root container */
 #root {
   width: 100vw;
   height: 100vh;
