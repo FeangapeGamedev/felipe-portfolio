@@ -1,92 +1,122 @@
 import React, { useRef, useState, useEffect } from "react";
 import { RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { AnimationMixer, LoopRepeat } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export const Character = ({ initialPosition, targetPosition, isPaused }) => {
   const characterRef = useRef();
-  const [isColliding, setIsColliding] = useState(false);
-  const speed = 0.5; // Movement speed (adjusted for smoother movement)
-  const lerpFactor = 0.1; // Controls smoothness (lower = smoother movement)
-  const stopThreshold = 0.1; // Distance to start reducing speed (adjusted for smoother stopping)
+  const modelRef = useRef();
+  const mixerRef = useRef(null);
+  const walkActionRef = useRef(null);
+  const [isWalking, setIsWalking] = useState(false);
+  const speed = 0.3;
+  const lerpFactor = 0.1;
+  const stopThreshold = 0.1;
+
+  // Load the character model
+  const { scene: characterModel } = useGLTF("src/assets/3dModels/GdevCharacterAI.glb"); // Ensure the correct path
 
   useEffect(() => {
-    setIsColliding(false); // Reset collision state when target position is updated
-  }, [targetPosition]);
+    const loadWalkAnimation = async () => {
+      try {
+        const gltfLoader = new GLTFLoader();
+        const walkAnimation = await gltfLoader.loadAsync("src/assets/animations/standardWalkAnim.glb"); // Ensure the correct path
 
-  useFrame(() => {
+        // Log node names in the model
+        characterModel.traverse((node) => {
+          console.log(node.name);
+        });
+
+        mixerRef.current = new AnimationMixer(characterModel);
+        walkActionRef.current = mixerRef.current.clipAction(walkAnimation.animations[0]);
+        walkActionRef.current.setLoop(LoopRepeat, Infinity);
+      } catch (error) {
+        console.error("Error loading walk animation:", error);
+      }
+    };
+    loadWalkAnimation();
+  }, [characterModel]);
+
+  useFrame((_, delta) => {
     if (isPaused || !targetPosition || !characterRef.current) return;
 
     const characterPos = characterRef.current.translation();
-
     let posX = characterPos.x;
     let posZ = characterPos.z;
     let newPosX = targetPosition.x;
     let newPosZ = targetPosition.z;
 
-    // Compute movement vector
     let directionX = newPosX - posX;
     let directionZ = newPosZ - posZ;
     let distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
 
-    // Stop movement if the character is very close to the target position
     if (distance < 0.01) {
+      setIsWalking(false);
       return;
     }
 
-    // Reduce speed as the character approaches the target
+    setIsWalking(true);
+
     let currentSpeed = speed;
     if (distance < stopThreshold) {
       currentSpeed = speed * (distance / stopThreshold);
     }
 
-    // Move if distance is greater than a small threshold and is not colliding
-    if (distance > 0.01 && !isColliding) {
-      let moveDistance = Math.min(currentSpeed, distance);
-      let targetPos = new THREE.Vector3(
-        posX + (directionX / distance) * moveDistance,
-        0.5, // Keep Y locked
-        posZ + (directionZ / distance) * moveDistance
-      );
+    let moveDistance = Math.min(currentSpeed, distance);
+    let targetPos = new THREE.Vector3(
+      posX + (directionX / distance) * moveDistance,
+      0,
+      posZ + (directionZ / distance) * moveDistance
+    );
 
-      // Smooth movement using Lerp
-      let currentPos = new THREE.Vector3(posX, 0.5, posZ);
-      currentPos.lerp(targetPos, lerpFactor);
+    let currentPos = new THREE.Vector3(posX, 0, posZ);
+    currentPos.lerp(targetPos, lerpFactor);
 
-      characterRef.current.setTranslation(
-        { x: currentPos.x, y: 0.5, z: currentPos.z },
-        true
-      );
+    characterRef.current.setTranslation(
+      { x: currentPos.x, y: 0, z: currentPos.z },
+      true
+    );
+
+    // Rotate the character to face the direction of movement
+    const lookAtPos = new THREE.Vector3(newPosX, 0, newPosZ);
+    if (modelRef.current) {
+      modelRef.current.lookAt(lookAtPos);
     }
+
+    if (mixerRef.current) mixerRef.current.update(delta);
   });
 
-  const handleCollisionEnter = (event) => {
-    if (event.other.name !== "floor") {
-      setIsColliding(true);
+  useEffect(() => {
+    if (walkActionRef.current) {
+      if (isWalking) {
+        walkActionRef.current.play();
+      } else {
+        walkActionRef.current.stop();
+      }
     }
-  };
-
-  const handleCollisionExit = (event) => {
-    if (event.other.name !== "floor") {
-      setIsColliding(false);
-    }
-  };
+  }, [isWalking]);
 
   return (
     <RigidBody
       ref={characterRef}
       colliders="cuboid"
-      position={initialPosition} // Use initialPosition for initial position
+      position={initialPosition}
       mass={1}
       type="dynamic"
       name="character"
-      onCollisionEnter={handleCollisionEnter}
-      onCollisionExit={handleCollisionExit}
+      angularFactor={[0, 1, 0]} // Lock rotation on X and Z axes
+      linearDamping={0.5} // Add damping to smooth out movement
+      angularDamping={0.5} // Add damping to smooth out rotation
     >
-      <mesh castShadow>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#69da96" />
-      </mesh>
+      <primitive
+        ref={modelRef}
+        object={characterModel}
+        scale={1}
+        rotation={[0, Math.PI / 4, 0]} // Adjust the rotation for isometric view
+      />
     </RigidBody>
   );
 };
