@@ -44,7 +44,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
   useEffect(() => {
     // Determine the initial position based on the door direction
     const initialPos = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
-    setInitialPosition(new THREE.Vector3(initialPos[0], initialPos[1], initialPos[2]));
+    setInitialPosition(new THREE.Vector3(initialPos[0], initialPos[1] + 0.1, initialPos[2])); // Adjust the initial position to be slightly above the ground
   }, [currentRoomId, doorDirection, currentRoom.spawnPositionForward, currentRoom.spawnPositionBackward]);
 
   return (
@@ -59,7 +59,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
       <ambientLight intensity={0.7} color="#ffffff" />
       <directionalLight position={[10, 10, 10]} intensity={0.8} castShadow />
 
-      <Physics>
+      <Physics debug>
         <Room
           key={currentRoomId} // Add key to force re-render when room changes
           room={currentRoom}

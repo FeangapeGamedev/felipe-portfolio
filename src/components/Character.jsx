@@ -1,100 +1,119 @@
 import React, { useRef, useState, useEffect } from "react";
-import { RigidBody } from "@react-three/rapier";
+import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { AnimationMixer, LoopRepeat } from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
-export const Character = ({ initialPosition, targetPosition, isPaused }) => {
+export const Character = ({ initialPosition, targetPosition, setTargetPosition, isPaused }) => {
   const characterRef = useRef();
   const modelRef = useRef();
   const mixerRef = useRef(null);
   const walkActionRef = useRef(null);
+  const idleActionRef = useRef(null);
   const [isWalking, setIsWalking] = useState(false);
-  const speed = 0.3;
+  const [isColliding, setIsColliding] = useState(false);
+  const speed = 0.2;
   const lerpFactor = 0.1;
-  const stopThreshold = 0.1;
+  const stopThreshold = 0.75;
+  const turnSpeed = 4;
 
-  // Load the character model
-  const { scene: characterModel } = useGLTF("src/assets/3dModels/GdevCharacterAI.glb"); // Ensure the correct path
+  // Load the character model with embedded animations
+  const { scene: characterModel, animations } = useGLTF("src/assets/3dModels/ccCharacterAnimated.glb");
 
   useEffect(() => {
-    const loadWalkAnimation = async () => {
-      try {
-        const gltfLoader = new GLTFLoader();
-        const walkAnimation = await gltfLoader.loadAsync("src/assets/animations/standardWalkAnim.glb"); // Ensure the correct path
+    if (characterModel && animations.length > 0) {
+      mixerRef.current = new AnimationMixer(characterModel);
+      idleActionRef.current = mixerRef.current.clipAction(animations[2]); // Idle animation
+      walkActionRef.current = mixerRef.current.clipAction(animations[4]); // Walk animation
+      idleActionRef.current.setLoop(LoopRepeat, Infinity);
+      walkActionRef.current.setLoop(LoopRepeat, Infinity);
+      idleActionRef.current.play();
+    } else {
+      console.error("Failed to load model or animations");
+    }
+  }, [characterModel, animations]);
 
-        // Log node names in the model
-        characterModel.traverse((node) => {
-          console.log(node.name);
-        });
-
-        mixerRef.current = new AnimationMixer(characterModel);
-        walkActionRef.current = mixerRef.current.clipAction(walkAnimation.animations[0]);
-        walkActionRef.current.setLoop(LoopRepeat, Infinity);
-      } catch (error) {
-        console.error("Error loading walk animation:", error);
+  useEffect(() => {
+    const animate = () => {
+      if (mixerRef.current) {
+        mixerRef.current.update(0.01);
       }
+      requestAnimationFrame(animate);
     };
-    loadWalkAnimation();
-  }, [characterModel]);
+    animate();
+  }, []);
+
+  // **Fix: Reset collision state when a new target position is set**
+  useEffect(() => {
+    if (targetPosition) {
+      setIsColliding(false);
+    }
+  }, [targetPosition]);
 
   useFrame((_, delta) => {
-    if (isPaused || !targetPosition || !characterRef.current) return;
+    if (isPaused || !targetPosition || !characterRef.current || isColliding) return;
 
+    // Get current position
     const characterPos = characterRef.current.translation();
     let posX = characterPos.x;
+    let posY = characterPos.y;
     let posZ = characterPos.z;
     let newPosX = targetPosition.x;
     let newPosZ = targetPosition.z;
 
+    // Calculate movement direction
     let directionX = newPosX - posX;
     let directionZ = newPosZ - posZ;
     let distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
 
-    if (distance < 0.01) {
-      setIsWalking(false);
+    if (distance < stopThreshold) {
+      if (isWalking) {
+        setIsWalking(false);
+      }
       return;
     }
 
-    setIsWalking(true);
-
-    let currentSpeed = speed;
-    if (distance < stopThreshold) {
-      currentSpeed = speed * (distance / stopThreshold);
+    if (!isWalking) {
+      setIsWalking(true);
     }
 
-    let moveDistance = Math.min(currentSpeed, distance);
+    // Smooth movement
+    let moveDistance = Math.min(speed, distance);
     let targetPos = new THREE.Vector3(
       posX + (directionX / distance) * moveDistance,
-      0,
+      posY,
       posZ + (directionZ / distance) * moveDistance
     );
 
-    let currentPos = new THREE.Vector3(posX, 0, posZ);
+    let currentPos = new THREE.Vector3(posX, posY, posZ);
     currentPos.lerp(targetPos, lerpFactor);
 
+    // Update Position
     characterRef.current.setTranslation(
-      { x: currentPos.x, y: 0, z: currentPos.z },
+      { x: currentPos.x, y: currentPos.y, z: currentPos.z },
       true
     );
 
-    // Rotate the character to face the direction of movement
-    const lookAtPos = new THREE.Vector3(newPosX, 0, newPosZ);
-    if (modelRef.current) {
-      modelRef.current.lookAt(lookAtPos);
-    }
+    // Update Rotation
+    const lookAtPos = new THREE.Vector3(newPosX, posY, newPosZ);
+    const direction = new THREE.Vector3().subVectors(lookAtPos, currentPos).normalize();
+    const targetQuaternion = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 0, 1), // Forward direction
+      new THREE.Vector3(direction.x, 0, direction.z)
+    );
 
-    if (mixerRef.current) mixerRef.current.update(delta);
+    modelRef.current.quaternion.slerp(targetQuaternion, turnSpeed * delta);
   });
 
   useEffect(() => {
-    if (walkActionRef.current) {
+    if (idleActionRef.current && walkActionRef.current) {
       if (isWalking) {
-        walkActionRef.current.play();
+        idleActionRef.current.fadeOut(0.5);
+        walkActionRef.current.reset().fadeIn(0.5).play();
       } else {
-        walkActionRef.current.stop();
+        walkActionRef.current.fadeOut(0.5);
+        idleActionRef.current.reset().fadeIn(0.5).play();
       }
     }
   }, [isWalking]);
@@ -108,15 +127,37 @@ export const Character = ({ initialPosition, targetPosition, isPaused }) => {
       type="dynamic"
       name="character"
       angularFactor={[0, 1, 0]} // Lock rotation on X and Z axes
-      linearDamping={0.5} // Add damping to smooth out movement
-      angularDamping={0.5} // Add damping to smooth out rotation
+      linearDamping={0.5}
+      angularDamping={0.5}
+      onCollisionEnter={(event) => {
+        if (event.colliderObject.name !== "character") {
+          console.log("Collision detected with:", event.colliderObject.name);
+          setIsColliding(true);
+          setIsWalking(false); // Stop walking animation
+          setTargetPosition(null); // Reset target position
+        }
+      }}
+      onCollisionExit={(event) => {
+        if (event.colliderObject.name !== "character") {
+          console.log("Collision ended with:", event.colliderObject.name);
+          setIsColliding(false); // Allow movement again
+        }
+      }}
     >
-      <primitive
-        ref={modelRef}
-        object={characterModel}
-        scale={1}
-        rotation={[0, Math.PI / 4, 0]} // Adjust the rotation for isometric view
-      />
+      <CuboidCollider args={[0.5, 1, 0.5]} position={[0, 1, 0]} />
+      {characterModel ? (
+        <primitive
+          ref={modelRef}
+          object={characterModel}
+          scale={1}
+          rotation={[0, Math.PI, 0]}
+        />
+      ) : (
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color="red" />
+        </mesh>
+      )}
     </RigidBody>
   );
 };
