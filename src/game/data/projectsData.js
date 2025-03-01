@@ -1,6 +1,6 @@
 export const projects = [
   {
-    id: 1,
+    id: "project1", // Make sure the ID is a string
     title: "Project One",
     description: "A cool project about...",
     image: "/images/project1.jpg",
@@ -10,7 +10,7 @@ export const projects = [
     media: "Screenshots and videos for Project One."
   },
   {
-    id: 2,
+    id: "project2",
     title: "Project Two",
     description: "Another awesome project...",
     image: "/images/project2.jpg",

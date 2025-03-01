@@ -5,15 +5,15 @@ import { useGame } from "../state/GameContext";
 import { CharacterController } from "./CharacterController";
 import { Room } from "./Room";
 import { Character } from "./Character";
-import { GameManager } from "../state/GameManager"; // ✅ Import GameManager
+import { GameManager } from "../state/GameManager";
 import * as THREE from "three";
 
 export const Scene = ({ isPaused, onProjectSelect }) => {
-  const { currentRoom, targetPosition, setTargetPosition, doorDirection, changeRoom } = useGame();
+  const { currentRoom, targetPosition, setTargetPosition, doorDirection } = useGame();
   const [characterKey, setCharacterKey] = React.useState(0);
   const [initialPosition, setInitialPosition] = React.useState(null);
 
-  // ✅ Initialize GameManager
+  // ✅ Initialize GameManager with `onProjectSelect`
   const { handleInteraction } = GameManager(onProjectSelect);
 
   useEffect(() => {
@@ -34,13 +34,13 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
       <ambientLight intensity={0.7} color="#ffffff" />
       <directionalLight position={[10, 10, 10]} intensity={0.8} castShadow />
 
-      <Physics debug>
+      <Physics>
         <Room
           key={currentRoom.id}
           room={currentRoom}
           setTargetPosition={setTargetPosition}
           isPaused={isPaused}
-          onProjectSelect={onProjectSelect}
+          onProjectSelect={onProjectSelect} // ✅ Pass it to the Room
         />
 
         {initialPosition && (
@@ -50,15 +50,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
         <CharacterController
           isPaused={isPaused}
           setTargetPosition={setTargetPosition}
-          onInteract={(object) => {
-            console.log("🖱️ Clicked on object:", object);
-
-            if (object.userData?.type) {
-              handleInteraction(object.userData.id, object.userData.type);
-            } else {
-              console.warn("⚠️ Clicked object has no type!");
-            }
-          }}
+          onProjectSelect={onProjectSelect} // ✅ Ensure this is passed!
         />
       </Physics>
     </group>

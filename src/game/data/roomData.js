@@ -10,33 +10,22 @@ export const roomData = [
     height: 5,
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
-      back: {
-        visible: true,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
-      left: {
-        visible: false,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
-      right: {
-        visible: false,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
-      front: {
-        visible: false,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
+      back: { visible: true, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      left: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      right: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      front: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
     },
     items: [
       {
         id: "door1",
         type: "door",
-        position: [-4, 1.5, -7.2], // Position the door at the back wall
-        rotation: [0, -55, 0], // Rotate the door to face the room
-        targetRoomId: 2, // Add target room ID
+        position: [-4, 1.5, -7.2],
+        rotation: [0, -55, 0],
+        targetRoomId: 2,
         label: "Go to Project Room",
-        model: "/src/assets/3dModels/door/scene.gltf", // New model path for the door in the first room
-        scale: [0.14, 0.12, 0.14], // Scale down the model
+        model: "/src/assets/3dModels/door/scene.gltf",
+        scale: [0.14, 0.12, 0.14],
+        userData: { raycastable: true, isInteractive: true },
       },
     ],
   },
@@ -51,54 +40,45 @@ export const roomData = [
     height: 5,
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
-      back: {
-        visible: true,
-        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
-      },
-      left: {
-        visible: true,
-        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
-      },
-      right: {
-        visible: false,
-        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
-      },
-      front: {
-        visible: false,
-        texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga",
-      },
+      back: { visible: true, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
+      left: { visible: true, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
+      right: { visible: false, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
+      front: { visible: false, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
     },
     items: [
       {
         id: "door2",
         type: "door",
-        position: [4, 0, -7.3], // Position the door at the back wall
-        rotation: [0, Math.PI, 0], // Rotate the door to face the room
-        targetRoomId: 3, // Add target room ID
+        position: [4, 0, -7.3],
+        rotation: [0, Math.PI, 0],
+        targetRoomId: 3,
         label: "Go to Game Room",
-        model: "src/assets/3dModels/SciFiDoor.glb", // No model path, will use fallback
-        scale: [0.9, 0.9, 0.9], // Default scale
+        model: "src/assets/3dModels/SciFiDoor.glb",
+        scale: [0.9, 0.9, 0.9],
+        userData: { raycastable: true, isInteractive: true },
       },
       {
         id: "door3",
         type: "door",
-        position: [-4, 1.5, 7.2], // Position the door at the front wall
-        rotation: [0, -55, 0], // Rotate the door to face the room
-        targetRoomId: 1, // Add target room ID
+        position: [-4, 1.5, 7],
+        rotation: [0, -55, 0],
+        targetRoomId: 1,
         label: "Go to Introduction Room",
         model: "/src/assets/3dModels/door/scene.gltf",
-        scale: [0.14, 0.12, 0.14], // Default scale
-        transparency: 0.2, // Add transparency option
+        scale: [0.14, 0.12, 0.14],
+        transparency: 0.2,
+        userData: { raycastable: true, isInteractive: true },
       },
       {
-        id: 1,
+        id: "project1",
         type: "project",
-        position: [-5, 0, -3], // Position the project on the left side
-        rotation: [0, 0, 0], // Rotate the project to face the room
+        position: [-5, 0, -3],
+        rotation: [0, -55, 0],
         label: "Project One",
         color: "blue",
-        model: "/src/assets/3dModels/Construction.glb", // No model path, will use fallback
-        scale: [0.65, 0.65, 0.65], // Default scale
+        model: "/src/assets/3dModels/Construction.glb",
+        scale: [0.65, 0.65, 0.65],
+        userData: { raycastable: true, isInteractive: true },
       },
     ],
   },
@@ -113,34 +93,23 @@ export const roomData = [
     height: 5,
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
-      back: {
-        visible: true,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
-      left: {
-        visible: true,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
-      right: {
-        visible: false,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
-      front: {
-        visible: false,
-        texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga",
-      },
+      back: { visible: true, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      left: { visible: true, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      right: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      front: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
     },
     items: [
       {
         id: "door4",
         type: "door",
-        position: [5, 0, 7.7], // Position the door at the front wall
-        rotation: [0, 0, 0], // Rotate the door to face the room
-        targetRoomId: 2, // Add target room ID
+        position: [5, 0, 7.7],
+        rotation: [0, 0, 0],
+        targetRoomId: 2,
         label: "Go to Project Room",
-        model: "src/assets/3dModels/SciFiDoor.glb", // No model path, will use fallback
-        scale: [0.9, 0.9, 0.9], // Default scale
-        transparency: 0.2, // Add transparency option
+        model: "src/assets/3dModels/SciFiDoor.glb",
+        scale: [0.9, 0.9, 0.9],
+        transparency: 0.2,
+        userData: { raycastable: true, isInteractive: true, id: "door4", },
       },
     ],
   },

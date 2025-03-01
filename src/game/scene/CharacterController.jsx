@@ -1,61 +1,83 @@
 import { useThree } from "@react-three/fiber";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useGame } from "../state/GameContext";
+import { GameManager } from "../state/GameManager";
 
-export const CharacterController = ({ isPaused, setTargetPosition, onInteract }) => {
+export const CharacterController = ({ isPaused, onProjectSelect }) => {
   const { scene, camera, gl } = useThree();
+  const { setTargetPosition } = useGame();
+  const { handleInteraction } = GameManager(onProjectSelect); // ✅ Pass it here
+
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
+  const interactionTarget = useRef(null);
 
   useEffect(() => {
     const onMouseDown = (event) => {
       if (isPaused) return;
 
-      // Convert mouse click to normalized device coordinates (-1 to +1)
       mouse.x = (event.clientX / gl.domElement.clientWidth) * 2 - 1;
       mouse.y = -(event.clientY / gl.domElement.clientHeight) * 2 + 1;
 
-      // Set the raycaster from camera to click point
       raycaster.setFromCamera(mouse, camera);
-
-      // Get intersections
       const intersections = raycaster.intersectObjects(scene.children, true);
 
+      let firstInteractive = null;
+      let firstFloorHit = null;
+
       for (let i = 0; i < intersections.length; i++) {
-        const intersectedObject = intersections[i].object;
+        let object = intersections[i].object;
 
-        if (intersectedObject.userData?.raycastable) {
-          console.log(`🖱️ Clicked on: ${intersectedObject.name || "Unknown Object"}`);
+        while (object && !object.userData?.raycastable && object.parent) {
+          object = object.parent;
+        }
 
-          // ✅ Check if the object is interactive
-          if (intersectedObject.userData?.isInteractive) {
-            console.log(`🖱️ Interactive Object Clicked: ${intersectedObject.userData.type}`);
-            
-            if (intersectedObject.userData.type === "project" || intersectedObject.userData.type === "door") {
-              onInteract(intersectedObject);
+        if (object.userData?.raycastable) {
+          const point = intersections[i].point;
+
+          if (object.userData?.isInteractive) {
+            console.log(`🖱️ Clicked Object Data:`, object.userData);
+
+            if (object.userData.id && object.userData.type) {
+              console.log(`🖱️ Clicked on Interactive Object: ID=${object.userData.id}, Type=${object.userData.type}`);
+              firstInteractive = { object, point };
+              interactionTarget.current = object.userData;
+              break;
+            } else {
+              console.warn("⚠️ Clicked object has no valid ID or type!", object.userData);
             }
-
-            return; // ✅ Prevents character from moving when clicking an interactive object
           }
 
-          // ✅ Move character to clicked position
-          const point = intersections[i].point;
-          console.log(`📍 Moving character to: ${point.x}, ${point.y}, ${point.z}`);
-          setTargetPosition(new THREE.Vector3(point.x, point.y, point.z));
-
-          break; // Exit the loop once a raycastable object is found
+          if (object.userData?.type === "floor" && !firstFloorHit) {
+            console.log("📍 Clicked on floor at:", point);
+            firstFloorHit = { object, point };
+          }
         }
+      }
+
+      if (firstInteractive) {
+        setTargetPosition(new THREE.Vector3(firstInteractive.point.x, firstInteractive.point.y, firstInteractive.point.z));
+      } else if (firstFloorHit) {
+        setTargetPosition(new THREE.Vector3(firstFloorHit.point.x, firstFloorHit.point.y, firstFloorHit.point.z));
       }
     };
 
-    // Attach event listener
+    const onKeyDown = (event) => {
+      if (isPaused || event.code !== "Space" || !interactionTarget.current) return;
+
+      console.log(`🔹 Space Pressed - Executing stored interaction`);
+      handleInteraction(interactionTarget.current.id, interactionTarget.current.type);
+    };
+
     window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      // Cleanup event listener on unmount
       window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("keydown", onKeyDown);
     };
-  }, [camera, gl, scene, setTargetPosition, onInteract, isPaused]);
+  }, [camera, gl, scene, setTargetPosition, handleInteraction, isPaused]);
 
   return null;
 };

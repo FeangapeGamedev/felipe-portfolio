@@ -17,7 +17,7 @@ export const Character = ({ initialPosition, isPaused }) => {
   const { targetPosition, setTargetPosition } = useGame(); // ✅ Use GameContext for movement
   const speed = 0.2;
   const lerpFactor = 0.1;
-  const stopThreshold = 0.75;
+  const stopThreshold = 0.1;
   const turnSpeed = 4;
 
   // ✅ Load Character Model
@@ -146,7 +146,7 @@ export const Character = ({ initialPosition, isPaused }) => {
         }
       }}
     >
-      <CuboidCollider args={[0.5, 1, 0.5]} position={[0, 1, 0]} />
+      <CuboidCollider args={[0.4, 1, 0.4]} position={[0, 1, 0]} />
       {characterModel ? (
         <primitive
           ref={modelRef}

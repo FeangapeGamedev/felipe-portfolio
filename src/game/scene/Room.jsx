@@ -153,11 +153,11 @@ export const Room = ({ isPaused, onProjectSelect }) => {
       ))}
 
       {/* Interactive Items */}
-      {currentRoom.items.map((item, index) => (
+      {currentRoom.items.map((item) => (
         <InteractiveObject
-          key={index}
-          id={item.id}
-          type={item.type}  // ✅ Make sure type is correctly passed!
+          key={item.id} // ✅ Ensure each object maintains a unique key
+          id={item.id}  // ✅ Pass the correct ID
+          type={item.type}  // ✅ Ensure type is passed
           position={item.position}
           rotation={item.rotation}
           scale={item.scale}
@@ -165,7 +165,7 @@ export const Room = ({ isPaused, onProjectSelect }) => {
           label={item.label}
           model={item.model}
           transparency={item.transparency}
-          onProjectSelect={item.type === "project" ? onProjectSelect : undefined} // ✅ Pass only for projects
+          onProjectSelect={item.type === "project" ? onProjectSelect : undefined}
         />
       ))}
     </group>

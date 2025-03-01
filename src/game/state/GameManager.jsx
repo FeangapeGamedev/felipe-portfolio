@@ -12,23 +12,16 @@ export const GameManager = (onProjectSelect) => {
         console.error(`❌ Door with ID ${id} not found in current room!`);
         return;
       }
-
-      console.log(`🚪 Door Opened: ${id}`);
-      console.log(`🔄 Changing Room to: ${door.targetRoomId}`);
-
-      if (!door.targetRoomId) {
-        console.error(`❌ No targetRoomId assigned to door ${id}`);
-        return;
-      }
-
+      console.log(`🚪 Door Opened: ${id} → Changing Room`);
       changeRoom(door.targetRoomId);
     } else if (type === "project") {
       console.log(`📂 Project Selected: ${id}`);
 
       if (typeof onProjectSelect === "function") {
-        onProjectSelect(id); // ✅ Call project selection safely
+        console.log("✅ Triggering project view...");
+        onProjectSelect(id);
       } else {
-        console.error(`❌ onProjectSelect is not a function or is undefined`);
+        console.error(`❌ onProjectSelect is not a function or is undefined.`);
       }
     } else {
       console.warn(`⚠️ Unknown interaction type: ${type}`);
