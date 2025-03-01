@@ -65,19 +65,30 @@ const InteractiveObject = ({
 
   // ✅ Apply Hover Effect
   useEffect(() => {
-    if (scene) {
+    if (!scene) return;
+
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        if (!child.userData.originalMaterial) {
+          child.userData.originalMaterial = child.material;
+        }
+        // Restore original material when not hovered
+        child.material = isHovered ? shaderMaterial : child.userData.originalMaterial;
+        child.material.transparent = true;
+        child.material.opacity = transparency;
+      }
+    });
+
+    // Reset hover state when leaving room
+    return () => {
       scene.traverse((child) => {
-        if (child.isMesh) {
-          if (!child.userData.originalMaterial) {
-            child.userData.originalMaterial = child.material;
-          }
-          child.material = isHovered ? shaderMaterial : child.userData.originalMaterial;
-          child.material.transparent = true;
-          child.material.opacity = transparency;
+        if (child.isMesh && child.userData.originalMaterial) {
+          child.material = child.userData.originalMaterial;
         }
       });
-    }
+    };
   }, [scene, shaderMaterial, isHovered, transparency]);
+
 
   const handleInteraction = () => {
     if (!isNear) return;
