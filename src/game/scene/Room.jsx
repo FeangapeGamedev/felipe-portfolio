@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
-import { TGALoader } from 'three/addons/loaders/TGALoader.js';
+import { TGALoader } from "three/addons/loaders/TGALoader.js";
+import { useGame } from "../state/GameContext"; // ✅ Import GameContext
 import InteractiveObject from "./InteractiveObject";
 
-export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handleDoorOpen, doorDirection }) => {
+export const Room = ({ isPaused, onProjectSelect }) => {
+  const { currentRoom, setTargetPosition, doorDirection } = useGame(); // ✅ Use GameContext
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
@@ -16,7 +18,7 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
     const loader = new TGALoader();
 
     // Load wall textures
-    const wallTexturePromises = Object.entries(room.walls).map(([wall, { texture }]) =>
+    const wallTexturePromises = Object.entries(currentRoom.walls).map(([wall, { texture }]) =>
       new Promise((resolve, reject) => {
         loader.load(
           texture,
@@ -38,40 +40,40 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
           return acc;
         }, {});
         setWallTextures(textureMap);
-        console.log('Wall textures loaded');
+        console.log("Wall textures loaded");
       })
       .catch((error) => {
-        console.error('An error happened while loading wall textures', error);
+        console.error("An error happened while loading wall textures", error);
       });
 
     // Load floor texture
     loader.load(
-      room.floorTexture,
+      currentRoom.floorTexture,
       (texture) => {
         setFloorTexture(texture);
-        console.log('Floor texture loaded');
+        console.log("Floor texture loaded");
       },
       undefined,
       (error) => {
-        console.error('An error happened while loading floor texture', error);
+        console.error("An error happened while loading floor texture", error);
       }
     );
 
     // Load background texture if provided
-    if (room.backgroundTexture) {
+    if (currentRoom.backgroundTexture) {
       loader.load(
-        room.backgroundTexture,
+        currentRoom.backgroundTexture,
         (texture) => {
           setBackgroundTexture(texture);
-          console.log('Background texture loaded');
+          console.log("Background texture loaded");
         },
         undefined,
         (error) => {
-          console.error('An error happened while loading background texture', error);
+          console.error("An error happened while loading background texture", error);
         }
       );
     }
-  }, [room.walls, room.floorTexture, room.backgroundTexture]);
+  }, [currentRoom]);
 
   // Memoize materials to avoid recreating them on every render
   const wallMaterials = useMemo(() => {
@@ -113,60 +115,57 @@ export const Room = ({ room, setTargetPosition, isPaused, onProjectSelect, handl
   }, [backgroundTexture]);
 
   useEffect(() => {
-    // Set the initial character position when the room is generated
-    const initialPosition = doorDirection === "forward" ? room.spawnPositionForward : room.spawnPositionBackward;
+    // ✅ Set initial character position when the room is generated
+    const initialPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
     console.log(`Initial character position: ${initialPosition}`);
     setTargetPosition(new THREE.Vector3(initialPosition[0], initialPosition[1], initialPosition[2]));
-  }, [room, setTargetPosition, doorDirection]);
+  }, [currentRoom, setTargetPosition, doorDirection]);
 
   return (
     <group>
       {/* Background Plane */}
-      <mesh position={[0, room.height / 2, -room.depth / 2 - 0.1]} rotation={[0, 0, 0]}>
-        <planeGeometry args={[room.width, room.height]} />
+      <mesh position={[0, currentRoom.height / 2, -currentRoom.depth / 2 - 0.1]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[currentRoom.width, currentRoom.height]} />
         <primitive attach="material" object={backgroundMaterial} />
       </mesh>
 
       {/* Floor */}
       <RigidBody type="fixed" colliders="cuboid">
         <mesh name="floor" userData={{ type: "floor", raycastable: true }} position={[0, -floorThickness / 2, 0]}>
-          <boxGeometry args={[room.width, floorThickness, room.depth]} />
+          <boxGeometry args={[currentRoom.width, floorThickness, currentRoom.depth]} />
           {floorTexture && <primitive attach="material" object={floorMaterial} />}
         </mesh>
       </RigidBody>
 
       {/* Walls */}
       {[
-        { pos: [0, room.height / 2, -room.depth / 2], rot: [0, 0, 0], size: [room.width, room.height, wallThickness], name: "back-wall", wall: "back" },
-        { pos: [-room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "left-wall", wall: "left" },
-        { pos: [room.width / 2, room.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [room.depth, room.height, wallThickness], name: "right-wall", wall: "right" },
-        { pos: [0, room.height / 2, room.depth / 2], rot: [0, Math.PI, 0], size: [room.width, room.height, wallThickness], name: "front-wall", wall: "front" },
+        { pos: [0, currentRoom.height / 2, -currentRoom.depth / 2], rot: [0, 0, 0], size: [currentRoom.width, currentRoom.height, wallThickness], name: "back-wall", wall: "back" },
+        { pos: [-currentRoom.width / 2, currentRoom.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [currentRoom.depth, currentRoom.height, wallThickness], name: "left-wall", wall: "left" },
+        { pos: [currentRoom.width / 2, currentRoom.height / 2, 0], rot: [0, Math.PI / 2, 0], size: [currentRoom.depth, currentRoom.height, wallThickness], name: "right-wall", wall: "right" },
+        { pos: [0, currentRoom.height / 2, currentRoom.depth / 2], rot: [0, Math.PI, 0], size: [currentRoom.width, currentRoom.height, wallThickness], name: "front-wall", wall: "front" },
       ].map(({ pos, rot, size, name, wall }, index) => (
         <RigidBody key={index} type="fixed" colliders="cuboid">
-          <mesh position={pos} rotation={rot} name={name} userData={{ raycastable: room.walls[wall].visible }}>
+          <mesh position={pos} rotation={rot} name={name} userData={{ raycastable: currentRoom.walls[wall].visible }}>
             <boxGeometry args={size} />
-            {wallTextures[wall] && <primitive attach="material" object={room.walls[wall].visible ? wallMaterials[wall] : transparentMaterial} />}
+            {wallTextures[wall] && <primitive attach="material" object={currentRoom.walls[wall].visible ? wallMaterials[wall] : transparentMaterial} />}
           </mesh>
         </RigidBody>
       ))}
 
       {/* Interactive Items */}
-      {room.items.map((item, index) => (
+      {currentRoom.items.map((item, index) => (
         <InteractiveObject
           key={index}
           id={item.id}
+          type={item.type}  // ✅ Make sure type is correctly passed!
           position={item.position}
           rotation={item.rotation}
           scale={item.scale}
-          onClick={() => console.log(`${item.type} clicked!`)}
-          onProjectClick={item.type === "door" ? () => handleDoorOpen(item.direction) : onProjectSelect}
           isPaused={isPaused}
-          color={item.color || "red"}
-          shape={item.type === "door" ? "door" : "sphere"} // Use "door" shape for doors
           label={item.label}
-          setTargetPosition={setTargetPosition}
-          model={item.model} // Pass the model path to InteractiveObject
-          transparency={item.transparency} // Pass transparency to InteractiveObject
+          model={item.model}
+          transparency={item.transparency}
+          onProjectSelect={item.type === "project" ? onProjectSelect : undefined} // ✅ Pass only for projects
         />
       ))}
     </group>

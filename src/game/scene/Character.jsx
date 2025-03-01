@@ -4,8 +4,9 @@ import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { AnimationMixer, LoopRepeat } from "three";
+import { useGame } from "../state/GameContext"; // ✅ Import GameContext
 
-export const Character = ({ initialPosition, targetPosition, setTargetPosition, isPaused }) => {
+export const Character = ({ initialPosition, isPaused }) => {
   const characterRef = useRef();
   const modelRef = useRef();
   const mixerRef = useRef(null);
@@ -13,12 +14,13 @@ export const Character = ({ initialPosition, targetPosition, setTargetPosition, 
   const idleActionRef = useRef(null);
   const [isWalking, setIsWalking] = useState(false);
   const [isColliding, setIsColliding] = useState(false);
+  const { targetPosition, setTargetPosition } = useGame(); // ✅ Use GameContext for movement
   const speed = 0.2;
   const lerpFactor = 0.1;
   const stopThreshold = 0.75;
   const turnSpeed = 4;
 
-  // Load the character model with embedded animations
+  // ✅ Load Character Model
   const { scene: characterModel, animations } = useGLTF("src/assets/3dModels/ccCharacterAnimated.glb");
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export const Character = ({ initialPosition, targetPosition, setTargetPosition, 
     animate();
   }, []);
 
-  // **Fix: Reset collision state when a new target position is set**
+  // ✅ Reset collision state when new target position is set
   useEffect(() => {
     if (targetPosition) {
       setIsColliding(false);
@@ -134,7 +136,7 @@ export const Character = ({ initialPosition, targetPosition, setTargetPosition, 
           console.log("Collision detected with:", event.colliderObject.name);
           setIsColliding(true);
           setIsWalking(false); // Stop walking animation
-          setTargetPosition(null); // Reset target position
+          setTargetPosition(null); // ✅ Reset target position in GameContext
         }
       }}
       onCollisionExit={(event) => {

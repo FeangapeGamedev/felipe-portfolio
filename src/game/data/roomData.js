@@ -33,7 +33,7 @@ export const roomData = [
         type: "door",
         position: [-4, 1.5, -7.2], // Position the door at the back wall
         rotation: [0, -55, 0], // Rotate the door to face the room
-        direction: "forward",
+        targetRoomId: 2, // Add target room ID
         label: "Go to Project Room",
         model: "/src/assets/3dModels/door/scene.gltf", // New model path for the door in the first room
         scale: [0.14, 0.12, 0.14], // Scale down the model
@@ -49,7 +49,6 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    backgroundTexture: "/src/assets/textures/introRoomBackground.tga", // Add background texture
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
       back: {
@@ -75,7 +74,7 @@ export const roomData = [
         type: "door",
         position: [4, 0, -7.3], // Position the door at the back wall
         rotation: [0, Math.PI, 0], // Rotate the door to face the room
-        direction: "forward",
+        targetRoomId: 3, // Add target room ID
         label: "Go to Game Room",
         model: "src/assets/3dModels/SciFiDoor.glb", // No model path, will use fallback
         scale: [0.9, 0.9, 0.9], // Default scale
@@ -85,7 +84,7 @@ export const roomData = [
         type: "door",
         position: [-4, 1.5, 7.2], // Position the door at the front wall
         rotation: [0, -55, 0], // Rotate the door to face the room
-        direction: "backward",
+        targetRoomId: 1, // Add target room ID
         label: "Go to Introduction Room",
         model: "/src/assets/3dModels/door/scene.gltf",
         scale: [0.14, 0.12, 0.14], // Default scale
@@ -105,14 +104,13 @@ export const roomData = [
   },
   {
     id: 3,
-    name: "Game Room",
+    name: "Danger Room",
     position: [0, 0, 0],
     spawnPositionForward: [5.5, 0, 6],
     spawnPositionBackward: [0, 0, -4],
     width: 15,
     depth: 15,
     height: 5,
-    backgroundTexture: "/src/assets/textures/introRoomBackground.tga", // Add background texture
     floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
     walls: {
       back: {
@@ -138,7 +136,7 @@ export const roomData = [
         type: "door",
         position: [5, 0, 7.7], // Position the door at the front wall
         rotation: [0, 0, 0], // Rotate the door to face the room
-        direction: "backward",
+        targetRoomId: 2, // Add target room ID
         label: "Go to Project Room",
         model: "src/assets/3dModels/SciFiDoor.glb", // No model path, will use fallback
         scale: [0.9, 0.9, 0.9], // Default scale

@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/Projects.css";
-import { projects } from "../data/projectsData"; // Import the project details
+import { projects } from "../game/data/projectsData"; // Import the project details
 
 const Projects = ({ onClose, onProjectClick }) => {
   const handleProjectClick = (id) => {

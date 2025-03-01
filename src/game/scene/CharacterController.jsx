@@ -1,4 +1,4 @@
-import { useThree, useFrame } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import React, { useEffect } from "react";
 import * as THREE from "three";
 
@@ -21,19 +21,28 @@ export const CharacterController = ({ isPaused, setTargetPosition, onInteract })
       // Get intersections
       const intersections = raycaster.intersectObjects(scene.children, true);
 
-      // Loop through intersections to find the first raycastable object
       for (let i = 0; i < intersections.length; i++) {
         const intersectedObject = intersections[i].object;
 
-        if (intersectedObject.userData.raycastable) {
-          // Check if the object is interactive
+        if (intersectedObject.userData?.raycastable) {
+          console.log(`🖱️ Clicked on: ${intersectedObject.name || "Unknown Object"}`);
+
+          // ✅ Check if the object is interactive
           if (intersectedObject.userData?.isInteractive) {
-            onInteract(intersectedObject);
-          } else {
-            // Move character to clicked position
-            const point = intersections[i].point;
-            setTargetPosition(new THREE.Vector3(point.x, point.y, point.z));
+            console.log(`🖱️ Interactive Object Clicked: ${intersectedObject.userData.type}`);
+            
+            if (intersectedObject.userData.type === "project" || intersectedObject.userData.type === "door") {
+              onInteract(intersectedObject);
+            }
+
+            return; // ✅ Prevents character from moving when clicking an interactive object
           }
+
+          // ✅ Move character to clicked position
+          const point = intersections[i].point;
+          console.log(`📍 Moving character to: ${point.x}, ${point.y}, ${point.z}`);
+          setTargetPosition(new THREE.Vector3(point.x, point.y, point.z));
+
           break; // Exit the loop once a raycastable object is found
         }
       }
@@ -50,4 +59,3 @@ export const CharacterController = ({ isPaused, setTargetPosition, onInteract })
 
   return null;
 };
-

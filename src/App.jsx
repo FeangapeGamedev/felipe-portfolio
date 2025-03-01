@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Scene } from "./components/Scene";
-import Navbar from "./sections/Navbar";
-import Inventory from "./sections/Inventory";
-import Contact from "./sections/Contact";
-import Projects from "./sections/Projects";
-import ProjectDetails from "./sections/ProjectDetails";
-import { projects } from "./data/projectsData"; // Import the project details
+import { Scene } from "./game/scene/Scene"; // ✅ Ensure correct path
+import Navbar from "./components/Navbar";
+import Inventory from "./components/Inventory";
+import Contact from "./components/Contact";
+import Projects from "./components/Projects";
+import ProjectDetails from "./components/ProjectDetails";
+import { projects } from "./game/data/projectsData"; // ✅ Ensure correct path
 
 function App() {
-  const [activeSection, setActiveSection] = useState("game"); // ✅ Default state is "game"
+  const [activeSection, setActiveSection] = useState("game");
   const [selectedProject, setSelectedProject] = useState(null);
   const [disableBackButton, setDisableBackButton] = useState(false);
 
@@ -19,24 +19,24 @@ function App() {
     const project = projects.find(p => p.id === projectId);
     setSelectedProject(project);
     setActiveSection("project-details");
-    setDisableBackButton(true); // Disable back button for collision logic
+    setDisableBackButton(true);
   };
 
   return (
     <>
-      {/* 🔹 Project Details Popup - Now Uses `activeSection` */}
+      {/* 🔹 Project Details Popup */}
       {activeSection === "project-details" && selectedProject && (
         <ProjectDetails
           project={selectedProject}
           onClose={() => {
             setSelectedProject(null);
-            setActiveSection("game"); // ✅ Close should return to game
+            setActiveSection("game");
           }}
           onBack={() => {
             setSelectedProject(null);
-            setActiveSection("projects"); // ✅ Back should return to Projects list
+            setActiveSection("projects");
           }}
-          disableBackButton={disableBackButton} // Pass the disableBackButton prop
+          disableBackButton={disableBackButton}
         />
       )}
 
@@ -45,32 +45,25 @@ function App() {
       {activeSection === "contact" && <Contact onClose={() => setActiveSection("game")} />}
       {activeSection === "projects" && (
         <Projects
-          onClose={() => {
-            console.log("❌ Closing Projects, returning to game...");
-            setActiveSection("game");
-          }}
+          onClose={() => setActiveSection("game")}
           onProjectClick={(project) => {
-            console.log(`📂 Project ${project.title} clicked!`); // ✅ Debug log
             setSelectedProject(project);
-            setActiveSection("project-details"); // ✅ Now correctly opens ProjectDetails
-            setDisableBackButton(false); // Enable back button for project list
+            setActiveSection("project-details");
+            setDisableBackButton(false);
           }}
         />
       )}
 
-      {/* 🔹 Navbar - Ensures functions are passed correctly */}
+      {/* 🔹 Navbar */}
       <Navbar
-        onInventoryClick={() => setActiveSection(activeSection === "inventory" ? "game" : "inventory")} // ✅ About opens Inventory
+        onInventoryClick={() => setActiveSection(activeSection === "inventory" ? "game" : "inventory")}
         onProjectsClick={() => setActiveSection(activeSection === "projects" ? "game" : "projects")}
         onContactClick={() => setActiveSection("contact")}
       />
 
-      {/* 🔹 Main Canvas */}
+      {/* 🔹 Main Game Canvas */}
       <Canvas shadows>
-        <Scene
-          isPaused={isPaused} // ✅ Disables interaction when UI is open
-          onProjectSelect={handleProjectSelect}
-        />
+        <Scene isPaused={isPaused} onProjectSelect={handleProjectSelect} />
       </Canvas>
     </>
   );
