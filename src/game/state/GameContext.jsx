@@ -14,14 +14,16 @@ export const GameProvider = ({ children }) => {
 
   // **✅ Game State**
   const [currentRoomId, setCurrentRoomId] = useState(roomData[0]?.id || 1);
+  const [previousRoomId, setPreviousRoomId] = useState(null);
   const [targetPosition, setTargetPosition] = useState(null);
+  const [doorDirection, setDoorDirection] = useState("forward"); // Track entry direction
 
   // **✅ Get Current Room**
   const currentRoom = roomData.find(room => room.id === currentRoomId) || null;
   if (!currentRoom) console.error(`🚨 ERROR: Room with ID ${currentRoomId} not found!`);
 
   // **🚀 Function to Change Room**
-  const changeRoom = (newRoomId, enteredFromDoor = "forward") => {
+  const changeRoom = (newRoomId) => {
     console.log(`🔄 Attempting to Change Room to ID: ${newRoomId}`);
 
     const newRoom = roomData.find(room => room.id === newRoomId);
@@ -32,33 +34,41 @@ export const GameProvider = ({ children }) => {
 
     console.log(`✅ Room Change Successful → Now Entering Room ${newRoom.id}: ${newRoom.name}`);
 
+    // Determine if moving forward or backward
+    const isMovingForward = previousRoomId === null || previousRoomId < newRoomId;
+    setDoorDirection(isMovingForward ? "forward" : "backward");
+
+    // Get correct spawn position
+    const spawnPosition = isMovingForward ? newRoom.spawnPositionForward : newRoom.spawnPositionBackward;
+
+    console.log(`📍 Setting New Position: ${spawnPosition}`);
+
+    setPreviousRoomId(currentRoomId);
     setCurrentRoomId(newRoomId);
-
-    // Set new target position based on entry direction
-    let newPosition = enteredFromDoor === "forward" ? newRoom.spawnPositionForward : newRoom.spawnPositionBackward;
-
-    if (!newPosition) {
-      console.warn(`⚠️ No valid spawn position for room ${newRoomId}, defaulting to [0,0,0]`);
-      newPosition = [0, 0, 0]; // Fallback position
-    }
-
-    console.log(`📍 Setting New Position: ${newPosition}`);
-    setTargetPosition(new THREE.Vector3(...newPosition));
+    setTargetPosition(new THREE.Vector3(...spawnPosition));
   };
 
-  // **✅ Ensure Character Spawns Correctly**
+  // **✅ Ensure Character Spawns Correctly on Load**
   useEffect(() => {
     if (!currentRoom) return;
 
     console.log(`🚪 Entering Room ${currentRoom.id} - Setting Position`);
-    const spawnPosition = currentRoom.spawnPositionForward || currentRoom.spawnPositionBackward;
+
+    const spawnPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
     console.log(`📍 Character Spawn Position: ${spawnPosition}`);
 
     setTargetPosition(new THREE.Vector3(...spawnPosition));
   }, [currentRoomId]); // ✅ Runs when room changes
 
   return (
-    <GameContext.Provider value={{ roomData, currentRoom, targetPosition, setTargetPosition, changeRoom }}>
+    <GameContext.Provider value={{ 
+      roomData, 
+      currentRoom, 
+      targetPosition, 
+      setTargetPosition, 
+      changeRoom, 
+      doorDirection 
+    }}>
       {children}
     </GameContext.Provider>
   );
