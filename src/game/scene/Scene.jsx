@@ -5,18 +5,16 @@ import { useGame } from "../state/GameContext";
 import { CharacterController } from "./CharacterController";
 import { Room } from "./Room";
 import { Character } from "./Character";
-import * as THREE from "three";
 
 export const Scene = ({ isPaused, onProjectSelect }) => {
-  const { currentRoom, doorDirection } = useGame();
-  const [characterKey] = useState(0);
+  const { currentRoom, targetPosition, doorDirection } = useGame();
   const [initialPosition, setInitialPosition] = useState(null);
 
   useEffect(() => {
-    if (!currentRoom) return;
-    const initialPos = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
-    setInitialPosition(new THREE.Vector3(...initialPos));
-  }, [currentRoom, doorDirection]);
+    if (!currentRoom || !targetPosition) return;
+    setInitialPosition(targetPosition.clone());
+    console.log(`Initial position in room ${currentRoom.id}: ${targetPosition.toArray()}`);
+  }, [currentRoom]);
 
   return (
     <group>
@@ -32,13 +30,13 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
 
       <Physics>
         <Room
-          key={currentRoom.id}
+          key={`room-${currentRoom.id}`}
           isPaused={isPaused}
           onProjectSelect={onProjectSelect}
         />
 
         {initialPosition && (
-          <Character key={characterKey} initialPosition={initialPosition} isPaused={isPaused} />
+          <Character key={`character-${currentRoom.id}-${doorDirection}`} initialPosition={initialPosition} isPaused={isPaused} />
         )}
 
         <CharacterController isPaused={isPaused} />

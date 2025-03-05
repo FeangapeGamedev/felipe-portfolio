@@ -86,7 +86,7 @@ export const roomData = [
     id: 3,
     name: "Danger Room",
     position: [0, 0, 0],
-    spawnPositionForward: [5.5, 0, 6],
+    spawnPositionForward: [5, 0, 6 ],
     spawnPositionBackward: [0, 0, -4],
     width: 15,
     depth: 15,

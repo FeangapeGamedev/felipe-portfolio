@@ -120,6 +120,20 @@ export const Character = ({ initialPosition, isPaused }) => {
     }
   }, [isWalking]);
 
+  useEffect(() => {
+    if (characterRef.current) {
+      const characterPos = characterRef.current.translation();
+      console.log(`Player position in new room: x=${characterPos.x}, y=${characterPos.y}, z=${characterPos.z}`);
+    }
+  }, [initialPosition]);
+
+  useEffect(() => {
+    if (characterRef.current && initialPosition) {
+      characterRef.current.setTranslation(initialPosition, true);
+      console.log(`Setting initial position: x=${initialPosition.x}, y=${initialPosition.y}, z=${initialPosition.z}`);
+    }
+  }, [initialPosition]);
+
   return (
     <RigidBody
       ref={characterRef}
@@ -133,7 +147,6 @@ export const Character = ({ initialPosition, isPaused }) => {
       angularDamping={0.5}
       onCollisionEnter={(event) => {
         if (event.colliderObject.name !== "character") {
-          console.log("Collision detected with:", event.colliderObject.name);
           setIsColliding(true);
           setIsWalking(false); // Stop walking animation
           setTargetPosition(null); // ✅ Reset target position in GameContext
@@ -141,7 +154,6 @@ export const Character = ({ initialPosition, isPaused }) => {
       }}
       onCollisionExit={(event) => {
         if (event.colliderObject.name !== "character") {
-          console.log("Collision ended with:", event.colliderObject.name);
           setIsColliding(false); // Allow movement again
         }
       }}

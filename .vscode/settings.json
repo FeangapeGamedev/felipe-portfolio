@@ -15,6 +15,7 @@
         "raycastable",
         "raycaster",
         "rgba",
+        "slerp",
         "SSAO",
         "unproject",
         "Wwise"

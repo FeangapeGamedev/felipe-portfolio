@@ -2,7 +2,19 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { roomData } from "../data/roomData"; // ✅ Ensure correct import path
 import * as THREE from "three";
 
+// **🗺️ Define Explicit Room Transitions (Placed at the top)**
+const roomTransitions = {
+  "1-2": "forward",
+  "2-1": "backward",
+  "2-3": "forward",
+  "3-2": "backward"
+};
+
 const GameContext = createContext();
+
+const getSpawnPosition = (room, direction) => {
+  return direction === "forward" ? room.spawnPositionForward : room.spawnPositionBackward;
+};
 
 export const GameProvider = ({ children }) => {
   if (!roomData || roomData.length === 0) {
@@ -11,7 +23,6 @@ export const GameProvider = ({ children }) => {
 
   // **✅ Game State**
   const [currentRoomId, setCurrentRoomId] = useState(roomData[0]?.id || 1);
-  const [previousRoomId, setPreviousRoomId] = useState(null);
   const [targetPosition, setTargetPosition] = useState(null);
   const [doorDirection, setDoorDirection] = useState("forward"); // Track entry direction
 
@@ -27,14 +38,17 @@ export const GameProvider = ({ children }) => {
       return;
     }
 
-    // Determine if moving forward or backward
-    const isMovingForward = previousRoomId === null || previousRoomId < newRoomId;
-    setDoorDirection(isMovingForward ? "forward" : "backward");
+    // **Determine movement direction using predefined transitions**
+    const movementKey = `${currentRoomId}-${newRoomId}`;
+    const direction = roomTransitions[movementKey] || "forward"; // Default to "forward" if not mapped
+
+    setDoorDirection(direction);
 
     // Get correct spawn position
-    const spawnPosition = isMovingForward ? newRoom.spawnPositionForward : newRoom.spawnPositionBackward;
+    const spawnPosition = getSpawnPosition(newRoom, direction);
 
-    setPreviousRoomId(currentRoomId);
+    console.log(`Changing room to ${newRoomId}. Moving ${direction}. Spawn position: ${spawnPosition}`);
+
     setCurrentRoomId(newRoomId);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
   };
@@ -43,9 +57,10 @@ export const GameProvider = ({ children }) => {
   useEffect(() => {
     if (!currentRoom) return;
 
-    const spawnPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
+    const spawnPosition = getSpawnPosition(currentRoom, doorDirection);
+    console.log(`Spawning in room ${currentRoomId}. Direction: ${doorDirection}. Spawn position: ${spawnPosition}`);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
-  }, [currentRoomId]); // ✅ Runs when room changes
+  }, [currentRoomId, doorDirection]); // ✅ Runs when room changes
 
   return (
     <GameContext.Provider value={{ 
