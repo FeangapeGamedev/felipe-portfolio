@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { TGALoader } from "three/addons/loaders/TGALoader.js";
 import { useGame } from "../state/GameContext"; // ✅ Import GameContext
 import InteractiveObject from "./InteractiveObject";
+import PropObject from "./propObjects"; // ✅ Import PropObject
 
 export const Room = ({ isPaused, onProjectSelect }) => {
   const { currentRoom} = useGame(); // ✅ Use GameContext
@@ -156,6 +157,19 @@ export const Room = ({ isPaused, onProjectSelect }) => {
           model={item.model}
           transparency={item.transparency}
           onProjectSelect={item.type === "project" ? onProjectSelect : undefined}
+        />
+      ))}
+
+      {/* Non-Interactive Props */}
+      {currentRoom.props.map((prop) => (
+        <PropObject
+          key={prop.id}
+          id={prop.id}
+          type={prop.type}
+          position={prop.position}
+          rotation={prop.rotation}
+          scale={prop.scale}
+          model={prop.model}
         />
       ))}
     </group>

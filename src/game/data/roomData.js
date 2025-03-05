@@ -19,15 +19,33 @@ export const roomData = [
       {
         id: "door1",
         type: "door",
-        position: [-4, 1.5, -7.2],
+        position: [-4, 1.3, -7.1],
         rotation: [0, -55, 0],
         targetRoomId: 2,
         label: "Go to Project Room",
         model: "/src/assets/3dModels/door/scene.gltf",
-        scale: [0.14, 0.12, 0.14],
+        scale: [0.14, 0.11, 0.12],
         userData: { raycastable: true, isInteractive: true },
       },
     ],
+    props: [
+      {
+        id: "car",
+        type: "prop",
+        position: [-3, 1, 5],
+        rotation: [0, 50, 0],
+        scale: [3, 3, 3],
+        model: "src/assets/3dModels/1987_Mercedes_Benz_b_0304010346_texture.glb",
+      },
+      {
+        id: "wallLights",
+        type: "prop",
+        position: [0, 4, -7],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1],
+        model: "src/assets/3dModels/3_modern_street_wall__0305114438_texture.glb",
+      },
+    ]
   },
   {
     id: 2,
@@ -60,12 +78,12 @@ export const roomData = [
       {
         id: "door3",
         type: "door",
-        position: [-4, 1.5, 7],
+        position: [-4, 1.3, 7],
         rotation: [0, -55, 0],
         targetRoomId: 1,
         label: "Go to Introduction Room",
         model: "/src/assets/3dModels/door/scene.gltf",
-        scale: [0.14, 0.12, 0.14],
+        scale: [0.14, 0.11, 0.12],
         transparency: 0.2,
         userData: { raycastable: true, isInteractive: true },
       },
@@ -75,12 +93,12 @@ export const roomData = [
         position: [-6, 0.5, -6],
         rotation: [0, 0, 0],
         label: "Project One",
-        color: "blue",
         model: "/src/assets/3dModels/Construction.glb",
         scale: [0.55, 0.55, 0.55],
         userData: { raycastable: true, isInteractive: true },
       },
     ],
+    props: [], // Ensure props is an array
   },
   {
     id: 3,
@@ -112,5 +130,6 @@ export const roomData = [
         userData: { raycastable: true, isInteractive: true, id: "door4", },
       },
     ],
+    props: [], // Ensure props is an array
   },
 ];
