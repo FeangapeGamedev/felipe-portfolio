@@ -6,7 +6,7 @@ import { useGame } from "../state/GameContext"; // ✅ Import GameContext
 import InteractiveObject from "./InteractiveObject";
 
 export const Room = ({ isPaused, onProjectSelect }) => {
-  const { currentRoom, setTargetPosition, doorDirection } = useGame(); // ✅ Use GameContext
+  const { currentRoom} = useGame(); // ✅ Use GameContext
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
@@ -40,7 +40,6 @@ export const Room = ({ isPaused, onProjectSelect }) => {
           return acc;
         }, {});
         setWallTextures(textureMap);
-        console.log("Wall textures loaded");
       })
       .catch((error) => {
         console.error("An error happened while loading wall textures", error);
@@ -51,7 +50,6 @@ export const Room = ({ isPaused, onProjectSelect }) => {
       currentRoom.floorTexture,
       (texture) => {
         setFloorTexture(texture);
-        console.log("Floor texture loaded");
       },
       undefined,
       (error) => {
@@ -65,7 +63,6 @@ export const Room = ({ isPaused, onProjectSelect }) => {
         currentRoom.backgroundTexture,
         (texture) => {
           setBackgroundTexture(texture);
-          console.log("Background texture loaded");
         },
         undefined,
         (error) => {
@@ -113,13 +110,6 @@ export const Room = ({ isPaused, onProjectSelect }) => {
       });
     }
   }, [backgroundTexture]);
-
-  useEffect(() => {
-    // ✅ Set initial character position when the room is generated
-    const initialPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
-    console.log(`Initial character position: ${initialPosition}`);
-    setTargetPosition(new THREE.Vector3(initialPosition[0], initialPosition[1], initialPosition[2]));
-  }, [currentRoom, setTargetPosition, doorDirection]);
 
   return (
     <group>

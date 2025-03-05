@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { Html, useGLTF } from "@react-three/drei";
 import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
-import { useGame } from "../state/GameContext";
 import vertexShader from "../../shaders/vertexShader.glsl";
 import fragmentShader from "../../shaders/fragmentShader.glsl";
 
@@ -21,7 +20,6 @@ const InteractiveObject = ({
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false); // ✅ Track hover state
-  const { currentRoom } = useGame();
 
   // ✅ Load the model
   const { scene } = useGLTF(model, true);
@@ -47,8 +45,6 @@ const InteractiveObject = ({
           child.userData = { ...userData };
         }
       });
-
-      console.log("✅ Set userData on scene:", scene.userData);
     }
   }, [scene, id, type, label]);
 
@@ -89,15 +85,10 @@ const InteractiveObject = ({
     };
   }, [scene, shaderMaterial, isHovered, transparency]);
 
-
   const handleInteraction = () => {
     if (!isNear) return;
 
-    console.log(`🎮 Handling Interaction for ID: ${id}, Type: ${type}`);
-
     if (type === "project") {
-      console.log(`📂 Project Selected: ${id}`);
-
       if (typeof onProjectSelect === "function") {
         onProjectSelect(id);
       } else {

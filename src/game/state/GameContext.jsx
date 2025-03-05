@@ -5,9 +5,6 @@ import * as THREE from "three";
 const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
-  console.log("🛠️ GameProvider Initialized");
-  console.log("📂 Loaded roomData:", roomData); // ✅ Debugging
-
   if (!roomData || roomData.length === 0) {
     console.error("🚨 ERROR: roomData is undefined or empty!");
   }
@@ -24,15 +21,11 @@ export const GameProvider = ({ children }) => {
 
   // **🚀 Function to Change Room**
   const changeRoom = (newRoomId) => {
-    console.log(`🔄 Attempting to Change Room to ID: ${newRoomId}`);
-
     const newRoom = roomData.find(room => room.id === newRoomId);
     if (!newRoom) {
       console.warn(`🚨 ERROR: Room ID ${newRoomId} does not exist in roomData!`);
       return;
     }
-
-    console.log(`✅ Room Change Successful → Now Entering Room ${newRoom.id}: ${newRoom.name}`);
 
     // Determine if moving forward or backward
     const isMovingForward = previousRoomId === null || previousRoomId < newRoomId;
@@ -40,8 +33,6 @@ export const GameProvider = ({ children }) => {
 
     // Get correct spawn position
     const spawnPosition = isMovingForward ? newRoom.spawnPositionForward : newRoom.spawnPositionBackward;
-
-    console.log(`📍 Setting New Position: ${spawnPosition}`);
 
     setPreviousRoomId(currentRoomId);
     setCurrentRoomId(newRoomId);
@@ -52,11 +43,7 @@ export const GameProvider = ({ children }) => {
   useEffect(() => {
     if (!currentRoom) return;
 
-    console.log(`🚪 Entering Room ${currentRoom.id} - Setting Position`);
-
     const spawnPosition = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
-    console.log(`📍 Character Spawn Position: ${spawnPosition}`);
-
     setTargetPosition(new THREE.Vector3(...spawnPosition));
   }, [currentRoomId]); // ✅ Runs when room changes
 

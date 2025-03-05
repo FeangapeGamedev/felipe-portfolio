@@ -5,21 +5,16 @@ import { useGame } from "../state/GameContext";
 import { CharacterController } from "./CharacterController";
 import { Room } from "./Room";
 import { Character } from "./Character";
-import { GameManager } from "../state/GameManager";
 import * as THREE from "three";
 
 export const Scene = ({ isPaused, onProjectSelect }) => {
-  const { currentRoom, targetPosition, setTargetPosition, doorDirection } = useGame();
-  const [characterKey, setCharacterKey] = useState(0);
+  const { currentRoom, doorDirection } = useGame();
+  const [characterKey] = useState(0);
   const [initialPosition, setInitialPosition] = useState(null);
-
-  // ✅ Initialize GameManager with `onProjectSelect`
-  const { handleInteraction } = GameManager(onProjectSelect);
 
   useEffect(() => {
     if (!currentRoom) return;
     const initialPos = doorDirection === "forward" ? currentRoom.spawnPositionForward : currentRoom.spawnPositionBackward;
-    console.log(`🔄 Updating Character Spawn Position: ${initialPos}`);
     setInitialPosition(new THREE.Vector3(...initialPos));
   }, [currentRoom, doorDirection]);
 
@@ -43,7 +38,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
         />
 
         {initialPosition && (
-          <Character key={characterKey} initialPosition={initialPosition} targetPosition={targetPosition} isPaused={isPaused} />
+          <Character key={characterKey} initialPosition={initialPosition} isPaused={isPaused} />
         )}
 
         <CharacterController isPaused={isPaused} />
