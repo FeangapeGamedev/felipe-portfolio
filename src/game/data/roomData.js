@@ -53,7 +53,39 @@ export const roomData = [
         scale: [1, 1, 1],
         model: "src/assets/3dModels/3_modern_street_wall__0305114438_texture.glb",
       },
-    ]
+    ],
+    lights: [
+      {
+        position: [0, 4, -7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [0, 1, -7], // Aiming downwards towards the floor
+        intensity: 10,             // Bright but not overpowering
+        color: 0xffcc88,            // Warm yellow light
+        angle: Math.PI / 4,         // Narrower beam for a focused effect
+        penumbra: 0.4,              // Soft edges
+        decay: 2,                   // Light fades naturally
+        distance: 50,               // Reasonable range for room lighting
+      },
+      {
+        position: [1, 4, -7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [0, 1, -7], // Aiming downwards towards the floor
+        intensity: 10,             // Bright but not overpowering
+        color: 0xffcc88,            // Warm yellow light
+        angle: Math.PI / 4,         // Narrower beam for a focused effect
+        penumbra: 0.4,              // Soft edges
+        decay: 2,                   // Light fades naturally
+        distance: 50,               // Reasonable range for room lighting
+      },
+      {
+        position: [-1, 4, -7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [0, 1, -7], // Aiming downwards towards the floor
+        intensity: 10,             // Bright but not overpowering
+        color: 0xffcc88,            // Warm yellow light
+        angle: Math.PI / 4,         // Narrower beam for a focused effect
+        penumbra: 0.4,              // Soft edges
+        decay: 2,                   // Light fades naturally
+        distance: 50,               // Reasonable range for room lighting
+      },
+    ],
   },
   {
     id: 2,
