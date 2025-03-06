@@ -98,11 +98,11 @@ export const roomData = [
       {
         id: "project1",
         type: "project",
-        position: [-4, 1.5, -4],
+        position: [-5, 0.5, -5],
         rotation: [0, 0, 0],
         label: "Project One",
         model: "/src/assets/3dModels/Construction.glb",
-        scale: [0.55, 0.55, 0.55],
+        scale: [0.5, 0.65, 0.5],
         userData: { raycastable: true, isInteractive: true },
       },
     ],
@@ -110,17 +110,9 @@ export const roomData = [
       {
         id: "stand_1",
         type: "prop",
-        position: [-4, 1, -4],
+        position: [-5.2, 0.2, -5.2],
         rotation: [0, 0, 0],
-        scale: [0.55, 0.55, 0.55],
-        model: "src/assets/3dModels/display_stand.glb",
-      },
-      {
-        id: "stand_2",
-        type: "prop",
-        position: [6.5, 1, 6.5],
-        rotation: [0, 0, 0],
-        scale: [0.55, 0.55, 0.55],
+        scale: [1.5, 0.2, 1.5],
         model: "src/assets/3dModels/display_stand.glb",
       },
       {

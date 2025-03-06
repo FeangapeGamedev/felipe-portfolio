@@ -158,7 +158,7 @@ export const Character = ({ initialPosition, isPaused }) => {
         }
       }}
     >
-      <CuboidCollider args={[0.4, 1, 0.4]} position={[0, 1, 0]} />
+      <CuboidCollider args={[0.35, 1, 0.35]} position={[0, 1, 0]} />
       {characterModel ? (
         <primitive
           ref={modelRef}
