@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
-import { useGame } from "../state/GameContext"; // ✅ Import GameContext
+import { useGame } from "../state/GameContext";
 import InteractiveObject from "./InteractiveObject";
-import PropObject from "./propObjects"; // ✅ Import PropObject
+import PropObject from "./propObjects";
+import SpotLightManager from "../state/SpotLightManager"; // Update import
 
 export const Room = ({ isPaused, onProjectSelect }) => {
-  const { currentRoom } = useGame(); // ✅ Use GameContext
+  const { currentRoom } = useGame();
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
@@ -15,15 +16,15 @@ export const Room = ({ isPaused, onProjectSelect }) => {
   const [backgroundTexture, setBackgroundTexture] = useState(null);
 
   useEffect(() => {
-    const loader = new THREE.TextureLoader(); // ✅ Use TextureLoader instead of TGALoader
+    const loader = new THREE.TextureLoader();
 
     // Load wall textures (JPEG)
     const wallTexturePromises = Object.entries(currentRoom.walls).map(([wall, { texture }]) =>
       new Promise((resolve, reject) => {
         loader.load(
-          texture.replace(".tga", ".jpg"), // ✅ Ensure it loads JPEG
+          texture.replace(".tga", ".jpg"),
           (loadedTexture) => {
-            loadedTexture.flipY = false; // ✅ Prevent upside-down textures if needed
+            loadedTexture.flipY = false;
             resolve({ wall, texture: loadedTexture });
           },
           undefined,
@@ -48,9 +49,9 @@ export const Room = ({ isPaused, onProjectSelect }) => {
 
     // Load floor texture (JPEG)
     loader.load(
-      currentRoom.floorTexture.replace(".tga", ".jpg"), // ✅ Convert to JPEG
+      currentRoom.floorTexture.replace(".tga", ".jpg"),
       (texture) => {
-        texture.flipY = false; // ✅ Fix texture orientation
+        texture.flipY = false;
         setFloorTexture(texture);
       },
       undefined,
@@ -62,7 +63,7 @@ export const Room = ({ isPaused, onProjectSelect }) => {
     // Load background texture (JPEG if applicable)
     if (currentRoom.backgroundTexture) {
       loader.load(
-        currentRoom.backgroundTexture.replace(".tga", ".jpg"), // ✅ Convert to JPEG
+        currentRoom.backgroundTexture.replace(".tga", ".jpg"),
         (texture) => {
           texture.flipY = false;
           setBackgroundTexture(texture);
@@ -107,7 +108,7 @@ export const Room = ({ isPaused, onProjectSelect }) => {
       });
     } else {
       return new THREE.MeshStandardMaterial({
-        color: 0x000000, // Default color if no texture is provided
+        color: 0x000000,
         metalness: 0,
         roughness: 1,
       });
@@ -121,6 +122,17 @@ export const Room = ({ isPaused, onProjectSelect }) => {
         <planeGeometry args={[currentRoom.width, currentRoom.height]} />
         <primitive attach="material" object={backgroundMaterial} />
       </mesh>
+
+      {/* Spot Lights */}
+      {currentRoom.lights.map((light, index) => (
+        <SpotLightManager
+          key={index}
+          position={light.position}
+          targetPosition={light.targetPosition}
+          intensity={light.intensity}
+          color={light.color}
+        />
+      ))}
 
       {/* Floor */}
       <RigidBody type="fixed" colliders="cuboid">

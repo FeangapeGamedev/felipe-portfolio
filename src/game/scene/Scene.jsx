@@ -5,6 +5,8 @@ import { useGame } from "../state/GameContext";
 import { CharacterController } from "./CharacterController";
 import { Room } from "./Room";
 import { Character } from "./Character";
+import SpotLightManager from "../state/SpotLightManager"; // Update import
+
 
 export const Scene = ({ isPaused, onProjectSelect }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
@@ -26,7 +28,25 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
       />
 
       <ambientLight intensity={0.7} color="#ffffff" />
-      <directionalLight position={[10, 10, 10]} intensity={0.8} castShadow />
+
+      {/* Directional Light */}
+      <directionalLight
+        position={[7.55, 5, 10]}
+        intensity={0.3}
+        color="#ffffff"
+        castShadow
+      />
+
+      {/* Spot Lights */}
+      {currentRoom.lights.map((light, index) => (
+        <SpotLightManager
+          key={index}
+          position={light.position}
+          targetPosition={light.targetPosition}
+          intensity={light.intensity}
+          color={light.color}
+        />
+      ))}
 
       <Physics>
         <Room
