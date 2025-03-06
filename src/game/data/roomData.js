@@ -8,12 +8,12 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
+    floorTexture: "src/assets/textures/dark-rock-wall-seamless-texture-free.jpg",
     walls: {
-      back: { visible: true, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
-      left: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
-      right: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
-      front: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      back: { visible: true, texture: "src/assets/textures/spray-paint-wall-graffiti-texture-free.jpg" },
+      left: { visible: false, texture: "src/assets/textures/graffiti-wall-texture-free.jpg" },
+      right: { visible: false, texture: "src/assets/textures/graffiti-wall-texture-free.jpg" },
+      front: { visible: false, texture: "src/assets/textures/graffiti-wall-texture-free.jpg" },
     },
     items: [
       {
@@ -32,10 +32,18 @@ export const roomData = [
       {
         id: "car",
         type: "prop",
-        position: [-3, 1, 5],
-        rotation: [0, 50, 0],
+        position: [-4, 1, 5],
+        rotation: [0, 6, 0],
         scale: [3, 3, 3],
         model: "src/assets/3dModels/1987_Mercedes_Benz_b_0304010346_texture.glb",
+      },
+      {
+        id: "suv",
+        type: "prop",
+        position: [5.5, 1.4, 5],
+        rotation: [0, 6, 0],
+        scale: [3, 3, 3],
+        model: "src/assets/3dModels/suv_truck.glb",
       },
       {
         id: "wallLights",
@@ -56,12 +64,12 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
+    floorTexture: "src/assets/textures/FloorTile2.jpg",
     walls: {
-      back: { visible: true, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
-      left: { visible: true, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
-      right: { visible: false, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
-      front: { visible: false, texture: "/src/assets/models/Cement Brick Wall/CementBrickWallAlbedo.tga" },
+      back: { visible: true, texture: "src/assets/textures/grunge-wall-texture.jpg" },
+      left: { visible: true, texture: "src/assets/textures/grunge-wall-texture.jpg" },
+      right: { visible: false, texture: "src/assets/textures/grunge-wall-texture.jpg" },
+      front: { visible: false, texture: "src/assets/textures/grunge-wall-texture.jpg" },
     },
     items: [
       {
@@ -90,7 +98,7 @@ export const roomData = [
       {
         id: "project1",
         type: "project",
-        position: [-6, 0.5, -6],
+        position: [-4, 1.5, -4],
         rotation: [0, 0, 0],
         label: "Project One",
         model: "/src/assets/3dModels/Construction.glb",
@@ -98,7 +106,56 @@ export const roomData = [
         userData: { raycastable: true, isInteractive: true },
       },
     ],
-    props: [], // Ensure props is an array
+    props: [
+      {
+        id: "stand_1",
+        type: "prop",
+        position: [-4, 1, -4],
+        rotation: [0, 0, 0],
+        scale: [0.55, 0.55, 0.55],
+        model: "src/assets/3dModels/display_stand.glb",
+      },
+      {
+        id: "stand_2",
+        type: "prop",
+        position: [6.5, 1, 6.5],
+        rotation: [0, 0, 0],
+        scale: [0.55, 0.55, 0.55],
+        model: "src/assets/3dModels/display_stand.glb",
+      },
+      {
+        id: "plant_1",
+        type: "prop",
+        position: [0, 1, -6.5],
+        rotation: [0, 0, 0],
+        scale: [1 ,1 ,1],
+        model: "src/assets/3dModels/Indoor_Plant_one.glb",
+      },
+      {
+        id: "plant_2",
+        type: "prop",
+        position: [0, 1, 6.5],
+        rotation: [0, 0, 0],
+        scale: [1 ,1 ,1],
+        model: "src/assets/3dModels/Indoor_Plant_one.glb",
+      },
+      {
+        id: "plant_3",
+        type: "prop",
+        position: [-6.5, 1, 0],
+        rotation: [0, 0, 0],
+        scale: [1 ,1 ,1],
+        model: "src/assets/3dModels/Indoor_Plant_two.glb",
+      },
+      {
+        id: "plant_4",
+        type: "prop",
+        position: [6.5, 1, 0],
+        rotation: [0, 0, 0],
+        scale: [1 ,1 ,1],
+        model: "src/assets/3dModels/Indoor_Plant_two.glb",
+      }
+    ], 
   },
   {
     id: 3,
@@ -109,12 +166,12 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    floorTexture: "/src/assets/models/Asphalt/Asphalt_Albedo.tga",
+    floorTexture: "src/assets/textures/FloorTile2.jpg",
     walls: {
-      back: { visible: true, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
-      left: { visible: true, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
-      right: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
-      front: { visible: false, texture: "/src/assets/models/Brick Wall/BrickWall_Albedo.tga" },
+      back: { visible: true, texture: "src/assets/textures/FloorTile2.jpg" },
+      left: { visible: true, texture: "src/assets/textures/FloorTile2.jpg" },
+      right: { visible: false, texture: "src/assets/textures/FloorTile2.jpg" },
+      front: { visible: false, texture: "src/assets/textures/FloorTile2.jpg" },
     },
     items: [
       {

@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
-import { TGALoader } from "three/addons/loaders/TGALoader.js";
 import { useGame } from "../state/GameContext"; // ✅ Import GameContext
 import InteractiveObject from "./InteractiveObject";
 import PropObject from "./propObjects"; // ✅ Import PropObject
 
 export const Room = ({ isPaused, onProjectSelect }) => {
-  const { currentRoom} = useGame(); // ✅ Use GameContext
+  const { currentRoom } = useGame(); // ✅ Use GameContext
   const wallThickness = 0.5;
   const floorThickness = 0.2;
 
@@ -16,14 +15,15 @@ export const Room = ({ isPaused, onProjectSelect }) => {
   const [backgroundTexture, setBackgroundTexture] = useState(null);
 
   useEffect(() => {
-    const loader = new TGALoader();
+    const loader = new THREE.TextureLoader(); // ✅ Use TextureLoader instead of TGALoader
 
-    // Load wall textures
+    // Load wall textures (JPEG)
     const wallTexturePromises = Object.entries(currentRoom.walls).map(([wall, { texture }]) =>
       new Promise((resolve, reject) => {
         loader.load(
-          texture,
+          texture.replace(".tga", ".jpg"), // ✅ Ensure it loads JPEG
           (loadedTexture) => {
+            loadedTexture.flipY = false; // ✅ Prevent upside-down textures if needed
             resolve({ wall, texture: loadedTexture });
           },
           undefined,
@@ -46,10 +46,11 @@ export const Room = ({ isPaused, onProjectSelect }) => {
         console.error("An error happened while loading wall textures", error);
       });
 
-    // Load floor texture
+    // Load floor texture (JPEG)
     loader.load(
-      currentRoom.floorTexture,
+      currentRoom.floorTexture.replace(".tga", ".jpg"), // ✅ Convert to JPEG
       (texture) => {
+        texture.flipY = false; // ✅ Fix texture orientation
         setFloorTexture(texture);
       },
       undefined,
@@ -58,11 +59,12 @@ export const Room = ({ isPaused, onProjectSelect }) => {
       }
     );
 
-    // Load background texture if provided
+    // Load background texture (JPEG if applicable)
     if (currentRoom.backgroundTexture) {
       loader.load(
-        currentRoom.backgroundTexture,
+        currentRoom.backgroundTexture.replace(".tga", ".jpg"), // ✅ Convert to JPEG
         (texture) => {
+          texture.flipY = false;
           setBackgroundTexture(texture);
         },
         undefined,
@@ -146,9 +148,9 @@ export const Room = ({ isPaused, onProjectSelect }) => {
       {/* Interactive Items */}
       {currentRoom.items.map((item) => (
         <InteractiveObject
-          key={item.id} // ✅ Ensure each object maintains a unique key
-          id={item.id}  // ✅ Pass the correct ID
-          type={item.type}  // ✅ Ensure type is passed
+          key={item.id}
+          id={item.id}
+          type={item.type}
           position={item.position}
           rotation={item.rotation}
           scale={item.scale}

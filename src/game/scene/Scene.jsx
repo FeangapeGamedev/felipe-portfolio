@@ -28,7 +28,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
       <ambientLight intensity={0.7} color="#ffffff" />
       <directionalLight position={[10, 10, 10]} intensity={0.8} castShadow />
 
-      <Physics debug>
+      <Physics>
         <Room
           key={`room-${currentRoom.id}`}
           isPaused={isPaused}
