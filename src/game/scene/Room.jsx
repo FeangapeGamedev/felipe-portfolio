@@ -5,6 +5,7 @@ import { useGame } from "../state/GameContext";
 import InteractiveObject from "./InteractiveObject";
 import PropObject from "./propObjects";
 import SpotLightManager from "../state/SpotLightManager"; // Update import
+import ThreeDText from "../../components/ThreeDText"; // ✅ Use correct relative path
 
 export const Room = ({ isPaused, onProjectSelect }) => {
   const { currentRoom } = useGame();
@@ -186,6 +187,33 @@ export const Room = ({ isPaused, onProjectSelect }) => {
           model={prop.model}
         />
       ))}
+
+      {/* 🔥 Add 3D Text in Room 1 */}
+      {currentRoom.id === 1 && (
+        <>
+          {/* "The" (🔥 Neon Glow) */}
+          <ThreeDText
+            text="The"
+            position={[4, 15, -7200]} // Higher placement
+            rotation={[0, 0, 0]}
+            color="cyan"
+            size={2}
+            height={0.1}
+            isNeon={true} // ✅ Glowing neon effect only for this text
+          />
+
+          {/* "Portfolio" (🔥 Neon Glow) */}
+          <ThreeDText
+            text="Portfolio"
+            position={[4, 12, -7200]} // Below "The"
+            rotation={[0, 0, 0]}
+            color="cyan"
+            size={2.5}
+            height={0.1}
+            isNeon={true} // ✅ Glowing neon effect only for this text
+          />
+        </>
+      )}
     </group>
   );
 };

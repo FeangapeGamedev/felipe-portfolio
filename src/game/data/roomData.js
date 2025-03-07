@@ -48,7 +48,7 @@ export const roomData = [
       {
         id: "wallLights",
         type: "prop",
-        position: [0, 4, -7],
+        position: [-4, 4, -7],
         rotation: [0, 0, 0],
         scale: [1, 1, 1],
         model: "src/assets/3dModels/3_modern_street_wall__0305114438_texture.glb",
@@ -56,34 +56,34 @@ export const roomData = [
     ],
     lights: [
       {
-        position: [0, 4, -7],       // Elevated, like a ceiling/streetlight
-        targetPosition: [0, 1, -7], // Aiming downwards towards the floor
+        position: [-5, 4, -7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [-5, 1, -7], // Aiming downwards towards the floor
         intensity: 10,             // Bright but not overpowering
         color: 0xffcc88,            // Warm yellow light
         angle: Math.PI / 4,         // Narrower beam for a focused effect
         penumbra: 0.4,              // Soft edges
-        decay: 2,                   // Light fades naturally
-        distance: 50,               // Reasonable range for room lighting
+        decay: 5,                   // Light fades naturally
+        distance: 20,               // Reasonable range for room lighting
       },
       {
-        position: [1, 4, -7],       // Elevated, like a ceiling/streetlight
-        targetPosition: [0, 1, -7], // Aiming downwards towards the floor
+        position: [-4, 4, -7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [-4.5, 1, -7], // Aiming downwards towards the floor
         intensity: 10,             // Bright but not overpowering
         color: 0xffcc88,            // Warm yellow light
         angle: Math.PI / 4,         // Narrower beam for a focused effect
         penumbra: 0.4,              // Soft edges
-        decay: 2,                   // Light fades naturally
-        distance: 50,               // Reasonable range for room lighting
+        decay: 5,                   // Light fades naturally
+        distance: 20,               // Reasonable range for room lighting
       },
       {
-        position: [-1, 4, -7],       // Elevated, like a ceiling/streetlight
-        targetPosition: [0, 1, -7], // Aiming downwards towards the floor
+        position: [-3, 4, -7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [-3.5, 1, -7], // Aiming downwards towards the floor
         intensity: 10,             // Bright but not overpowering
         color: 0xffcc88,            // Warm yellow light
         angle: Math.PI / 4,         // Narrower beam for a focused effect
         penumbra: 0.4,              // Soft edges
-        decay: 2,                   // Light fades naturally
-        distance: 50,               // Reasonable range for room lighting
+        decay: 5,                   // Light fades naturally
+        distance: 20,               // Reasonable range for room lighting
       },
     ],
   },
