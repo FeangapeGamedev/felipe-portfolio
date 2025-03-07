@@ -53,6 +53,14 @@ export const roomData = [
         scale: [1, 1, 1],
         model: "src/assets/3dModels/3_modern_street_wall__0305114438_texture.glb",
       },
+      {
+        id: "streetLights",
+        type: "prop",
+        position: [1.5, 0, 7],
+        rotation: [0, 3, 0],
+        scale: [25, 25, 25],
+        model: "src/assets/3dModels/lamp.glb",
+      },
     ],
     lights: [
       {
@@ -85,6 +93,17 @@ export const roomData = [
         decay: 5,                   // Light fades naturally
         distance: 20,               // Reasonable range for room lighting
       },
+      {
+        position: [1.5, 3.7, 7],       // Elevated, like a ceiling/streetlight
+        targetPosition: [1.5, 0, 7], // Aiming downwards towards the floor
+        intensity: 10,             // Bright but not overpowering
+        color: 0xffcc88,            // Warm yellow light
+        angle: Math.PI / 4,         // Narrower beam for a focused effect
+        penumbra: 0.4,              // Soft edges
+        decay: 5,                   // Light fades naturally
+        distance: 20,               // Reasonable range for room lighting
+      },
+
     ],
   },
   {
@@ -180,6 +199,7 @@ export const roomData = [
         model: "src/assets/3dModels/Indoor_Plant_two.glb",
       }
     ], 
+    lights: [],
   },
   {
     id: 3,
@@ -212,5 +232,6 @@ export const roomData = [
       },
     ],
     props: [], // Ensure props is an array
+    lights: [],
   },
 ];

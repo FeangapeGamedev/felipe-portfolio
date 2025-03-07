@@ -196,21 +196,20 @@ export const Room = ({ isPaused, onProjectSelect }) => {
             text="The"
             position={[4, 15, -7200]} // Higher placement
             rotation={[0, 0, 0]}
-            color="cyan"
+            color="cyan" // 🔥 Magenta
             size={2}
             height={0.1}
-            isNeon={true} // ✅ Glowing neon effect only for this text
+            isNeon={true}
           />
 
-          {/* "Portfolio" (🔥 Neon Glow) */}
           <ThreeDText
             text="Portfolio"
             position={[4, 12, -7200]} // Below "The"
             rotation={[0, 0, 0]}
-            color="cyan"
-            size={2.5}
+            color="#00ffff" // 🔥 Cyan
+            size={3.5}
             height={0.1}
-            isNeon={true} // ✅ Glowing neon effect only for this text
+            isNeon={true}
           />
         </>
       )}
