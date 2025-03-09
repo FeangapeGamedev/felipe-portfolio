@@ -150,7 +150,7 @@ export const roomData = [
         id: "project1",
         type: "project",
         position: [-5, 0.5, -5],
-        rotation: [0, 55, 0],
+        rotation: [0, 0, 0],
         label: "Project One",
         model: "/src/assets/3dModels/Construction.glb",
         scale: [0.52, 0.52, 0.52],

@@ -1,4 +1,4 @@
-/* Full-screen Background Overlay (Only for Project Details) */
+/* 🔹 Full-screen Background Overlay */
 .overlay {
     position: fixed;
     top: 0;
@@ -12,9 +12,9 @@
     z-index: 999;
 }
 
-/* Project Details Container */
+/* 🔹 Project Details Container */
 .project-details-container {
-    width: 1200px; /* ✅ Twice as large as other popups */
+    width: 1200px;
     height: 800px;
     background: #1a1a1a;
     border: 8px solid #555;
@@ -25,9 +25,10 @@
     display: flex;
     flex-direction: column;
     z-index: 1000;
+    overflow: hidden;
 }
 
-/* Header */
+/* 🔹 Header */
 .project-details-header {
     width: 99%;
     background: #333;
@@ -41,13 +42,13 @@
     border-bottom: 4px solid #777;
 }
 
-/* Header Buttons (Back & Close) */
+/* 🔹 Header Buttons */
 .header-buttons {
     display: flex;
     gap: 10px;
 }
 
-.back-button {
+.back-button, .close-button, .back-to-contributions {
     background: #444;
     color: white;
     border: 2px solid #777;
@@ -57,19 +58,14 @@
     transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.back-button:hover {
+.back-button:hover, .back-to-contributions:hover {
     background: #666;
     border-color: #999;
 }
 
 .close-button {
     background: #a00;
-    color: white;
     border: 2px solid #600;
-    padding: 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .close-button:hover {
@@ -77,28 +73,28 @@
     border-color: #cc0000;
 }
 
-/* 🔹 Main Content Area - Fix Alignment */
+/* 🔹 Main Content Area */
 .project-details-content {
     display: flex;
-    width: 100%; /* ✅ Take full width */
+    width: 100%;
     height: 100%;
     flex-grow: 1;
-    padding: 0; /* ✅ Remove padding that caused shifting */
+    padding: 0;
 }
 
-/* 🔹 Left Panel - Fixed Width */
+/* 🔹 Left Panel - Categories */
 .categories-menu {
-    width: 280px; /* ✅ Fixed width */
+    width: 280px;
     background: #222;
     border-right: 4px solid #777;
     padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex-shrink: 0; /* ✅ Prevents shrinking */
+    flex-shrink: 0;
 }
 
-/* Category Item */
+/* 🔹 Category Item */
 .category-item {
     background: #333;
     padding: 10px;
@@ -119,9 +115,9 @@
     color: black;
 }
 
-/* 🔹 Right Panel - Now Expands Fully */
+/* 🔹 Right Panel */
 .content-display {
-    flex-grow: 1; /* ✅ Expands to fill remaining space */
+    flex-grow: 1;
     padding: 20px;
     text-align: left;
     font-size: 14px;
@@ -134,15 +130,15 @@
     overflow: hidden;
 }
 
-/* Scrollable Content */
+/* 🔹 Scrollable Content */
 .scrollable-content {
     width: 100%;
-    max-height: 600px; /* ✅ Ensures scrolling when content is long */
+    max-height: 600px;
     overflow-y: auto;
     padding-right: 10px;
 }
 
-/* Custom Scrollbar */
+/* 🔹 Custom Scrollbar */
 .scrollable-content::-webkit-scrollbar {
     width: 8px;
 }
@@ -154,4 +150,129 @@
 
 .scrollable-content::-webkit-scrollbar-track {
     background: #333;
+}
+
+/* 🔹 Overview Section - Video on Top, Text Below */
+.overview-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* 🔹 Spaced Text for Readability */
+.overview-text, .contribution-section p {
+    line-height: 1.8; /* ✅ Adjusted to make text more readable */
+    font-size: 16px;
+    text-align: justify;
+    margin-bottom: 15px;
+}
+
+/* 🔹 Overview Media */
+.overview-media {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+.overview-media img, 
+.overview-media video {
+    width: 90%;
+    max-width: 600px;
+    border-radius: 5px;
+    border: 3px solid #555;
+}
+
+/* 🔹 Contributions - List */
+.contributions-list {
+    list-style: none;
+    padding: 0;
+}
+
+.contribution-item {
+    background: #333;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 2px solid #777;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.contribution-item:hover {
+    background: #555;
+    border-color: #999;
+}
+
+/* 🔹 Contributions - Detailed View */
+.contribution-details {
+    padding: 20px;
+    background: #333;
+    border-radius: 8px;
+    border: 3px solid #777;
+}
+
+/* 🔹 Alternating Text & Media */
+.contribution-section {
+    margin-bottom: 25px;
+    padding: 10px;
+}
+
+/* 🔹 Spaced Media (Images & Videos) */
+.contribution-section img, 
+.contribution-section video {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 5px;
+    border: 3px solid #555;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 🔹 Responsive Design */
+@media (max-width: 768px) {
+    /* 🔹 Stack Overview Media Below Text */
+    .overview-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .overview-media {
+        max-width: 100%;
+    }
+
+    .overview-text {
+        font-size: 14px;
+    }
+
+    /* 🔹 Contributions Media Stacked */
+    .contribution-media {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* 🔹 Adjust Project Details for Smaller Screens */
+    .project-details-container {
+        width: 90%;
+        height: auto;
+        max-height: 90vh;
+    }
+
+    /* 🔹 Adjust Category Menu for Mobile */
+    .categories-menu {
+        width: 100%;
+        border-right: none;
+        border-bottom: 4px solid #777;
+        flex-direction: row;
+        justify-content: center;
+        overflow-x: auto;
+        padding: 10px 0;
+    }
+
+    .category-item {
+        padding: 8px 15px;
+        white-space: nowrap;
+    }
 }
