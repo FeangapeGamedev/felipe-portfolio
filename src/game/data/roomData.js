@@ -150,10 +150,10 @@ export const roomData = [
         id: "project1",
         type: "project",
         position: [-5, 0.5, -5],
-        rotation: [0, 0, 0],
+        rotation: [0, 55, 0],
         label: "Project One",
         model: "/src/assets/3dModels/Construction.glb",
-        scale: [0.5, 0.65, 0.5],
+        scale: [0.52, 0.52, 0.52],
         userData: { raycastable: true, isInteractive: true },
       },
     ],
@@ -165,6 +165,14 @@ export const roomData = [
         rotation: [0, 0, 0],
         scale: [1.5, 0.2, 1.5],
         model: "src/assets/3dModels/display_stand.glb",
+      },
+      {
+        id: "ceilingLight",
+        type: "prop",
+        position: [-5, 5, -5],
+        rotation: [3.15, 0, 0],
+        scale: [2, 2, 2],
+        model: "src/assets/3dModels/Octagonal concrete lamp.glb",
       },
       {
         id: "plant_1",
@@ -199,7 +207,18 @@ export const roomData = [
         model: "src/assets/3dModels/Indoor_Plant_two.glb",
       }
     ], 
-    lights: [],
+    lights: [
+      {
+        position: [-5, 4.5, -5],       // Elevated, like a ceiling/streetlight
+        targetPosition: [-5, 0, -5], // Aiming downwards towards the floor
+        intensity: 20,             // Bright but not overpowering
+        color: 0xffcc88,            // Warm yellow light
+        angle: Math.PI / 2,         // Narrower beam for a focused effect
+        penumbra: 0.4,              // Soft edges
+        decay: 5,                   // Light fades naturally
+        distance: 40,               // Reasonable range for room lighting
+      },
+    ],
   },
   {
     id: 3,
