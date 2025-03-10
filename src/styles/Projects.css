@@ -1,15 +1,15 @@
-/* Projects Container */
+/* 🔹 Projects Container */
 .projects-container {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 900px;
+    width: 950px;
     height: auto;
-    min-height: 700px;
+    min-height: 750px;
     background: #1a1a1a;
     border: 8px solid #555;
-    padding: 10px;
+    padding: 20px;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
     font-family: "Press Start 2P", sans-serif;
     color: white;
@@ -20,28 +20,27 @@
     z-index: 1000;
 }
 
-/* Header */
+/* 🔹 Header */
 .projects-header {
     width: 100%;
-  background: #333;
-  padding: 8px;
-  font-size: 14px;
-  color: #ddd;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 4px solid #777;
-  position: relative;
+    background: #333;
+    padding: 12px;
+    font-size: 16px;
+    color: #ddd;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid #777;
 }
 
-/* Close Button */
+/* 🔹 Close Button */
 .close-button {
     background: #a00;
     color: white;
     border: 2px solid #600;
-    padding: 5px 10px;
-    font-size: 12px;
+    padding: 6px 12px;
+    font-size: 14px;
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
 }
@@ -51,28 +50,25 @@
     border-color: #cc0000;
 }
 
-/* Projects Grid */
+/* 🔹 Projects Grid - Always 2 Columns */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(250px, 1fr)); /* ✅ Always 2 columns, expandable width */
-    column-gap: 60px; /* ✅ Adds spacing between columns */
-    row-gap: 20px; /* ✅ Adds spacing between rows */
-    width: fit-content; /* ✅ Prevents unnecessary extra space */
-    padding: 20px;
-    justify-content: center; /* ✅ Ensures grid stays centered */
-    justify-items: center; /* ✅ Centers items inside grid cells */
+    grid-template-columns: repeat(2, 1fr); /* ✅ Forces 2 projects per row */
+    gap: 30px; /* ✅ Ensures proper spacing */
+    width: 100%;
+    max-width: 800px; /* ✅ Prevents excessive stretching */
+    padding: 30px;
+    justify-content: center;
     align-items: center;
-    margin: 0 auto; /* ✅ Ensures full centering */
 }
 
-/* Project Frame */
+/* 🔹 Project Frame */
 .project-frame {
-    width: 100%; /* ✅ Takes up full grid space */
-    max-width: 300px; /* ✅ Prevents frames from becoming too large */
-    height: 260px; /* ✅ Keeps height consistent */
+    width: 100%;
+    max-width: 340px;
     background: #222;
     border: 4px solid #777;
-    padding: 15px; /* ✅ Adds internal spacing instead of `gap` */
+    padding: 20px;
     text-align: center;
     font-size: 14px;
     font-family: "Press Start 2P", sans-serif;
@@ -83,31 +79,68 @@
     justify-content: space-between;
     transition: transform 0.2s ease, background 0.2s ease;
     cursor: pointer;
-    text-decoration: none;
+    gap: 12px;
 }
 
-/* Hover Effect */
+/* 🔹 Hover Effect */
 .project-frame:hover {
-    transform: scale(1.1);
+    transform: scale(1.06);
     background: #333;
 }
 
-/* Project Image */
+/* 🔹 Project Image */
 .project-image {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+    width: 100%;
+    max-width: 240px;
+    height: 190px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 3px solid #555;
 }
 
-/* Project Title */
+/* 🔹 Project Title */
 .project-title {
-    font-size: 12px;
+    font-size: 14px;
     text-transform: uppercase;
+    margin-top: 12px;
 }
 
-/* Project Description */
+/* 🔹 Project Description */
 .project-description {
-    font-size: 10px;
+    font-size: 12px;
     color: #bbb;
+    text-align: center;
+    margin-top: 5px;
+    line-height: 1.5;
 }
 
+/* 🔹 Responsive Adjustments */
+@media (max-width: 768px) {
+    .projects-container {
+        width: 90%;
+        min-height: auto;
+    }
+
+    .projects-grid {
+        grid-template-columns: repeat(1, 1fr); /* ✅ Stack to 1 column on smaller screens */
+        gap: 20px;
+    }
+
+    .project-frame {
+        max-width: 280px;
+        padding: 15px;
+    }
+
+    .project-image {
+        max-width: 200px;
+        height: 160px;
+    }
+
+    .project-title {
+        font-size: 13px;
+    }
+
+    .project-description {
+        font-size: 11px;
+    }
+}

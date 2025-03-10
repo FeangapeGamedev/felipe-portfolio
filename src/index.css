@@ -16,7 +16,18 @@ body {
   position: relative;
 }
 
-/* Subtle Noise Texture (For Classic Horror Feel) */
+/* 🔹 Titles & Subtitles (Keep Bright White) */
+h1, h2, h3 {
+  color: white; /* Keeps strong contrast for headings */
+  text-transform: uppercase;
+}
+
+/* 🔹 Body Text (Slightly Grey for Softer Readability) */
+body, p, span, li {
+  color: #CCCCCC; /* Softer gray for general text */
+}
+
+/* 🔹 Subtle Noise Texture (For Classic Horror Feel) */
 body::before {
   content: "";
   position: absolute;
@@ -30,7 +41,7 @@ body::before {
   mix-blend-mode: overlay;
 }
 
-/* Subtle, Static Grayish Fog */
+/* 🔹 Subtle, Static Grayish Fog */
 body::after {
   content: "";
   position: absolute;
@@ -44,7 +55,7 @@ body::after {
   pointer-events: none;
 }
 
-/* Cyan Glow in the Center */
+/* 🔹 Cyan Glow in the Center */
 body::before {
   content: "";
   position: absolute;
@@ -58,7 +69,7 @@ body::before {
   opacity: 0.6;
 }
 
-/* Root container */
+/* 🔹 Root container */
 #root {
   width: 100vw;
   height: 100vh;

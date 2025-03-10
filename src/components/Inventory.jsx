@@ -43,7 +43,7 @@ const Inventory = ({ onClose }) => {
     <div className="inventory-container">
       {/* Upper Ribbon */}
       <div className="inventory-ribbon">
-        <span>INVENTORY</span>
+        <span >INVENTORY</span>
         <button className="close-button" onClick={onClose}>X</button>
       </div>
 
@@ -52,12 +52,12 @@ const Inventory = ({ onClose }) => {
         {/* Left Column: Avatar & Active Skills */}
         <div className="left-column">
           <div className="frame-container avatar-frame" onClick={() => setSelectedTool(null)}>
-            <p className="frame-title">Avatar</p>
+            <h4 className="frame-title">Avatar</h4>
             <img src="/profile.jpg" alt="Avatar" className="avatar-img" />
           </div>
 
           <div className="frame-container active-skills-container">
-            <p className="frame-title">Active Skills</p>
+            <h4 className="frame-title">Active Skills</h4>
             <ul className="active-skills-list">
               {["Game Design", "System Design", "User Experience Design", "Gameplay Programming", "Modeling"].map((skill, index) => (
                 <li key={index}>{skill}</li>
@@ -69,7 +69,7 @@ const Inventory = ({ onClose }) => {
         {/* Right Column: Tools Section */}
         <div className="right-column">
           <div className="frame-container tools-frame">
-            <p className="frame-title">Tools</p>
+            <h4 className="frame-title">Tools</h4>
             <div className="tools-grid">
               {tools.map((tool) => (
                 <div key={tool.name} className="tool-item" onClick={() => setSelectedTool(tool)}>
@@ -83,7 +83,7 @@ const Inventory = ({ onClose }) => {
 
       {/* Description Section */}
       <div className="frame-container description-frame">
-        <p className="frame-title">Description</p>
+        <h4 className="frame-title">Description</h4>
         <div className="description-content">
           {selectedTool ? <p>{selectedTool.description}</p> : aboutMe}
         </div>

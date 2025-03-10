@@ -27,8 +27,8 @@ const Projects = ({ onClose, onProjectClick }) => {
             onClick={() => handleProjectClick(project.id)}
           >
             <img src={project.image} alt={project.title} className="project-image" />
-            <span className="project-title">{project.title}</span>
-            <span className="project-description">{project.description}</span>
+            <h3 className="project-title">{project.title}</h3>
+            <p className="project-description">{project.description}</p>
           </div>
         ))}
       </div>
