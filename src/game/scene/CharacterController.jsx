@@ -2,12 +2,10 @@ import { useThree } from "@react-three/fiber";
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 import { useGame } from "../state/GameContext";
-import { GameManager } from "../state/GameManager";
 
 export const CharacterController = ({ isPaused }) => {
   const { scene, camera, gl } = useThree();
   const { setTargetPosition, targetPosition } = useGame();
-  const { handleInteraction } = GameManager();
 
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -52,7 +50,6 @@ export const CharacterController = ({ isPaused }) => {
               // ✅ If already colliding with this object, just interact and skip movement
               if (collidingObject === object.userData.id) {
                 console.log(`✅ Already near ${object.userData.id}, skipping movement.`);
-                handleInteraction(object.userData.id, object.userData.type);
                 return;
               }
 
@@ -92,23 +89,11 @@ export const CharacterController = ({ isPaused }) => {
       }
     };
 
-    const onKeyDown = (event) => {
-      if (isPaused) return;
-
-      // 🛠️ If Space is pressed and we're near an object, interact with it
-      if (event.code === "Space" && currentInteractive) {
-        console.log(`🔹 Space Pressed - Executing stored interaction for ${currentInteractive.id}`);
-        handleInteraction(currentInteractive.id, currentInteractive.type);
-      }
-    };
-
     window.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("keydown", onKeyDown);
     };
-  }, [camera, gl, scene, setTargetPosition, handleInteraction, isPaused, currentInteractive, collidingObject, lastClickedObject]);
+  }, [camera, gl, scene, setTargetPosition, isPaused, currentInteractive, collidingObject, lastClickedObject]);
 
   // ✅ Handle collision events to track when the player is near an object
   useEffect(() => {

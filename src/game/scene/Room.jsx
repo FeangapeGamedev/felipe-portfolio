@@ -172,6 +172,7 @@ export const Room = ({ isPaused, onProjectSelect }) => {
           model={item.model}
           transparency={item.transparency}
           onProjectSelect={item.type === "project" ? onProjectSelect : undefined}
+          targetRoomId={item.targetRoomId} // Pass targetRoomId to InteractiveObject
         />
       ))}
 

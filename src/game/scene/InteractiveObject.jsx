@@ -4,6 +4,7 @@ import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
 import vertexShader from "../../shaders/vertexShader.glsl";
 import fragmentShader from "../../shaders/fragmentShader.glsl";
+import { useGame } from "../state/GameContext";
 
 const InteractiveObject = ({
   id,
@@ -16,10 +17,12 @@ const InteractiveObject = ({
   label = "Press Space to activate",
   isPaused,
   onProjectSelect,
+  targetRoomId, // Add targetRoomId prop
 }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false); // ✅ Track hover state
+  const { changeRoom } = useGame(); // ✅ Use changeRoom from GameContext
 
   // ✅ Load the model
   const { scene } = useGLTF(model, true);
@@ -36,6 +39,7 @@ const InteractiveObject = ({
         label,
         raycastable: true,
         isInteractive: true,
+        targetRoomId, // Add targetRoomId to userData
       };
 
       scene.userData = userData;
@@ -46,7 +50,7 @@ const InteractiveObject = ({
         }
       });
     }
-  }, [scene, id, type, label]);
+  }, [scene, id, type, label, targetRoomId]);
 
   // ✅ Shader Material for Hover Effect
   const shaderMaterial = new THREE.ShaderMaterial({
@@ -94,6 +98,15 @@ const InteractiveObject = ({
       } else {
         console.error(`❌ onProjectSelect is not a function or is undefined`);
       }
+    } else if (type === "door") {
+      console.log(`🚪 Interacting with door: ${id}`);
+      if (targetRoomId) {
+        changeRoom(targetRoomId); // ✅ Change room using targetRoomId
+      } else {
+        console.error(`❌ targetRoomId is not defined for door: ${id}`);
+      }
+    } else {
+      console.warn(`⚠️ Unknown interaction type: ${type}`);
     }
   };
 
@@ -118,10 +131,14 @@ const InteractiveObject = ({
       scale={scale}
       onCollisionEnter={(event) => {
         if (event.other.rigidBodyObject?.name === "character") {
+          console.log(`✅ Collision Detected with: ${id}`);
           setIsNear(true);
         }
       }}
-      onCollisionExit={() => setIsNear(false)}
+      onCollisionExit={() => {
+        console.log(`❌ Collision Lost with: ${id}`);
+        setIsNear(false);
+      }}
       onPointerEnter={() => setIsHovered(true)} // ✅ Hover Effect
       onPointerLeave={() => setIsHovered(false)}
     >
