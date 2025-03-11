@@ -14,7 +14,7 @@ const InteractiveObject = ({
   scale,
   model,
   transparency = 1,
-  label = "Press Space to activate",
+  label = "Press Y to activate",
   isPaused,
   onProjectSelect,
   targetRoomId, // Add targetRoomId prop
@@ -22,6 +22,7 @@ const InteractiveObject = ({
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
   const [isHovered, setIsHovered] = useState(false); // ✅ Track hover state
+  const [labelVisible, setLabelVisible] = useState(true); // Track label visibility
   const { changeRoom } = useGame(); // ✅ Use changeRoom from GameContext
 
   // ✅ Load the model
@@ -112,8 +113,12 @@ const InteractiveObject = ({
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (isNear && event.code === "Space" && !isPaused) {
-        handleInteraction();
+      if (isNear && !isPaused) {
+        if (event.code === "KeyY") {
+          handleInteraction();
+        } else if (event.code === "KeyN") {
+          setLabelVisible(false);
+        }
       }
     };
 
@@ -133,6 +138,7 @@ const InteractiveObject = ({
         if (event.other.rigidBodyObject?.name === "character") {
           console.log(`✅ Collision Detected with: ${id}`);
           setIsNear(true);
+          setLabelVisible(true); // Re-enable label on collision enter
         }
       }}
       onCollisionExit={() => {
@@ -143,7 +149,11 @@ const InteractiveObject = ({
       onPointerLeave={() => setIsHovered(false)}
     >
       <primitive object={scene} scale={scale} />
-      {isNear && !isPaused && <Html position={[0, 1.2, 0]}><div className="object-label">{label}</div></Html>}
+      {isNear && !isPaused && labelVisible && (
+        <Html position={[0, 1.2, 0]}>
+          <div className="object-label">{label}</div>
+        </Html>
+      )}
     </RigidBody>
   );
 };

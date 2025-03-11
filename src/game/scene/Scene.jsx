@@ -48,7 +48,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
         />
       ))}
 
-      <Physics debug>
+      <Physics>
         <Room
           key={`room-${currentRoom.id}`}
           isPaused={isPaused}
