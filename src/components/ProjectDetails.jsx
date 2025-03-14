@@ -11,6 +11,19 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
   const [activeCategory, setActiveCategory] = useState("overview");
   const [selectedContribution, setSelectedContribution] = useState(null);
 
+  const renderTextWithFormatting = (text) => {
+    const lines = text.split("\n");
+    return lines.map((line, index) => {
+      if (line.trim() === "") {
+        return <br key={index} />;
+      }
+      const formattedLine = line
+        .replace(/#### (.*)/g, "<h4>$1</h4>") // Subtitles
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Bold text
+      return <p key={index} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+    });
+  };
+
   return (
     <div className="overlay">
       <div className="project-details-container">
@@ -81,9 +94,7 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
 
                   {/* ✅ Overview Text (Keeps the fix for line breaks) */}
                   <div className="overview-text">
-                    {project.overview.split("\n").map((line, index) =>
-                      line.trim() !== "" ? <p key={index}>{line}</p> : <br key={index} />
-                    )}
+                    {renderTextWithFormatting(project.overview)}
                   </div>
                 </div>
               )}
@@ -116,7 +127,7 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
 
                   {selectedContribution.content.map((section, index) => (
                     <div key={index} className="contribution-section">
-                      {section.type === "text" && <p>{section.value}</p>}
+                      {section.type === "text" && renderTextWithFormatting(section.value)}
                       {section.type === "image" && <img src={section.value} alt={selectedContribution.title} />}
                       {section.type === "video" && (
                         <video controls>
@@ -132,7 +143,11 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
               {/* 🔹 Media Section */}
               {activeCategory === "media" && (
                 <div>
-                  <img src={project.media} alt="Project Media" />
+                  <div className="media-link">
+                    <a href="https://www.youtube.com/playlist?list=PLFZuofY8ahtdBD438Uat_QqovD9h6tLpz" target="_blank" rel="noopener noreferrer">
+                      Watch more on YouTube
+                    </a>
+                  </div>
                 </div>
               )}
             </div>
