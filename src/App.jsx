@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Scene } from "./game/scene/Scene"; // ✅ Ensure correct path
+import { Physics } from "@react-three/rapier"; // Import Physics component
+import Scene from "./game/scene/Scene"; // Ensure correct path
 import Navbar from "./components/Navbar";
 import Inventory from "./components/Inventory";
 import Contact from "./components/Contact";
 import Projects from "./components/Projects";
 import ProjectDetails from "./components/ProjectDetails";
-import { projects } from "./game/data/projectsData"; // ✅ Ensure correct path
+import CodeFrame from "./components/CodeFrame"; // Import CodeFrame component
+import { projects } from "./game/data/projectsData"; // Ensure correct path
+import { useGame } from "./game/state/GameContext"; // Import useGame
 
 function App() {
   const [activeSection, setActiveSection] = useState("game");
   const [selectedProject, setSelectedProject] = useState(null);
   const [disableBackButton, setDisableBackButton] = useState(false);
+  const [showCodeFrame, setShowCodeFrame] = useState(false); // even thou showCodeFrame is not used we need to import it
+  const [doorPassKey] = useState("1958"); // Default passkey
+  const { changeRoom } = useGame(); // Use changeRoom from GameContext
 
   const isPaused = activeSection !== "game";
 
@@ -20,6 +26,17 @@ function App() {
     setSelectedProject(project);
     setActiveSection("project-details");
     setDisableBackButton(true);
+  };
+
+  const handleShowCodeFrame = () => {
+    setShowCodeFrame(true);
+    setActiveSection("code-frame");
+  };
+
+  const handleCorrectPassKey = () => {
+    // Logic to move to the next room
+    console.log("Correct passkey entered. Moving to the next room.");
+    changeRoom(3); // Use the correct room ID
   };
 
   return (
@@ -53,6 +70,14 @@ function App() {
           }}
         />
       )}
+      {activeSection === "code-frame" && (
+        <CodeFrame
+          onClose={() => setActiveSection("game")}
+          className="popup-frame"
+          doorPassKey={doorPassKey}
+          onCorrectPassKey={handleCorrectPassKey}
+        />
+      )} {/* Display CodeFrame */}
 
       {/* 🔹 Navbar */}
       <Navbar
@@ -63,7 +88,9 @@ function App() {
 
       {/* 🔹 Main Game Canvas */}
       <Canvas shadows>
-        <Scene isPaused={isPaused} onProjectSelect={handleProjectSelect} />
+        <Physics>
+          <Scene isPaused={isPaused} onProjectSelect={handleProjectSelect} onShowCodeFrame={handleShowCodeFrame} />
+        </Physics>
       </Canvas>
     </>
   );

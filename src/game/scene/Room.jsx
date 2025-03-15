@@ -7,7 +7,7 @@ import PropObject from "./propObjects";
 import SpotLightManager from "../state/SpotLightManager"; // Update import
 import ThreeDText from "../../components/ThreeDText"; // ✅ Use correct relative path
 
-export const Room = ({ isPaused, onProjectSelect }) => {
+const Room = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
   const { currentRoom } = useGame();
   const wallThickness = 0.5;
   const floorThickness = 0.2;
@@ -173,6 +173,7 @@ export const Room = ({ isPaused, onProjectSelect }) => {
           transparency={item.transparency}
           onProjectSelect={item.type === "project" ? onProjectSelect : undefined}
           targetRoomId={item.targetRoomId} // Pass targetRoomId to InteractiveObject
+          onShowCodeFrame={item.type === "door" && item.id === "door2" ? onShowCodeFrame : undefined} // Pass onShowCodeFrame to InteractiveObject
         />
       ))}
 
@@ -217,3 +218,5 @@ export const Room = ({ isPaused, onProjectSelect }) => {
     </group>
   );
 };
+
+export default Room;

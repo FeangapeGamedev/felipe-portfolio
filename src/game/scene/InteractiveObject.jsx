@@ -18,6 +18,8 @@ const InteractiveObject = ({
   isPaused,
   onProjectSelect,
   targetRoomId, // Add targetRoomId prop
+  onShowCodeFrame, // Add onShowCodeFrame prop
+
 }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
@@ -100,8 +102,9 @@ const InteractiveObject = ({
         console.error(`❌ onProjectSelect is not a function or is undefined`);
       }
     } else if (type === "door") {
-      console.log(`🚪 Interacting with door: ${id}`);
-      if (targetRoomId) {
+      if (id === "door2") {
+        onShowCodeFrame(); // Show CodeFrame instead of changing room
+      } else if (targetRoomId) {
         changeRoom(targetRoomId); // ✅ Change room using targetRoomId
       } else {
         console.error(`❌ targetRoomId is not defined for door: ${id}`);
@@ -127,34 +130,36 @@ const InteractiveObject = ({
   }, [isNear, isPaused]);
 
   return (
-    <RigidBody
-      ref={objectRef}
-      colliders="cuboid"
-      type="fixed"
-      position={position}
-      rotation={rotation}
-      scale={scale}
-      onCollisionEnter={(event) => {
-        if (event.other.rigidBodyObject?.name === "character") {
-          console.log(`✅ Collision Detected with: ${id}`);
-          setIsNear(true);
-          setLabelVisible(true); // Re-enable label on collision enter
-        }
-      }}
-      onCollisionExit={() => {
-        console.log(`❌ Collision Lost with: ${id}`);
-        setIsNear(false);
-      }}
-      onPointerEnter={() => setIsHovered(true)} // ✅ Hover Effect
-      onPointerLeave={() => setIsHovered(false)}
-    >
-      <primitive object={scene} scale={scale} />
-      {isNear && !isPaused && labelVisible && (
-        <Html position={[0, 1.2, 0]}>
-          <div className="object-label">{label}</div>
-        </Html>
-      )}
-    </RigidBody>
+    <>
+      <RigidBody
+        ref={objectRef}
+        colliders="cuboid"
+        type="fixed"
+        position={position}
+        rotation={rotation}
+        scale={scale}
+        onCollisionEnter={(event) => {
+          if (event.other.rigidBodyObject?.name === "character") {
+            console.log(`✅ Collision Detected with: ${id}`);
+            setIsNear(true);
+            setLabelVisible(true); // Re-enable label on collision enter
+          }
+        }}
+        onCollisionExit={() => {
+          console.log(`❌ Collision Lost with: ${id}`);
+          setIsNear(false);
+        }}
+        onPointerEnter={() => setIsHovered(true)} // ✅ Hover Effect
+        onPointerLeave={() => setIsHovered(false)}
+      >
+        <primitive object={scene} scale={scale} />
+        {isNear && !isPaused && labelVisible && (
+          <Html position={[0, 1.2, 0]}>
+            <div className="object-label">{label}</div>
+          </Html>
+        )}
+      </RigidBody>
+    </>
   );
 };
 

@@ -3,12 +3,11 @@ import { OrthographicCamera } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import { useGame } from "../state/GameContext";
 import { CharacterController } from "./CharacterController";
-import { Room } from "./Room";
 import { Character } from "./Character";
 import SpotLightManager from "../state/SpotLightManager"; // Update import
+import Room from './Room'; // Ensure correct import
 
-
-export const Scene = ({ isPaused, onProjectSelect }) => {
+const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
   const [initialPosition, setInitialPosition] = useState(null);
 
@@ -53,6 +52,7 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
           key={`room-${currentRoom.id}`}
           isPaused={isPaused}
           onProjectSelect={onProjectSelect}
+          onShowCodeFrame={onShowCodeFrame}
         />
 
         {initialPosition && (
@@ -64,3 +64,5 @@ export const Scene = ({ isPaused, onProjectSelect }) => {
     </group>
   );
 };
+
+export default Scene;
