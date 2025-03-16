@@ -95,7 +95,7 @@ const Contact = ({ onClose }) => {
                 <div className="contact-frame contact-resume">
                     <span>Download Resume</span>
                     <div className="resume-container" onClick={() => window.open("/your-resume.pdf", "_blank")}>
-                        <img src="public/portfolio_16672960.png" alt="Resume Icon" className="resume-icon" />
+                        <img src="/portfolio_16672960.png" alt="Resume Icon" className="resume-icon" />
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@ const Contact = ({ onClose }) => {
                             className="social-box linkedin-box" 
                             onClick={() => window.open("https://www.linkedin.com/in/felipe-andres-garcia-pereira-58ab5a347", "_blank")}
                         >
-                            <img src="/public/InBug-White.png" alt="LinkedIn Icon" className="social-icon linkedin-icon" />
+                            <img src="/InBug-White.png" alt="LinkedIn Icon" className="social-icon linkedin-icon" />
                         </div>
                     </div>
                 </div>
