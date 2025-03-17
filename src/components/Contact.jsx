@@ -1,4 +1,4 @@
-import { useRef, useState, lazy, Suspense } from "react";
+import { useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import "../styles/Contact.css";
 
@@ -59,6 +59,7 @@ const Contact = ({ onClose }) => {
                     onChange={handleChange}
                     required
                     placeholder="Enter your name"
+                    autoComplete="name"
                 />
 
                 <label htmlFor="contact-email">Email</label>
@@ -70,6 +71,7 @@ const Contact = ({ onClose }) => {
                     onChange={handleChange}
                     required
                     placeholder="Enter your email"
+                    autoComplete="email"
                 />
 
                 <label htmlFor="contact-message">Your Message</label>
@@ -81,6 +83,7 @@ const Contact = ({ onClose }) => {
                     required
                     rows="4"
                     placeholder="Enter your message"
+                    autoComplete="off"
                 />
 
                 <button type="submit" disabled={loading}>
