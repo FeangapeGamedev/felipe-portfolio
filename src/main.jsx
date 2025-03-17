@@ -1,13 +1,17 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import { GameProvider } from "./game/state/GameContext"; // ✅ Import GameProvider
+import { GameProvider } from "./game/state/GameContext";
 import "./index.css";
+
+// ✅ Lazy load App.jsx
+const App = lazy(() => import("./App"));
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <GameProvider> {/* ✅ Wrap everything inside GameProvider */}
-      <App />
+    <GameProvider>
+      <Suspense fallback={<div>Loading...</div>}>
+        <App />
+      </Suspense>
     </GameProvider>
   </React.StrictMode>
 );

@@ -26,7 +26,12 @@ const Projects = ({ onClose, onProjectClick }) => {
             className="project-frame"
             onClick={() => handleProjectClick(project.id)}
           >
-            <img src={project.image} alt={project.title} className="project-image" />
+            <img
+              src={project.image}
+              alt={project.title}
+              className="project-image"
+              loading="lazy" // ✅ Lazy loads images
+            />
             <h3 className="project-title">{project.title}</h3>
             <p className="project-description">{project.description}</p>
           </div>

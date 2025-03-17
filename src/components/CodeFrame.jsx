@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import '../styles/CodeFrame.css';
+import React, { useState, lazy, Suspense } from "react";
+import "../styles/CodeFrame.css";
 
 const CodeFrame = ({ onClose, className, doorPassKey, onCorrectPassKey }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value)) { // Only allow digits
+    if (/^\d*$/.test(value)) {
       setInputValue(value);
     }
   };
 
   const handleSubmit = () => {
     if (inputValue === doorPassKey) {
-      onCorrectPassKey(); // Call the function to move to the next room
+      onCorrectPassKey();
     } else {
-      console.log('Incorrect passkey');
+      console.log("Incorrect passkey");
     }
-    onClose(); // Close the frame after submission
+    onClose();
   };
 
   return (

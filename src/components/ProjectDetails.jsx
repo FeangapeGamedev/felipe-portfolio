@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "../styles/ProjectDetails.css"; // Ensure this file exists
+import React, { useState, lazy, Suspense } from "react";
+import "../styles/ProjectDetails.css"; 
 
 const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
   const categories = [
@@ -18,8 +18,8 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
         return <br key={index} />;
       }
       const formattedLine = line
-        .replace(/#### (.*)/g, "<h4>$1</h4>") // Subtitles
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); // Bold text
+        .replace(/#### (.*)/g, "<h4>$1</h4>") 
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       return <p key={index} dangerouslySetInnerHTML={{ __html: formattedLine }} />;
     });
   };
@@ -48,7 +48,7 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
                 className={`category-item ${activeCategory === category.id ? "active" : ""}`}
                 onClick={() => {
                   setActiveCategory(category.id);
-                  setSelectedContribution(null); // Reset selection when switching categories
+                  setSelectedContribution(null);
                 }}
               >
                 {category.label}
@@ -59,8 +59,6 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
           {/* Right Panel - Content Display */}
           <div className="content-display">
             <div className="scrollable-content">
-
-              {/* 🔹 Overview - Video on Top, Text Below */}
               {activeCategory === "overview" && (
                 <div className="overview-container">
                   {project.overview_media && (
@@ -76,30 +74,26 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
                             allowFullScreen
                           ></iframe>
 
-                          {/* 🔹 Show Disclaimer Below the Video */}
                           {project.disclaimer && (
                             <p className="video-disclaimer">{project.disclaimer}</p>
                           )}
                         </>
                       ) : project.overview_media.endsWith(".mp4") ? (
-                        <video controls>
+                        <video controls preload="metadata">
                           <source src={project.overview_media} type="video/mp4" />
-                          Your browser does not support the video tag.
                         </video>
                       ) : (
-                        <img src={project.overview_media} alt="Overview" />
+                        <img src={project.overview_media} alt="Overview" loading="lazy" />
                       )}
                     </div>
                   )}
 
-                  {/* ✅ Overview Text (Keeps the fix for line breaks) */}
                   <div className="overview-text">
                     {renderTextWithFormatting(project.overview)}
                   </div>
                 </div>
               )}
 
-              {/* 🔹 My Contributions List */}
               {activeCategory === "my_contributions" && !selectedContribution && (
                 <div>
                   <ul className="contributions-list">
@@ -107,7 +101,6 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
                       const contribution = project.my_contributions[key];
                       return (
                         <li key={key} className="contribution-item" onClick={() => setSelectedContribution(contribution)}>
-                          {/* ✅ Use h4 for title */}
                           <h4 className="contribution-title">{contribution.title}</h4>
                           <p>{contribution.short_description}</p>
                         </li>
@@ -117,22 +110,18 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
                 </div>
               )}
 
-              {/* 🔹 Detailed Contribution View - Alternating Text & Media */}
               {selectedContribution && (
                 <div className="contribution-details">
                   <button className="back-to-contributions" onClick={() => setSelectedContribution(null)}>← Back to Contributions</button>
-
-                  {/* ✅ Change title to h4 */}
                   <h4 className="contribution-title">{selectedContribution.title}</h4>
 
                   {selectedContribution.content.map((section, index) => (
                     <div key={index} className="contribution-section">
                       {section.type === "text" && renderTextWithFormatting(section.value)}
-                      {section.type === "image" && <img src={section.value} alt={selectedContribution.title} />}
+                      {section.type === "image" && <img src={section.value} alt={selectedContribution.title} loading="lazy" />}
                       {section.type === "video" && (
-                        <video controls>
+                        <video controls preload="metadata">
                           <source src={section.value} type="video/mp4" />
-                          Your browser does not support the video tag.
                         </video>
                       )}
                     </div>
@@ -140,7 +129,6 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
                 </div>
               )}
 
-              {/* 🔹 Media Section */}
               {activeCategory === "media" && (
                 <div>
                   <div className="media-link">

@@ -7,15 +7,23 @@ import { NeonShader } from "../shaders/neonShader";
 
 extend({ TextGeometry });
 
+// ✅ Font Cache to Prevent Multiple Loads
+const fontCache = new Map();
+
 const ThreeDText = ({ text, position, rotation, color, size, height, isNeon = false }) => {
   const [font, setFont] = useState(null);
   const [textMesh, setTextMesh] = useState(null);
 
   useEffect(() => {
-    const loader = new FontLoader();
-    loader.load("/Kind Regards_Regular.json", (loadedFont) => {
-      setFont(loadedFont);
-    });
+    if (!fontCache.has("KindRegards")) {
+      const loader = new FontLoader();
+      loader.load("/Kind Regards_Regular.json", (loadedFont) => {
+        fontCache.set("KindRegards", loadedFont);
+        setFont(loadedFont);
+      });
+    } else {
+      setFont(fontCache.get("KindRegards"));
+    }
   }, []);
 
   useEffect(() => {
@@ -37,9 +45,9 @@ const ThreeDText = ({ text, position, rotation, color, size, height, isNeon = fa
       if (isNeon) {
         material = new THREE.ShaderMaterial({
           uniforms: {
-            color: { value: new THREE.Color(color) }, // ✅ Pass color to shader
-            intensity: { value: 3.5 }, // ✅ Adjust bloom intensity
-            time: { value: 0.0 }, // ✅ Controls flickering
+            color: { value: new THREE.Color(color) },
+            intensity: { value: 3.5 },
+            time: { value: 0.0 },
           },
           vertexShader: NeonShader.vertexShader,
           fragmentShader: NeonShader.fragmentShader,
@@ -57,7 +65,7 @@ const ThreeDText = ({ text, position, rotation, color, size, height, isNeon = fa
 
   useFrame(({ clock }) => {
     if (isNeon && textMesh) {
-      textMesh.material.uniforms.time.value = clock.elapsedTime; // Flickering Effect
+      textMesh.material.uniforms.time.value = clock.elapsedTime;
     }
   });
 

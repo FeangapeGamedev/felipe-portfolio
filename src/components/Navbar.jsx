@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/Navbar.css"; // ✅ Import external styles
+import "../styles/Navbar.css";
 
 const Navbar = ({ onInventoryClick, onProjectsClick, onContactClick }) => {
   return (
@@ -8,41 +8,17 @@ const Navbar = ({ onInventoryClick, onProjectsClick, onContactClick }) => {
       <nav>
         <ul className="text-xs">
           <li>
-            <a 
-              href="#" 
-              className="about-button" // ✅ Keep class as "about-button"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                console.log("🔍 About (Inventory) Button Clicked!"); // ✅ Log for clarity
-                onInventoryClick(); // ✅ Still calls inventory function
-              }}
-            >
+            <a role="button" className="about-button" onClick={onInventoryClick}>
               About
             </a>
           </li>
           <li>
-            <a 
-              href="#" 
-              className="projects-button"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                console.log("🔍 Projects Button Clicked!");
-                onProjectsClick();
-              }}
-            >
+            <a role="button" className="projects-button" onClick={onProjectsClick}>
               Projects
             </a>
           </li>
           <li>
-            <a 
-              href="#" 
-              className="contact-button"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                console.log("🔍 Contact Button Clicked!");
-                onContactClick();
-              }}
-            >
+            <a role="button" className="contact-button" onClick={onContactClick}>
               Contact
             </a>
           </li>

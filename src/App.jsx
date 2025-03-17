@@ -1,28 +1,31 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Physics } from "@react-three/rapier"; // Import Physics component
-import Scene from "./game/scene/Scene"; // Ensure correct path
-import Navbar from "./components/Navbar";
-import Inventory from "./components/Inventory";
-import Contact from "./components/Contact";
-import Projects from "./components/Projects";
-import ProjectDetails from "./components/ProjectDetails";
-import CodeFrame from "./components/CodeFrame"; // Import CodeFrame component
-import { projects } from "./game/data/projectsData"; // Ensure correct path
-import { useGame } from "./game/state/GameContext"; // Import useGame
+import { Physics } from "@react-three/rapier"; 
+import { projects } from "./game/data/projectsData"; 
+import { useGame } from "./game/state/GameContext"; 
+import "./index.css";
+
+// ✅ Lazy Load Components
+const Scene = lazy(() => import("./game/scene/Scene"));
+const Navbar = lazy(() => import("./components/Navbar"));
+const Inventory = lazy(() => import("./components/Inventory"));
+const Contact = lazy(() => import("./components/Contact"));
+const Projects = lazy(() => import("./components/Projects"));
+const ProjectDetails = lazy(() => import("./components/ProjectDetails"));
+const CodeFrame = lazy(() => import("./components/CodeFrame"));
 
 function App() {
   const [activeSection, setActiveSection] = useState("game");
   const [selectedProject, setSelectedProject] = useState(null);
   const [disableBackButton, setDisableBackButton] = useState(false);
-  const [showCodeFrame, setShowCodeFrame] = useState(false); // even thou showCodeFrame is not used we need to import it
-  const [doorPassKey] = useState("1958"); // Default passkey
-  const { changeRoom } = useGame(); // Use changeRoom from GameContext
+  const [showCodeFrame, setShowCodeFrame] = useState(false);
+  const [doorPassKey] = useState("1958");
+  const { changeRoom } = useGame();
 
   const isPaused = activeSection !== "game";
 
   const handleProjectSelect = (projectId) => {
-    const project = projects.find(p => p.id === projectId);
+    const project = projects.find((p) => p.id === projectId);
     setSelectedProject(project);
     setActiveSection("project-details");
     setDisableBackButton(true);
@@ -34,13 +37,12 @@ function App() {
   };
 
   const handleCorrectPassKey = () => {
-    // Logic to move to the next room
     console.log("Correct passkey entered. Moving to the next room.");
-    changeRoom(3); // Use the correct room ID
+    changeRoom(3);
   };
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       {/* 🔹 Project Details Popup */}
       {activeSection === "project-details" && selectedProject && (
         <ProjectDetails
@@ -77,7 +79,7 @@ function App() {
           doorPassKey={doorPassKey}
           onCorrectPassKey={handleCorrectPassKey}
         />
-      )} {/* Display CodeFrame */}
+      )}
 
       {/* 🔹 Navbar */}
       <Navbar
@@ -92,7 +94,7 @@ function App() {
           <Scene isPaused={isPaused} onProjectSelect={handleProjectSelect} onShowCodeFrame={handleShowCodeFrame} />
         </Physics>
       </Canvas>
-    </>
+    </Suspense>
   );
 }
 
