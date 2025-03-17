@@ -59,7 +59,7 @@ Ensured accessibility and usability for both new and experienced users.
 Created an intuitive and visually consistent UI that integrates seamlessly with Trimble’s ecosystem.
             `
           },
-          { type: "video", value: "src/assets/Videos/Main UI.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/Main%20UI.mp4" }
         ]
       },
       run_mode_hud: {
@@ -89,7 +89,7 @@ Developed an efficient, customizable HUD that enhances workflow efficiency.
 Implemented an interactive system that allows users to toggle key information dynamically.
             `
           },
-          { type: "video", value: "src/assets/Videos/HUD.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/HUD.mp4" }
         ]
       },
       avatar_selection: {
@@ -118,7 +118,7 @@ Ensured visual and functional consistency across the UI.
 Developed a scalable system that allows future customization expansions.
             `
           },
-          { type: "video", value: "src/assets/Videos/Avatar selection.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/Avatar%20selection.mp4" }
         ]
       },
       interactive_objects: {
@@ -151,7 +151,7 @@ Integrated visual feedback to enhance user experience.
 Ensured logical object interaction across various scenarios.
             `
           },
-          { type: "video", value: "src/assets/Videos/object interaction.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/object%20interaction.mp4" }
         ]
       },
       character_controller: {
@@ -185,7 +185,7 @@ Ensured fluid animations that react dynamically to terrain.
 Designed a scalable system that can be extended with future updates.
             `
           },
-          { type: "video", value: "src/assets/Videos/Character controller.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/Character%20Controller.mp4" }
         ]
       },
       machine_animations: {
@@ -220,7 +220,7 @@ Integrated 7 fully animated construction machines, all crucial to the simulation
 Enhanced immersion with real-time feedback & environmental interactions.
             `
           },
-          { type: "video", value: "src/assets/Videos/Machine sped up.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/Machine%20sped%20up.mp4" }
         ]
       },
       three_wire_leveling: {
@@ -255,7 +255,7 @@ Integrated real-world measurement techniques into a digital environment.
 Enhanced user experience with terrain-adaptive ruler positioning.
             `
           },
-          { type: "video", value: "src/assets/Videos/threewire.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/threewire.mp4" }
         ]
       },
       stake_layout: {
@@ -288,7 +288,7 @@ Provided students with real-world stakeout training in a virtual setting.
 Integrated interactive feedback for accuracy tracking.
             `
           },
-          { type: "video", value: "src/assets/Videos/stakeout sped up.mp4" }
+          { type: "video", value: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/Videos/stakeout%20sped%20up.mp4" }
         ]
       }
     },

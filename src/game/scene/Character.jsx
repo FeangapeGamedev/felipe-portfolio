@@ -21,7 +21,7 @@ export const Character = ({ initialPosition, isPaused }) => {
   const turnSpeed = 4;
 
   // ✅ Load Character Model
-  const { scene: characterModel, animations } = useGLTF("src/assets/3dModels/ccCharacterAnimated.glb");
+  const { scene: characterModel, animations } = useGLTF("https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/ccCharacterAnimated.glb");
 
   useEffect(() => {
     if (characterModel && animations.length > 0) {

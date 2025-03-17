@@ -8,12 +8,12 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    floorTexture: "src/assets/textures/dark-rock-wall-seamless-texture-free.jpg",
+    floorTexture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/dark-rock-wall-seamless-texture-free.jpg",
     walls: {
-      back: { visible: true, texture: "src/assets/textures/spray-paint-wall-graffiti-texture-free.jpg" },
-      left: { visible: false, texture: "src/assets/textures/graffiti-wall-texture-free.jpg" },
-      right: { visible: false, texture: "src/assets/textures/graffiti-wall-texture-free.jpg" },
-      front: { visible: false, texture: "src/assets/textures/graffiti-wall-texture-free.jpg" },
+      back: { visible: true, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/spray-paint-wall-graffiti-texture-free.jpg" },
+      left: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/white-concrete-wall-textures.jpg" },
+      right: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/white-concrete-wall-textures.jpg" },
+      front: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/white-concrete-wall-textures.jpg" },
     },
     items: [
       {
@@ -23,7 +23,7 @@ export const roomData = [
         rotation: [0, -55, 0],
         targetRoomId: 2,
         label: "Enter the Portfolio? Y/N",
-        model: "/src/assets/3dModels/door/scene.gltf",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/door/scene.gltf",
         scale: [0.14, 0.11, 0.12],
         userData: { raycastable: true, isInteractive: true },
       },
@@ -35,7 +35,7 @@ export const roomData = [
         position: [-4, 1, 5],
         rotation: [0, 6, 0],
         scale: [3, 3, 3],
-        model: "src/assets/3dModels/1987_Mercedes_Benz_b_0304010346_texture.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/1987_Mercedes_Benz_b_0304010346_texture.glb",
       },
       {
         id: "suv",
@@ -43,7 +43,7 @@ export const roomData = [
         position: [5.5, 1.4, 5],
         rotation: [0, 6, 0],
         scale: [3, 3, 3],
-        model: "src/assets/3dModels/suv_truck.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/suv_truck.glb",
       },
       {
         id: "wallLights",
@@ -51,7 +51,7 @@ export const roomData = [
         position: [-4, 4, -7],
         rotation: [0, 0, 0],
         scale: [1, 1, 1],
-        model: "src/assets/3dModels/3_modern_street_wall__0305114438_texture.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/3_modern_street_wall__0305114438_texture.glb",
       },
       {
         id: "streetLights",
@@ -59,7 +59,7 @@ export const roomData = [
         position: [1.5, 0, 7],
         rotation: [0, 3, 0],
         scale: [25, 25, 25],
-        model: "src/assets/3dModels/lamp.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/lamp.glb",
       },
     ],
     lights: [
@@ -115,12 +115,12 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    floorTexture: "src/assets/textures/FloorTile2.jpg",
+    floorTexture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/FloorTile2.jpg",
     walls: {
-      back: { visible: true, texture: "src/assets/textures/grunge-wall-texture.jpg" },
-      left: { visible: true, texture: "src/assets/textures/grunge-wall-texture.jpg" },
-      right: { visible: false, texture: "src/assets/textures/grunge-wall-texture.jpg" },
-      front: { visible: false, texture: "src/assets/textures/grunge-wall-texture.jpg" },
+      back: { visible: true, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/grunge-wall-texture.jpg" },
+      left: { visible: true, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/grunge-wall-texture.jpg" },
+      right: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/grunge-wall-texture.jpg" },
+      front: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/grunge-wall-texture.jpg" },
     },
     items: [
       {
@@ -130,7 +130,7 @@ export const roomData = [
         rotation: [0, Math.PI, 0],
         targetRoomId: 3,
         label: "Enter mystery Room? Y/N",
-        model: "src/assets/3dModels/SciFiDoor.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/SciFiDoor.glb",
         scale: [0.9, 0.9, 0.9],
         userData: { raycastable: true, isInteractive: true },
       },
@@ -141,7 +141,7 @@ export const roomData = [
         rotation: [0, -55, 0],
         targetRoomId: 1,
         label: "Exit the Portfolio? Y/N",
-        model: "/src/assets/3dModels/door/scene.gltf",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/door/scene.gltf",
         scale: [0.14, 0.11, 0.12],
         transparency: 0.2,
         userData: { raycastable: true, isInteractive: true },
@@ -152,7 +152,7 @@ export const roomData = [
         position: [-5, 0.5, -5],
         rotation: [0, 0, 0],
         label: "View Trimble Virtual World? Y/N",
-        model: "/src/assets/3dModels/Construction.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Construction.glb",
         scale: [0.52, 0.52, 0.52],
         userData: { raycastable: true, isInteractive: true },
       },
@@ -164,7 +164,7 @@ export const roomData = [
         position: [-5.2, 0.2, -5.2],
         rotation: [0, 0, 0],
         scale: [1.5, 0.2, 1.5],
-        model: "src/assets/3dModels/display_stand.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/display_stand.glb",
       },
       {
         id: "ceilingLight",
@@ -172,7 +172,7 @@ export const roomData = [
         position: [-5, 5, -5],
         rotation: [3.15, 0, 0],
         scale: [2, 2, 2],
-        model: "src/assets/3dModels/Octagonal concrete lamp.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Octagonal%20concrete%20lamp.glb",
       },
       {
         id: "plant_1",
@@ -180,7 +180,7 @@ export const roomData = [
         position: [0, 1, -6.5],
         rotation: [0, 0, 0],
         scale: [1 ,1 ,1],
-        model: "src/assets/3dModels/Indoor_Plant_one.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_one.glb",
       },
       {
         id: "plant_2",
@@ -188,7 +188,7 @@ export const roomData = [
         position: [0, 1, 6.5],
         rotation: [0, 0, 0],
         scale: [1 ,1 ,1],
-        model: "src/assets/3dModels/Indoor_Plant_one.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_one.glb",
       },
       {
         id: "plant_3",
@@ -196,7 +196,7 @@ export const roomData = [
         position: [-6.5, 1, 0],
         rotation: [0, 0, 0],
         scale: [1 ,1 ,1],
-        model: "src/assets/3dModels/Indoor_Plant_two.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_two.glb",
       },
       {
         id: "plant_4",
@@ -204,7 +204,7 @@ export const roomData = [
         position: [6.5, 1, 0],
         rotation: [0, 0, 0],
         scale: [1 ,1 ,1],
-        model: "src/assets/3dModels/Indoor_Plant_two.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_two.glb",
       }
     ], 
     lights: [
@@ -229,12 +229,12 @@ export const roomData = [
     width: 15,
     depth: 15,
     height: 5,
-    floorTexture: "src/assets/textures/FloorTile2.jpg",
+    floorTexture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/FloorTile2.jpg",
     walls: {
-      back: { visible: true, texture: "src/assets/textures/FloorTile2.jpg" },
-      left: { visible: true, texture: "src/assets/textures/FloorTile2.jpg" },
-      right: { visible: false, texture: "src/assets/textures/FloorTile2.jpg" },
-      front: { visible: false, texture: "src/assets/textures/FloorTile2.jpg" },
+      back: { visible: true, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/FloorTile2.jpg" },
+      left: { visible: true, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/FloorTile2.jpg" },
+      right: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/FloorTile2.jpg" },
+      front: { visible: false, texture: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/textures/FloorTile2.jpg" },
     },
     items: [
       {
@@ -244,7 +244,7 @@ export const roomData = [
         rotation: [0, 0, 0],
         targetRoomId: 2,
         label: "Escape the Danger? Y/N",
-        model: "src/assets/3dModels/SciFiDoor.glb",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/SciFiDoor.glb",
         scale: [0.9, 0.9, 0.9],
         transparency: 0.2,
         userData: { raycastable: true, isInteractive: true, id: "door4", },
