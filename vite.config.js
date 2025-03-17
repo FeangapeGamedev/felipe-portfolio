@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import glsl from "vite-plugin-glsl";
 
 export default defineConfig({
-  base: "felipe-portfolio", // Base URL for GitHub Pages
+  base: process.env.NODE_ENV === "production" ? "/felipe-portfolio/" : "",
   plugins: [react(), glsl()],
   publicDir: "public",
   build: {
