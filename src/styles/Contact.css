@@ -149,7 +149,6 @@
 .resume-icon {
   width: 50px; /* Adjust icon size */
   height: 50px;
-  background-image: url('/resume-icon.png'); /* Replace with actual icon path */
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -202,15 +201,5 @@
   height: 50px;
   background-size: contain;
   background-repeat: no-repeat;
-}
-
-/* LinkedIn Icon */
-.linkedin-icon {
-  background-image: url('/linkedin-icon.png'); /* Replace with actual LinkedIn icon */
-}
-
-/* Facebook Icon */
-.facebook-icon {
-  background-image: url('/facebook-icon.png'); /* Replace with actual Facebook icon */
 }
 
