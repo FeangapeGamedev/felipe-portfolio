@@ -3,7 +3,7 @@ export const projects = [
     id: "project1",
     title: "Trimble Virtual World",
     description: "Land surveying and construction simulation.",
-    image: "/Trimble_Logo.png",
+    image: "/Trimble_Logo.webp",
 
     overview: `
 Trimble Virtual World is an immersive training simulation for land surveyors. 
