@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
-import { useGame } from "../state/GameContext";
-import InteractiveObject from "./InteractiveObject";
-import PropObject from "./propObjects";
-import SpotLightManager from "../state/SpotLightManager"; // Update import
-import ThreeDText from "../../components/ThreeDText"; // ✅ Use correct relative path
+import { useGame } from "../state/GameContext.jsx";
+import InteractiveObject from "./InteractiveObject.jsx";
+import PropObject from "./propObjects.jsx";
+import SpotLightManager from "../state/SpotLightManager.jsx"; // Update import
+import ThreeDText from "../../components/ThreeDText.jsx"; // ✅ Use correct relative path
 
 const Room = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
   const { currentRoom } = useGame();

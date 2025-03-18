@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import * as THREE from "three";
-import { useGame } from "../state/GameContext";
+import { useGame } from "../state/GameContext.jsx";
 
 export const CharacterController = ({ isPaused }) => {
   const { scene, camera, gl } = useThree();

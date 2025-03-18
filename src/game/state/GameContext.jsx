@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { roomData } from "../data/roomData"; // ✅ Ensure correct import path
+import { roomData } from "../data/roomData.js"; // ✅ Ensure correct import path
 import * as THREE from "three";
 
 // **🗺️ Define Explicit Room Transitions (Placed at the top)**

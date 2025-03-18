@@ -4,7 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { AnimationMixer, LoopRepeat } from "three";
-import { useGame } from "../state/GameContext"; // ✅ Import GameContext
+import { useGame } from "../state/GameContext.jsx"; // ✅ Import GameContext
 
 export const Character = ({ initialPosition, isPaused }) => {
   const characterRef = useRef();

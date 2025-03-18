@@ -1,4 +1,4 @@
-import { useGame } from "../state/GameContext";
+import { useGame } from "../state/GameContext.jsx";
 
 export const GameManager = (onProjectSelect = () => {}) => {
   const { changeRoom, currentRoom } = useGame();

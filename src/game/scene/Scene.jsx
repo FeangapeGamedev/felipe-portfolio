@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { OrthographicCamera } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
-import { useGame } from "../state/GameContext";
-import { CharacterController } from "./CharacterController";
-import { Character } from "./Character";
-import SpotLightManager from "../state/SpotLightManager"; // Update import
-import Room from './Room'; // Ensure correct import
+import { useGame } from "../state/GameContext.jsx";
+import { CharacterController } from "./CharacterController.jsx";
+import { Character } from "./Character.jsx";
+import SpotLightManager from "../state/SpotLightManager.jsx"; // Update import
+import Room from './Room.jsx'; // Ensure correct import
 
 const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();

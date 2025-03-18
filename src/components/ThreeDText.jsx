@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { extend, useFrame } from "@react-three/fiber";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
-import { NeonShader } from "../shaders/neonShader";
+import { NeonShader } from "../shaders/neonShader.js";
 
 extend({ TextGeometry });
 
