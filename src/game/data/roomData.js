@@ -103,8 +103,16 @@ export const roomData = [
         decay: 5,                   // Light fades naturally
         distance: 20,               // Reasonable range for room lighting
       },
-
     ],
+    text: {
+      content: "The Portfolio", // Text to display
+      position: [4, 10, -7255], // Position on the back wall
+      rotation: [0.01, -0.01, 0.], // No rotation
+      color: "teal", // cyan color
+      size: 3, // Text size
+      height: 1, // Extrusion depth
+      isNeon: true, // Enable neon effect
+    },
   },
   {
     id: 2,

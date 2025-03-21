@@ -66,35 +66,46 @@
   display: flex;
   flex-direction: column;
   width: 40%;
-  gap: 15px;
+  gap: 10px;
 }
 
 /* Avatar Frame */
 .avatar-frame {
   width: 180px;
-  height: 180px;
-  border: 3px solid #777;
+  height: 220px; /* Increased height to accommodate the text and image */
+  border: 4px solid #777;
   background: #222;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: column; /* Ensures text and image are stacked vertically */
+  justify-content: flex-start; /* Aligns content to the top */
   align-items: center;
+  overflow: hidden; /* Ensures the image doesn't overflow the frame */
   transition: transform 0.2s ease, background 0.2s ease;
+  padding: 10px; /* Adds spacing inside the frame */
+  cursor: pointer;
 }
 
 /* Hover Effect for Avatar */
 .avatar-frame:hover {
-  transform: scale(1.1);
+  transform: scale(1.05); /* Slightly enlarges the frame on hover */
   background: #333;
 }
 
 /* Avatar Image */
 .avatar-img {
-  width: 90%;
-  height: 90%;
-  object-fit: cover;
+  width: 100%; /* Ensures the image fills the frame horizontally */
+  height: auto; /* Maintains the aspect ratio */
+  object-fit: contain; /* Ensures the image fits within the frame without cropping */
+  margin-bottom: 10px; /* Adds spacing between the image and the text */
 }
 
+/* Frame Title (Avatar Text) */
+.frame-title {
+  font-size: 16px;
+  color: #ddd;
+  text-align: center;
+  margin-top: 10px; /* Adds spacing above the text */
+}
 
 /* Active Skills */
 .active-skills-container {
@@ -114,7 +125,7 @@
 /* Tools */
 .tools-frame {
   width: 90%;
-  height: 341px;
+  height: 397px;
   border: 4px solid #777;
   padding: 20px;
   background: #222;

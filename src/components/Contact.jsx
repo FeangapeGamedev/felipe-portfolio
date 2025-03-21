@@ -97,8 +97,13 @@ const Contact = ({ onClose }) => {
                 {/* Resume Section */}
                 <div className="contact-frame contact-resume">
                     <span>Download Resume</span>
-                    <div className="resume-container" onClick={() => window.open("/your-resume.pdf", "_blank")}>
-                        <img src="/portfolio_16672960.webp" alt="Resume Icon" className="resume-icon" loading="lazy" />
+                    <div className="resume-container" onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = `${import.meta.env.BASE_URL}documents/felipe-CV-2025.pdf`;
+                        link.download = "felipe-CV-2025.pdf"; // Suggested filename for the download
+                        link.click();
+                    }}>
+                        <img src={`${import.meta.env.BASE_URL}portfolio_16672960.webp`} alt="Resume Icon" className="resume-icon" loading="lazy" />
                     </div>
                 </div>
 
@@ -111,7 +116,7 @@ const Contact = ({ onClose }) => {
                             className="social-box linkedin-box" 
                             onClick={() => window.open("https://www.linkedin.com/in/felipe-andres-garcia-pereira-58ab5a347", "_blank")}
                         >
-                            <img src="/InBug-White.webp" alt="LinkedIn Icon" className="social-icon linkedin-icon" loading="lazy" />
+                            <img src={`${import.meta.env.BASE_URL}InBug-White.webp`} alt="LinkedIn Icon" className="social-icon linkedin-icon" loading="lazy" />
                         </div>
                     </div>
                 </div>

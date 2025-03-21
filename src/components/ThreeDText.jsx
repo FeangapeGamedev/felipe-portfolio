@@ -17,7 +17,7 @@ const ThreeDText = ({ text, position, rotation, color, size, height, isNeon = fa
   useEffect(() => {
     if (!fontCache.has("KindRegards")) {
       const loader = new FontLoader();
-      loader.load("/Kind Regards_Regular.json", (loadedFont) => {
+      loader.load("/portfolio-game/fonts/Kind_Regards_Regular.json", (loadedFont) => {
         fontCache.set("KindRegards", loadedFont);
         setFont(loadedFont);
       });

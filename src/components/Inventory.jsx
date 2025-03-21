@@ -4,27 +4,27 @@ import "../styles/Inventory.css";
 const tools = [
   { 
     name: "Unity", 
-    icon: <img src="/U_Logo_Small_White_RGB_1C.webp" alt="Unity" className="tool-icon" loading="lazy" />, 
+    icon: <img src={`${import.meta.env.BASE_URL}U_Logo_Small_White_RGB_1C.webp`} alt="Unity" className="tool-icon" />, 
     description: "Advanced Unity development, specializing in C# and gameplay mechanics." 
   },
   { 
     name: "Three.js", 
-    icon: <img src="/ThreeJSLogo.svg" alt="Three.js" className="tool-icon" loading="lazy" />, 
+    icon: <img src={`${import.meta.env.BASE_URL}ThreeJSLogo.svg`} alt="Three.js" className="tool-icon" loading="lazy" />, 
     description: "Developing interactive 3D experiences on the web using Three.js." 
   },
   { 
     name: "Unreal Engine", 
-    icon: <img src="/UE-Logotype-2023-Vertical-White.webp" alt="Unreal Engine" className="tool-icon" loading="lazy" />, 
+    icon: <img src={`${import.meta.env.BASE_URL}UE-Logotype-2023-Vertical-White.webp`} alt="Unreal Engine" className="tool-icon" loading="lazy" />, 
     description: "Familiar with Unreal Engine, including C++ and Blueprint scripting." 
   },
   { 
     name: "VR Development", 
-    icon: <img src="/head_mounted_device_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.webp" alt="VR Development" className="tool-icon" loading="lazy" />, 
+    icon: <img src={`${import.meta.env.BASE_URL}head_mounted_device_24dp_E8EAED_FILL0_wght400_GRAD0_opsz24.webp`} alt="VR Development" className="tool-icon" loading="lazy" />, 
     description: "Building interactive VR applications with Unity and Unreal Engine." 
   },
   { 
     name: "3D Modeling", 
-    icon: <img src="/blender_logo_no_socket_white.webp" alt="Blender" className="tool-icon" loading="lazy" />, 
+    icon: <img src={`${import.meta.env.BASE_URL}blender_logo_no_socket_white.webp`} alt="Blender" className="tool-icon" loading="lazy" />, 
     description: "Creating and optimizing 3D assets using Blender." 
   }
 ];
@@ -53,7 +53,12 @@ const Inventory = ({ onClose }) => {
         <div className="left-column">
           <div className="frame-container avatar-frame" onClick={() => setSelectedTool(null)}>
             <h4 className="frame-title">Avatar</h4>
-            <img src="/profile.webp" alt="Avatar" className="avatar-img" loading="lazy" />
+            <img 
+              src={`${import.meta.env.BASE_URL}pxArt.webp`} 
+              alt="Avatar" 
+              className="avatar-img" 
+              loading="lazy" 
+            />
           </div>
 
           <div className="frame-container active-skills-container">
