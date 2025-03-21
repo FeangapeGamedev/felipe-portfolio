@@ -27,7 +27,7 @@ const Projects = ({ onClose, onProjectClick }) => {
             onClick={() => handleProjectClick(project.id)}
           >
             <img
-              src={project.image}
+              src={`${import.meta.env.BASE_URL}${project.image}`} // Updated to use dynamic base URL
               alt={project.title}
               className="project-image"
               loading="lazy" // ✅ Lazy loads images

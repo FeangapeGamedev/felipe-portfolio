@@ -1,18 +1,18 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier"; 
 import { projects } from "./game/data/projectsData"; 
 import { useGame } from "./game/state/GameContext"; 
 import "./index.css";
 
-// ✅ Lazy Load Components
-const Scene = lazy(() => import("./game/scene/Scene"));
-const Navbar = lazy(() => import("./components/Navbar"));
-const Inventory = lazy(() => import("./components/Inventory"));
-const Contact = lazy(() => import("./components/Contact"));
-const Projects = lazy(() => import("./components/Projects"));
-const ProjectDetails = lazy(() => import("./components/ProjectDetails"));
-const CodeFrame = lazy(() => import("./components/CodeFrame"));
+// ✅ Directly Import All Components
+import Scene from "./game/scene/Scene";
+import Navbar from "./components/Navbar";
+import Inventory from "./components/Inventory";
+import Contact from "./components/Contact";
+import Projects from "./components/Projects";
+import ProjectDetails from "./components/ProjectDetails";
+import CodeFrame from "./components/CodeFrame";
 
 function App() {
   const [activeSection, setActiveSection] = useState("game");

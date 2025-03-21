@@ -41,19 +41,6 @@ body::after {
   pointer-events: none;
 }
 
-/* 🔹 Cyan Glow in the Center */
-body::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 80vw;
-  height: 80vh;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.15) 10%, transparent 70%);
-  pointer-events: none;
-  opacity: 0.6;
-}
 
 /* 🔹 Root container */
 #root {
