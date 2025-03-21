@@ -13,7 +13,7 @@ export default defineConfig(async () => {
         exclude: 'node_modules/**', // Exclude node_modules
       }),
     ],
-    base: process.env.NODE_ENV === 'production' ? '/portfolio-game/' : '/', // Ensure correct base path
+    base: process.env.NODE_ENV === 'production' ? '/felipe-portfolio/' : '/', // Ensure correct base path
     build: {
       outDir: 'dist', // Output directory
       sourcemap: true, // Enable source maps for debugging
