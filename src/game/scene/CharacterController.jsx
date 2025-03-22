@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { useGame } from "../state/GameContext.jsx";
 
@@ -12,12 +12,17 @@ export const CharacterController = ({ isPaused }) => {
   const [currentInteractive, setCurrentInteractive] = useState(null);
   const [collidingObject, setCollidingObject] = useState(null);
   const [lastClickedObject, setLastClickedObject] = useState(null);
-
   const [lastClickTime, setLastClickTime] = useState(0);
+
+  const isPausedRef = useRef(isPaused);
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
 
   useEffect(() => {
     const onMouseDown = (event) => {
-      if (isPaused) return;
+      if (isPausedRef.current) return;
 
       const currentTime = performance.now();
       const timeSinceLastClick = currentTime - lastClickTime;
@@ -68,7 +73,6 @@ export const CharacterController = ({ isPaused }) => {
         return;
       }
 
-      // ✅ Move to interactive object (with run)
       if (firstInteractive) {
         setLastClickedObject(firstInteractive.object.userData.id);
 
@@ -79,15 +83,12 @@ export const CharacterController = ({ isPaused }) => {
               firstInteractive.point.y,
               firstInteractive.point.z
             ),
-            run: isDoubleClick, // ✅ enable run to interactive object
+            run: isDoubleClick,
           });
         }
 
         setCurrentInteractive(firstInteractive.object.userData);
-      }
-
-      // ✅ Move on floor (with run)
-      else if (firstFloorHit) {
+      } else if (firstFloorHit) {
         setLastClickedObject(null);
         setTargetPosition({
           position: new THREE.Vector3(
@@ -105,17 +106,7 @@ export const CharacterController = ({ isPaused }) => {
     return () => {
       window.removeEventListener("mousedown", onMouseDown);
     };
-  }, [
-    camera,
-    gl,
-    scene,
-    setTargetPosition,
-    isPaused,
-    currentInteractive,
-    collidingObject,
-    lastClickedObject,
-    lastClickTime,
-  ]);
+  }, [camera, gl, scene, setTargetPosition, currentInteractive, collidingObject, lastClickedObject, lastClickTime]);
 
   useEffect(() => {
     const handleCollisionEnter = (event) => {

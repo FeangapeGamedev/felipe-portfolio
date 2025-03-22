@@ -1,12 +1,11 @@
-/* CodeFrame Container */
-.code-frame {
+/* Main Popup Container */
+.popup-panel {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: auto; /* Adjust width to fit content */
-  max-width: 450px; /* Maximum width */
-  height: auto; /* Adjust height to fit content */
+  width: 450px;                /* ✅ fixed width */
+  height: auto;                /* allow it to grow slightly with content */
   background: #1a1a1a;
   border: 8px solid #555;
   padding: 10px;
@@ -20,8 +19,20 @@
   z-index: 1000;
 }
 
-/* CodeFrame Header - Styled Like Ribbon */
-.code-frame-header {
+/* Keep content neatly wrapped */
+.popup-panel-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+  align-items: center;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Header / Ribbon */
+.popup-panel-header {
   width: 100%;
   background: #333;
   padding: 8px;
@@ -51,17 +62,14 @@
   border-color: #cc0000;
 }
 
-/* Content Layout */
-.code-frame-content {
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-  padding: 20px;
-  align-items: center; /* Centers all children, including the button */
-  text-align: center; /* Center the text */
+/* Ensure text inside wraps properly */
+.popup-panel p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
-/* Input Field */
+/* Input Field (shared with CodeFrame) */
 .code-input {
   width: 100%;
   background: #222;
@@ -74,7 +82,7 @@
   text-align: center;
 }
 
-/* Submit Button */
+/* Submit Button (shared with CodeFrame) */
 .submit-button {
   background: #ff9800;
   color: white;
@@ -91,3 +99,17 @@
   background: #e68900;
   border-color: #995500;
 }
+
+.welcome-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
