@@ -33,8 +33,6 @@ export const Character = ({ initialPosition, isPaused }) => {
 
   useEffect(() => {
     if (characterModel && animations.length > 0) {
-      console.log("🎬 Loaded Animations:", animations.map(a => a.name));
-
       mixerRef.current = new AnimationMixer(characterModel);
       idleActionRef.current = mixerRef.current.clipAction(animations[2]);
       walkActionRef.current = mixerRef.current.clipAction(animations[5]);
@@ -98,15 +96,12 @@ export const Character = ({ initialPosition, isPaused }) => {
     if (distance < stopThreshold) {
       if (!isIdle) {
         setIsIdle(true);
-        console.log("🧍 Set idle");
       }
       if (isWalking) {
         setIsWalking(false);
-        console.log("🛑 Stopped walking");
       }
       if (isRunning) {
         setIsRunning(false);
-        console.log("🛑 Stopped running");
       }
       return;
     }
@@ -150,15 +145,12 @@ export const Character = ({ initialPosition, isPaused }) => {
 
     if (isIdle) {
       idleActionRef.current.weight = 1;
-      console.log("🎬 Blending to idle");
     } else if (isWalking && isRunning) {
       runActionRef.current.weight = 1;
       idleActionRef.current.weight = 0.2;
-      console.log("🏃 Blending to run");
     } else if (isWalking && !isRunning) {
       walkActionRef.current.weight = 1;
       idleActionRef.current.weight = 0.2;
-      console.log("🚶 Blending to walk");
     }
   }, [isIdle, isWalking, isRunning]);
 
@@ -171,7 +163,6 @@ export const Character = ({ initialPosition, isPaused }) => {
   useEffect(() => {
     if (characterRef.current) {
       const characterPos = characterRef.current.translation();
-      console.log(`Player position in new room: x=${characterPos.x}, y=${characterPos.y}, z=${characterPos.z}`);
     }
   }, [initialPosition]);
 
@@ -182,7 +173,6 @@ export const Character = ({ initialPosition, isPaused }) => {
         const extraRotation = spawnRotationY === Math.PI ? Math.PI : 0;
         modelRef.current.rotation.y = Math.PI + extraRotation;
       }
-      console.log(`Setting initial position: x=${initialPosition.x}, y=${initialPosition.y}, z=${initialPosition.z}`);
     }
   }, [initialPosition, spawnRotationY]);
 
@@ -200,8 +190,6 @@ export const Character = ({ initialPosition, isPaused }) => {
       onCollisionEnter={(event) => {
         const colliderName = event.colliderObject.name;
         if (colliderName === "character" || colliderName === "floor") return;
-
-        console.log("🛑 Collision with:", colliderName);
         setIsColliding(true);
         setIsWalking(false);
         setIsRunning(false);

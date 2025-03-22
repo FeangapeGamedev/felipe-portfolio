@@ -13,8 +13,6 @@ const PropObject = ({ id, type, position, rotation, scale, model }) => {
     loader.load(
       model,
       (loadedGltf) => {
-        console.log(`GLTF model loaded for ${id}:`, loadedGltf);
-
         // Compute bounding box
         const box = new THREE.Box3().setFromObject(loadedGltf.scene);
         boundingBox.current = box;
@@ -26,7 +24,6 @@ const PropObject = ({ id, type, position, rotation, scale, model }) => {
         // Validate dimensions
         if (width > 0 && height > 0 && depth > 0) {
           size.current = [width / 2, height / 2, depth / 2]; // Adjust size for collider
-          console.log(`Computed collider size for ${id}:`, size.current);
         } else {
           console.warn(`Invalid bounding box for ${id}:`, { width, height, depth });
         }

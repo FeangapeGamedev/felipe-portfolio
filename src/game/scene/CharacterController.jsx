@@ -23,7 +23,6 @@ export const CharacterController = ({ isPaused }) => {
       const timeSinceLastClick = currentTime - lastClickTime;
       const isDoubleClick = timeSinceLastClick < 300;
 
-      console.log(isDoubleClick ? "🏃 Double click detected! Will run." : "🚶 Single click.");
       setLastClickTime(currentTime);
 
       mouse.x = (event.clientX / gl.domElement.clientWidth) * 2 - 1;
@@ -46,14 +45,10 @@ export const CharacterController = ({ isPaused }) => {
           const point = intersections[i].point;
 
           if (object.userData?.isInteractive) {
-            console.log(`🖱️ Clicked Object Data:`, object.userData);
-
             if (object.userData.id && object.userData.type) {
-              console.log(`🖱️ Clicked on Interactive Object: ID=${object.userData.id}, Type=${object.userData.type}`);
               firstInteractive = { object, point };
 
               if (collidingObject === object.userData.id) {
-                console.log(`✅ Already near ${object.userData.id}, skipping movement.`);
                 return;
               }
 
@@ -64,14 +59,12 @@ export const CharacterController = ({ isPaused }) => {
           }
 
           if (object.userData?.type === "floor" && !firstFloorHit) {
-            console.log("📍 Clicked on floor at:", point);
             firstFloorHit = { object, point };
           }
         }
       }
 
       if (!isDoubleClick && lastClickedObject && firstInteractive?.object.userData.id === lastClickedObject) {
-        console.log(`🚫 Clicked ${lastClickedObject} again - Ignoring movement.`);
         return;
       }
 
@@ -88,7 +81,6 @@ export const CharacterController = ({ isPaused }) => {
             ),
             run: isDoubleClick, // ✅ enable run to interactive object
           });
-          console.log("🚶 Moving to interactive target with run =", isDoubleClick);
         }
 
         setCurrentInteractive(firstInteractive.object.userData);
@@ -105,7 +97,6 @@ export const CharacterController = ({ isPaused }) => {
           ),
           run: isDoubleClick,
         });
-        console.log("🚶 Moving to floor target with run =", isDoubleClick);
         setCurrentInteractive(null);
       }
     };
@@ -129,14 +120,12 @@ export const CharacterController = ({ isPaused }) => {
   useEffect(() => {
     const handleCollisionEnter = (event) => {
       if (event?.other?.rigidBodyObject?.userData?.isInteractive) {
-        console.log(`🛑 Colliding with Interactive Object: ${event.other.rigidBodyObject.userData.id}`);
         setCollidingObject(event.other.rigidBodyObject.userData.id);
       }
     };
 
     const handleCollisionExit = (event) => {
       if (event?.other?.rigidBodyObject?.userData?.isInteractive) {
-        console.log(`✅ No longer colliding with: ${event.other.rigidBodyObject.userData.id}`);
         setCollidingObject(null);
       }
     };

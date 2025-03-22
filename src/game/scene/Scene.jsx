@@ -14,7 +14,6 @@ const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
     setInitialPosition(targetPosition.clone());
-    console.log(`Initial position in room ${currentRoom.id}: ${targetPosition.toArray()}`);
   }, [currentRoom]);
 
   return (

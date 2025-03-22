@@ -17,10 +17,17 @@ const ThreeDText = ({ text, position, rotation, color, size, height, isNeon = fa
   useEffect(() => {
     if (!fontCache.has("KindRegards")) {
       const loader = new FontLoader();
-      loader.load("/portfolio-game/fonts/Kind_Regards_Regular.json", (loadedFont) => {
-        fontCache.set("KindRegards", loadedFont);
-        setFont(loadedFont);
-      });
+      loader.load(
+        `${import.meta.env.BASE_URL}fonts/Kind_Regards_Regular.json`, // Use BASE_URL for dynamic base path
+        (loadedFont) => {
+          fontCache.set("KindRegards", loadedFont);
+          setFont(loadedFont);
+        },
+        undefined,
+        (error) => {
+          console.error("Error loading font:", error);
+        }
+      );
     } else {
       setFont(fontCache.get("KindRegards"));
     }

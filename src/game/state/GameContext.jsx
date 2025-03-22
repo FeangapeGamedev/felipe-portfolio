@@ -39,7 +39,6 @@ export const GameProvider = ({ children }) => {
     setSpawnRotationY(getSpawnRotation(direction));
 
     const spawnPosition = getSpawnPosition(newRoom, direction);
-    console.log(`Changing room to ${newRoomId}, direction: ${direction}, position: ${spawnPosition}`);
 
     setCurrentRoomId(newRoomId);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
@@ -54,7 +53,6 @@ export const GameProvider = ({ children }) => {
     setSpawnRotationY(rotation);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
 
-    console.log(`Spawning in room ${currentRoomId}, direction: ${doorDirection}, position: ${spawnPosition}`);
   }, [currentRoomId, doorDirection]);
 
   return (
