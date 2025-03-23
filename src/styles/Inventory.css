@@ -1,12 +1,12 @@
-/* Inventory Container */
 .inventory-container {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 900px; /* Slightly wider for better spacing */
-  height: auto;
-  min-height: 700px; /* Adjusted height */
+  width: 90vw;              /* ✅ Responsive width */
+  max-width: 900px;         /* ✅ Preserve original size where possible */
+  min-height: 700px;        /* ✅ Keeps your layout stable */
+  max-height: 90vh;         /* ✅ Prevents overflow on short screens */
   background: #1a1a1a;
   border: 8px solid #555;
   padding: 10px;
@@ -18,6 +18,9 @@
   align-items: center;
   justify-content: flex-start;
   z-index: 1000;
+  overflow-y: auto;         /* ✅ Enables scroll if it’s too tall */
+  box-sizing: border-box;   /* ✅ Avoids padding messing with width */
+  overflow-x: hidden;
 }
 
 /* Upper Ribbon */
@@ -34,6 +37,8 @@
   border-bottom: 4px solid #777;
   position: relative;
 }
+
+
 
 /* Close Button - Bright Red */
 .close-button {
@@ -163,9 +168,8 @@
   object-fit: contain;
 }
 
-/* Description */
 .description-frame {
-  width: 99%;
+  width: 100%;
   background: #222;
   border: 4px solid #777;
   min-height: 130px;
@@ -174,9 +178,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;              /* ✅ Prevents child overflow */
+  box-sizing: border-box;
 }
 
 .description-content {
   padding: 20px;
   font-size: 14px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;           /* ✅ Allow wrapping */
+  text-align: justify;
+  max-width: 100%;
+  overflow-x: hidden;            /* ✅ NO horizontal scrollbar */
+  overflow-y: auto;              /* ✅ Vertical scroll only if needed */
+  box-sizing: border-box;
 }
+
+
+
+

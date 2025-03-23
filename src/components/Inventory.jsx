@@ -25,7 +25,7 @@ const tools = [
   { 
     name: "3D Modeling", 
     icon: <img src={`${import.meta.env.BASE_URL}blender_logo_no_socket_white.webp`} alt="Blender" className="tool-icon" loading="lazy" />, 
-    description: "Creating and optimizing 3D assets using Blender." 
+    description: "Creating and optimizing simple 3D models, including rigging and basic animations using Blender."
   }
 ];
 

@@ -4,9 +4,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 900px; /* Slightly wider for better spacing */
-  height: auto;
-  min-height: 700px; /* Adjusted height */
+  width: 90vw;             /* ✅ Responsive width for smaller screens */
+  max-width: 900px;        /* ✅ Matches inventory size */
+  min-height: 700px;       /* ✅ Keeps original height */
+  max-height: 90vh;        /* ✅ Prevents it from going off screen */
   background: #1a1a1a;
   border: 8px solid #555;
   padding: 10px;
@@ -18,7 +19,11 @@
   align-items: center;
   justify-content: flex-start;
   z-index: 1000;
+  overflow-y: auto;        /* ✅ Allows vertical scroll if needed */
+  overflow-x: hidden;      /* ✅ Prevents horizontal scroll */
+  box-sizing: border-box;
 }
+
 
 /* Contact Header - Styled Like Ribbon */
 .contact-header {
@@ -203,3 +208,15 @@
   background-repeat: no-repeat;
 }
 
+@media (max-width: 768px) {
+  .contact-bottom-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .contact-resume,
+  .contact-social {
+    width: 100%;
+  }
+}

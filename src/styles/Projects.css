@@ -4,12 +4,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 950px;
-    height: auto;
-    min-height: 750px;
+    width: 90vw;             /* ✅ Responsive for smaller screens */
+    max-width: 900px;        /* ✅ Matches Inventory & Contact */
+    min-height: 700px;       /* ✅ Consistent base height */
+    max-height: 90vh;        /* ✅ Prevents overflow */
     background: #1a1a1a;
     border: 8px solid #555;
-    padding: 20px;
+    padding: 10px;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
     font-family: "Press Start 2P", sans-serif;
     color: white;
@@ -18,20 +19,24 @@
     align-items: center;
     justify-content: flex-start;
     z-index: 1000;
+    overflow-y: auto;        /* ✅ Scrolls vertically if needed */
+    overflow-x: hidden;      /* ✅ Prevents horizontal scroll */
+    box-sizing: border-box;
 }
 
 /* 🔹 Header */
 .projects-header {
     width: 100%;
     background: #333;
-    padding: 12px;
-    font-size: 16px;
+    padding: 8px;
+    font-size: 14px;
     color: #ddd;
     text-transform: uppercase;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 4px solid #777;
+    position: relative;
 }
 
 /* 🔹 Close Button */
@@ -39,8 +44,8 @@
     background: #a00;
     color: white;
     border: 2px solid #600;
-    padding: 6px 12px;
-    font-size: 14px;
+    padding: 5px 10px;
+    font-size: 12px;
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
 }
@@ -124,6 +129,39 @@
     .projects-grid {
         grid-template-columns: repeat(1, 1fr); /* ✅ Stack to 1 column on smaller screens */
         gap: 20px;
+    }
+
+    .project-frame {
+        max-width: 280px;
+        padding: 15px;
+    }
+
+    .project-image {
+        max-width: 200px;
+        height: 160px;
+    }
+
+    .project-title {
+        font-size: 13px;
+    }
+
+    .project-description {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-container {
+        width: 90vw;
+        min-height: auto;
+        max-height: 90vh;
+        padding: 15px;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;
     }
 
     .project-frame {
