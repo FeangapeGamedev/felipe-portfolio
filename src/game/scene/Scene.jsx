@@ -4,17 +4,46 @@ import { Physics } from "@react-three/rapier";
 import { useGame } from "../state/GameContext.jsx";
 import { CharacterController } from "./CharacterController.jsx";
 import { Character } from "./Character.jsx";
-import SpotLightManager from "../state/SpotLightManager.jsx"; // Update import
-import Room from './Room.jsx'; // Ensure correct import
+import SpotLightManager from "../state/SpotLightManager.jsx";
+import Room from './Room.jsx';
+import useTrapPlacement from "../survivor/useTrapPlacement.jsx"; // ✅ Import your hook
 
-const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
+const Scene = ({
+  isPaused,
+  onProjectSelect,
+  onShowCodeFrame,
+  onRoomChange,
+  placementMode,
+  setPlacementMode,
+  trapCharges,
+  setTrapCharges,
+  initialPosition,      // ✅ receive from App.jsx
+  setInitialPosition,   // ✅ receive this too
+  forceTeleport,
+  setForceTeleport,
+}) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
-  const [initialPosition, setInitialPosition] = useState(null);
+
+
+  // ✅ Safely use trap placement inside Canvas
+  const { TrapPreview } = useTrapPlacement({
+    placementMode,
+    onPlaced: (trapType, position) => {
+      // Decrease trap charge
+      setTrapCharges(prev => ({
+        ...prev,
+        [trapType]: 0
+      }));
+      // Exit placement mode
+      setPlacementMode(null);
+    }
+  });
 
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
     setInitialPosition(targetPosition.clone());
   }, [currentRoom]);
+
 
   return (
     <group>
@@ -27,7 +56,6 @@ const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
 
       <ambientLight intensity={0.7} color="#ffffff" />
 
-      {/* Directional Light */}
       <directionalLight
         position={[7.55, 5, 10]}
         intensity={0.3}
@@ -35,7 +63,7 @@ const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
         castShadow
       />
 
-      {/* Spot Lights */}
+      {/* Spotlights */}
       {currentRoom.lights.map((light, index) => (
         <SpotLightManager
           key={index}
@@ -55,11 +83,20 @@ const Scene = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
         />
 
         {initialPosition && (
-          <Character key={`character-${currentRoom.id}-${doorDirection}`} initialPosition={initialPosition} isPaused={isPaused} />
+          <Character
+            key={`character-${currentRoom.id}-${doorDirection}`}
+            initialPosition={initialPosition}
+            isPaused={isPaused}
+            teleport={forceTeleport} // ✅ pass teleport flag
+            onTeleportComplete={() => setForceTeleport(false)} // ✅ reset after teleport
+          />
         )}
 
         <CharacterController isPaused={isPaused} />
       </Physics>
+
+      {/* ✅ Render trap preview if active */}
+      {TrapPreview}
     </group>
   );
 };

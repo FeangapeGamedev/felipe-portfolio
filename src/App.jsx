@@ -7,6 +7,7 @@ import "./index.css";
 // Game Data & State
 import { projects } from "./game/data/projectsData";
 import { useGame } from "./game/state/GameContext";
+import SurvivorGameManager from "./game/survivor/SurvivorGameManager";
 
 // Components
 import Scene from "./game/scene/Scene";
@@ -18,6 +19,11 @@ import ProjectDetails from "./components/ProjectDetails";
 import CodeFrame from "./components/CodeFrame";
 import ErrorCodePopup from "./components/ErrorCodePopup";
 import WelcomePopup from "./components/WelcomePopup";
+import * as THREE from "three";
+import { roomData } from "./game/data/roomData"; 
+
+
+
 
 function App() {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -29,12 +35,26 @@ function App() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [doorPassKey] = useState("1958");
+  const [prepTime, setPrepTime] = useState(60); // ⏱️ 60s prep
+  const [showIntro, setShowIntro] = useState(true); // 👋 Show intro popup
+  const [forceTeleport, setForceTeleport] = useState(false);
+  const [initialPosition, setInitialPosition] = useState(null);
+
 
   const { changeRoom, currentRoom, doorDirection } = useGame();
   const previousRoomId = useRef(null);
   const loadingStartTime = useRef(null);
 
   const isPaused = activeSection !== "game" || showWelcomePopup;
+
+  // 👇 Trap placement state (shared between Scene + SurvivorGameManager)
+  const [placementMode, setPlacementMode] = useState(null);
+  const [trapCharges, setTrapCharges] = useState({
+    unity: 1,
+    blender: 1,
+    react: 1,
+  });
+
 
 
   // Show Welcome popup only once after everything has loaded
@@ -104,6 +124,28 @@ function App() {
     setShowLoadingScreen(true);
     changeRoom(roomId);
   };
+
+  const restartSurvivorGame = () => {
+    changeRoom(3); // Respawn into Room 3
+
+    setTrapCharges({
+      unity: 1,
+      blender: 1,
+      react: 1,
+    });
+
+    setPlacementMode(null);
+    setPrepTime(60);     // ⏱️ reset timer
+    setShowIntro(true);  // 🧾 show popup again
+
+    // ✅ Force teleport after room loads
+    setTimeout(() => {
+      setInitialPosition(new THREE.Vector3(...roomData[2].spawnPositionForward)); // Room 3's spawn
+      setForceTeleport(true); // trigger teleport
+    }, 200); // slight delay to allow Room 3 to render
+  };
+
+
 
   return (
     <>
@@ -184,14 +226,36 @@ function App() {
         <Canvas shadows>
           <Physics>
             <Scene
-              isPaused={isPaused}
-              onProjectSelect={handleProjectSelect}
-              onShowCodeFrame={handleShowCodeFrame}
-              onRoomChange={handleRoomChange}
+             isPaused={isPaused}
+             onProjectSelect={handleProjectSelect}
+             onShowCodeFrame={handleShowCodeFrame}
+             onRoomChange={handleRoomChange}
+             placementMode={placementMode}
+             setPlacementMode={setPlacementMode}
+             trapCharges={trapCharges}
+             setTrapCharges={setTrapCharges}
+             initialPosition={initialPosition}          // ✅
+             setInitialPosition={setInitialPosition}    // ✅
+             forceTeleport={forceTeleport}              // ✅
+             setForceTeleport={setForceTeleport}        // ✅
             />
           </Physics>
         </Canvas>
       </Suspense>
+
+      {currentRoom?.id === 3 && !showLoadingScreen && (
+        <SurvivorGameManager
+          placementMode={placementMode}
+          setPlacementMode={setPlacementMode}
+          trapCharges={trapCharges}
+          setTrapCharges={setTrapCharges}
+          prepTime={prepTime}
+          setPrepTime={setPrepTime}
+          showIntro={showIntro}
+          setShowIntro={setShowIntro}
+          restartSurvivorGame={restartSurvivorGame}
+        />
+      )}
 
       {!showLoadingScreen && showWelcomePopup && (
         <WelcomePopup onClose={() => setShowWelcomePopup(false)} />

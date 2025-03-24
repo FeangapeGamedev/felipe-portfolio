@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { AnimationMixer, LoopRepeat } from "three";
 import { useGame } from "../state/GameContext.jsx";
 
-export const Character = ({ initialPosition, isPaused }) => {
+export const Character = ({ initialPosition, isPaused, teleport = false, onTeleportComplete = () => { } }) => {
   const characterRef = useRef();
   const modelRef = useRef();
   const mixerRef = useRef(null);
@@ -161,20 +161,19 @@ export const Character = ({ initialPosition, isPaused }) => {
   }, [targetPosition]);
 
   useEffect(() => {
-    if (characterRef.current) {
-      const characterPos = characterRef.current.translation();
-    }
-  }, [initialPosition]);
+    if (teleport && initialPosition && characterRef.current) {
+      characterRef.current.setTranslation(initialPosition, true); // ✅ teleport instantly
 
-  useEffect(() => {
-    if (characterRef.current && initialPosition) {
-      characterRef.current.setTranslation(initialPosition, true);
       if (modelRef.current) {
         const extraRotation = spawnRotationY === Math.PI ? Math.PI : 0;
         modelRef.current.rotation.y = Math.PI + extraRotation;
       }
+
+      onTeleportComplete?.(); // ✅ reset the flag
     }
-  }, [initialPosition, spawnRotationY]);
+  }, [teleport, initialPosition, spawnRotationY]);
+
+
 
   return (
     <RigidBody
