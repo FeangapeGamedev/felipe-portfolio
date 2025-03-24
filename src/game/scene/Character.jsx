@@ -3,7 +3,7 @@ import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { AnimationMixer, LoopRepeat } from "three";
+import { AnimationMixer, LoopRepeat, LoopOnce } from "three";
 import { useGame } from "../state/GameContext.jsx";
 
 export const Character = ({ initialPosition, isPaused, teleport = false, onTeleportComplete = () => { } }) => {
@@ -13,17 +13,23 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   const walkActionRef = useRef(null);
   const idleActionRef = useRef(null);
   const runActionRef = useRef(null);
+  const standToCrouchActionRef = useRef(null);
+  const crouchIdleActionRef = useRef(null);
+  const crouchToStandingActionRef = useRef(null);
+  const [trapToPlace, setTrapToPlace] = useState(null);
 
   const [isWalking, setIsWalking] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isIdle, setIsIdle] = useState(true);
   const [isColliding, setIsColliding] = useState(false);
+  const [isPlacingTrap, setIsPlacingTrap] = useState(false);
+  const hasStartedPlacingRef = useRef(false);
 
   const { targetPosition, setTargetPosition, spawnRotationY } = useGame();
 
   const walkSpeed = 0.014;
   const runSpeed = 0.035;
-  const stopThreshold = 0.1;
+  const stopThreshold = 0.25;
   const lerpFactor = 1;
   const turnSpeed = 7;
 
@@ -31,27 +37,48 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/ccCharacterAnimated.glb"
   );
 
+  const restoreMovementWeights = () => {
+    idleActionRef.current.weight = isIdle ? 1 : isWalking ? 0.2 : 0;
+    walkActionRef.current.weight = isWalking && !isRunning ? 1 : 0;
+    runActionRef.current.weight = isWalking && isRunning ? 1 : 0;
+  };
+
+  const blendTo = (actionRef, weight = 1) => {
+    actionRef.reset();
+    actionRef.weight = weight;
+    actionRef.fadeIn(0.2).play();
+  };
+
   useEffect(() => {
     if (characterModel && animations.length > 0) {
       mixerRef.current = new AnimationMixer(characterModel);
-      idleActionRef.current = mixerRef.current.clipAction(animations[2]);
-      walkActionRef.current = mixerRef.current.clipAction(animations[5]);
-      runActionRef.current = mixerRef.current.clipAction(animations[3]);
+      idleActionRef.current = mixerRef.current.clipAction(animations[2]); // Idle
+      walkActionRef.current = mixerRef.current.clipAction(animations[5]); // Walk
+      standToCrouchActionRef.current = mixerRef.current.clipAction(animations[1]); // Stand to Crouch
+      crouchIdleActionRef.current = mixerRef.current.clipAction(animations[0]); // Crouch Idle
+      crouchToStandingActionRef.current = mixerRef.current.clipAction(animations[4]); // Crouch to Stand
+      runActionRef.current = mixerRef.current.clipAction(animations[3]); // Run
 
       idleActionRef.current.setLoop(LoopRepeat, Infinity);
       walkActionRef.current.setLoop(LoopRepeat, Infinity);
       runActionRef.current.setLoop(LoopRepeat, Infinity);
 
+      standToCrouchActionRef.current.setLoop(LoopOnce, 1);
+      crouchIdleActionRef.current.setLoop(LoopOnce, 1);
+      crouchToStandingActionRef.current.setLoop(LoopOnce, 1);
+
+      standToCrouchActionRef.current.clampWhenFinished = true;
+      crouchIdleActionRef.current.clampWhenFinished = true;
+      crouchToStandingActionRef.current.clampWhenFinished = true;
+
       idleActionRef.current.timeScale = 1;
       walkActionRef.current.timeScale = 1.8;
       runActionRef.current.timeScale = 1;
 
-      // Start all actions (idle always running in background)
       idleActionRef.current.play();
       walkActionRef.current.play();
       runActionRef.current.play();
 
-      // Set default weights
       idleActionRef.current.weight = 1;
       walkActionRef.current.weight = 0;
       runActionRef.current.weight = 0;
@@ -67,7 +94,8 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       mixerRef.current.update(delta);
     }
 
-    if (isPaused || !targetPosition || !characterRef.current || isColliding) return;
+    // Prevent movement updates during the crouching sequence
+    if (isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap) return;
 
     const characterPos = characterRef.current.translation();
     const posX = characterPos.x;
@@ -94,15 +122,9 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     const distance = Math.sqrt(directionX * directionX + directionZ * directionZ);
 
     if (distance < stopThreshold) {
-      if (!isIdle) {
-        setIsIdle(true);
-      }
-      if (isWalking) {
-        setIsWalking(false);
-      }
-      if (isRunning) {
-        setIsRunning(false);
-      }
+      if (!isIdle) setIsIdle(true);
+      if (isWalking) setIsWalking(false);
+      if (isRunning) setIsRunning(false);
       return;
     }
 
@@ -135,24 +157,43 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     modelRef.current.quaternion.slerp(targetQuaternion, turnSpeed * delta);
   });
 
+
   useEffect(() => {
+    if (isPlacingTrap) return;
     if (!idleActionRef.current || !walkActionRef.current || !runActionRef.current) return;
+  
+    idleActionRef.current.setEffectiveWeight(isIdle ? 1 : isWalking ? 0.2 : 0);
+    walkActionRef.current.setEffectiveWeight(isWalking && !isRunning ? 1 : 0);
+    runActionRef.current.setEffectiveWeight(isWalking && isRunning ? 1 : 0);
+  }, [isIdle, isWalking, isRunning, isPlacingTrap]);
+  
 
-    // Reset all weights
-    idleActionRef.current.weight = 0;
-    walkActionRef.current.weight = 0;
-    runActionRef.current.weight = 0;
-
-    if (isIdle) {
-      idleActionRef.current.weight = 1;
-    } else if (isWalking && isRunning) {
-      runActionRef.current.weight = 1;
-      idleActionRef.current.weight = 0.2;
-    } else if (isWalking && !isRunning) {
-      walkActionRef.current.weight = 1;
-      idleActionRef.current.weight = 0.2;
+  const onCrouchAnimationFinished = (e) => {
+    const finishedAction = e.action;
+  
+    if (finishedAction === standToCrouchActionRef.current) {
+      standToCrouchActionRef.current.fadeOut(0.2);
+      blendTo(crouchIdleActionRef.current);
+    } else if (finishedAction === crouchIdleActionRef.current) {
+      crouchIdleActionRef.current.fadeOut(0.2);
+      blendTo(crouchToStandingActionRef.current);
+    } else if (finishedAction === crouchToStandingActionRef.current) {
+      crouchToStandingActionRef.current.fadeOut(0.2);
+      mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
+  
+      setIsPlacingTrap(false);
+      setTrapToPlace(null);
+      hasStartedPlacingRef.current = false;
+  
+      // 👇 Explicitly fade in the idle animation
+      blendTo(idleActionRef.current, 1);
+      blendTo(walkActionRef.current, 0.2);
+      blendTo(runActionRef.current, 0.2);
+  
+      restoreMovementWeights();
     }
-  }, [isIdle, isWalking, isRunning]);
+  };
+  
 
   useEffect(() => {
     if (targetPosition) {
@@ -162,19 +203,78 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
 
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
-      characterRef.current.setTranslation(initialPosition, true); // ✅ teleport instantly
+      characterRef.current.setTranslation(initialPosition, true);
 
       if (modelRef.current) {
         const extraRotation = spawnRotationY === Math.PI ? Math.PI : 0;
         modelRef.current.rotation.y = Math.PI + extraRotation;
       }
 
-      onTeleportComplete?.(); // ✅ reset the flag
+      onTeleportComplete?.();
     }
   }, [teleport, initialPosition, spawnRotationY]);
 
+  useEffect(() => {
+    if (!trapToPlace || !characterRef.current) return;
 
+    const characterPos = characterRef.current.translation();
+    const distance = trapToPlace.position.distanceTo(new THREE.Vector3(
+      characterPos.x, characterPos.y, characterPos.z
+    ));
 
+    if (distance < stopThreshold && !hasStartedPlacingRef.current) {
+      hasStartedPlacingRef.current = true;
+      setIsPlacingTrap(true);
+      if (standToCrouchActionRef.current) {
+        blendTo(standToCrouchActionRef.current);
+        idleActionRef.current.weight = 0;
+        walkActionRef.current.weight = 0;
+        runActionRef.current.weight = 0;
+      }
+      mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
+    }
+  }, [trapToPlace]);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "p") {
+        console.log("🔑 Key P pressed. Starting crouch sequence...");
+  
+        if (!standToCrouchActionRef.current || !characterRef.current || !mixerRef.current) {
+          console.error("❌ Missing animation references.");
+          return;
+        }
+  
+        // 🚫 Prevent movement logic from running during the crouch
+        setIsPlacingTrap(true);
+        setTrapToPlace(null); // in case it was from trap placement
+        hasStartedPlacingRef.current = true;
+  
+        // 🛑 Stop movement by forcing the target to current position
+        const currentPos = characterRef.current.translation();
+        setTargetPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
+  
+        // ✅ Force play stand-to-crouch cleanly
+        standToCrouchActionRef.current.reset();
+        standToCrouchActionRef.current.weight = 1;
+        standToCrouchActionRef.current.play();
+  
+        // ❌ Fade out walk/run/idle immediately
+        idleActionRef.current.weight = 0;
+        walkActionRef.current.weight = 0;
+        runActionRef.current.weight = 0;
+  
+        // 🔁 Hook animation finish event
+        mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished); // clean cleanup
+        mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
+      }
+    };
+  
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+  
+  
   return (
     <RigidBody
       ref={characterRef}

@@ -55,25 +55,35 @@ const SurvivorGameManager = ({
           zIndex: 10,
         }}
       >
-        {Object.entries(trapCharges).map(([trap, count]) => (
-          <button
-            key={trap}
-            onClick={() => onToolClicked(trap)}
-            disabled={count === 0 || prepTime <= 0 || showIntro}
-            style={{
-              padding: "14px 22px",
-              fontSize: "16px",
-              borderRadius: "30px",
-              background: count > 0 ? "#222" : "#444",
-              color: "#fff",
-              border: "1px solid #888",
-              cursor: count > 0 && prepTime > 0 ? "pointer" : "not-allowed",
-              opacity: showIntro ? 0.3 : 1,
-            }}
-          >
-            {trap.toUpperCase()} ({count})
-          </button>
-        ))}
+        {Object.entries(trapCharges).map(([trap, count]) => {
+          const trapColors = {
+            unity: "#224b55",    // Deep teal (dark Unity cyan)
+            unreal: "#3f2a47",   // Dusky plum (dark Unreal purple)
+            react: "#1e3a5f",    // Midnight blue (React)
+            blender: "#5a2c16",  // Burnt orange-brown (Blender)
+            vr: "#3d1f1f",        // Dried blood red (VR)
+          };
+          
+          return (
+            <button
+              key={trap}
+              onClick={() => onToolClicked(trap)}
+              disabled={count === 0 || prepTime <= 0 || showIntro}
+              style={{
+                padding: "14px 22px",
+                fontSize: "16px",
+                borderRadius: "30px",
+                background: trapColors[trap] || "#333",
+                color: "#fff",
+                border: "1px solid #888",
+                cursor: count > 0 && prepTime > 0 ? "pointer" : "not-allowed",
+                opacity: showIntro ? 0.3 : 1,
+              }}
+            >
+              {trap.toUpperCase()} ({count})
+            </button>
+          );
+        })}
       </div>
 
       {/* Prep Timer */}

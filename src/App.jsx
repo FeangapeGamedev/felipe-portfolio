@@ -51,9 +51,12 @@ function App() {
   const [placementMode, setPlacementMode] = useState(null);
   const [trapCharges, setTrapCharges] = useState({
     unity: 1,
-    blender: 1,
+    unreal: 1,
     react: 1,
+    blender: 1,
+    vr: 1,
   });
+  
 
 
 
@@ -132,7 +135,10 @@ function App() {
       unity: 1,
       blender: 1,
       react: 1,
+      unreal: 1,
+      vr: 1,
     });
+    
 
     setPlacementMode(null);
     setPrepTime(60);     // ⏱️ reset timer

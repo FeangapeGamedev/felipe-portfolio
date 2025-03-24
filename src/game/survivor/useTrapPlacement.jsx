@@ -3,9 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 const trapColors = {
-  unity: "cyan",
-  blender: "orange",
-  react: "blue",
+  unity: "#224b55",    // Deep teal (dark Unity cyan)
+  unreal: "#3f2a47",   // Dusky plum (dark Unreal purple)
+  react: "#1e3a5f",    // Midnight blue (React)
+  blender: "#5a2c16",  // Burnt orange-brown (Blender)
+  vr: "#3d1f1f",        // Dried blood red (VR)
 };
 
 export default function useTrapPlacement({ placementMode, onPlaced }) {
