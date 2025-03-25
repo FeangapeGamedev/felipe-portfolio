@@ -210,6 +210,14 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
         modelRef.current.rotation.y = Math.PI + extraRotation;
       }
 
+      // Reset movement-related states to idle
+      setIsIdle(true);
+      setIsWalking(false);
+      setIsRunning(false);
+
+      // Clear the target position to prevent unintended movement
+      setTargetPosition(null);
+
       onTeleportComplete?.();
     }
   }, [teleport, initialPosition, spawnRotationY]);
