@@ -16,8 +16,9 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   const standToCrouchActionRef = useRef(null);
   const crouchIdleActionRef = useRef(null);
   const crouchToStandingActionRef = useRef(null);
-  const [trapToPlace, setTrapToPlace] = useState(null);
 
+  const [justTeleported, setJustTeleported] = useState(false);
+  const [trapToPlace, setTrapToPlace] = useState(null);
   const [isWalking, setIsWalking] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isIdle, setIsIdle] = useState(true);
@@ -95,7 +96,8 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     }
 
     // Prevent movement updates during the crouching sequence
-    if (isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap) return;
+    if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap) return;
+
 
     const characterPos = characterRef.current.translation();
     const posX = characterPos.x;
@@ -154,23 +156,30 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       new THREE.Vector3(0, 0, 1),
       new THREE.Vector3(direction.x, 0, direction.z)
     );
+
+    if (!isWalking && !isRunning) {
+      return; // ✅ skip rotation when idle
+    }
+
+    console.log("🔄 useFrame is rotating model during movement");
     modelRef.current.quaternion.slerp(targetQuaternion, turnSpeed * delta);
+
   });
 
 
   useEffect(() => {
     if (isPlacingTrap) return;
     if (!idleActionRef.current || !walkActionRef.current || !runActionRef.current) return;
-  
+
     idleActionRef.current.setEffectiveWeight(isIdle ? 1 : isWalking ? 0.2 : 0);
     walkActionRef.current.setEffectiveWeight(isWalking && !isRunning ? 1 : 0);
     runActionRef.current.setEffectiveWeight(isWalking && isRunning ? 1 : 0);
   }, [isIdle, isWalking, isRunning, isPlacingTrap]);
-  
+
 
   const onCrouchAnimationFinished = (e) => {
     const finishedAction = e.action;
-  
+
     if (finishedAction === standToCrouchActionRef.current) {
       standToCrouchActionRef.current.fadeOut(0.2);
       blendTo(crouchIdleActionRef.current);
@@ -180,20 +189,20 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     } else if (finishedAction === crouchToStandingActionRef.current) {
       crouchToStandingActionRef.current.fadeOut(0.2);
       mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
-  
+
       setIsPlacingTrap(false);
       setTrapToPlace(null);
       hasStartedPlacingRef.current = false;
-  
+
       // 👇 Explicitly fade in the idle animation
       blendTo(idleActionRef.current, 1);
       blendTo(walkActionRef.current, 0.2);
       blendTo(runActionRef.current, 0.2);
-  
+
       restoreMovementWeights();
     }
   };
-  
+
 
   useEffect(() => {
     if (targetPosition) {
@@ -204,23 +213,25 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
       characterRef.current.setTranslation(initialPosition, true);
-
+  
       if (modelRef.current) {
-        const extraRotation = spawnRotationY === Math.PI ? Math.PI : 0;
-        modelRef.current.rotation.y = Math.PI + extraRotation;
+        modelRef.current.quaternion.setFromEuler(
+          new THREE.Euler(0, spawnRotationY, 0) // Apply Y-axis rotation
+        );
+        console.log("✅ Applied spawn rotation:", spawnRotationY);
       }
-
-      // Reset movement-related states to idle
+  
+      setTargetPosition(null);
       setIsIdle(true);
       setIsWalking(false);
       setIsRunning(false);
-
-      // Clear the target position to prevent unintended movement
-      setTargetPosition(null);
-
-      onTeleportComplete?.();
+  
+      setJustTeleported(true);
+      setTimeout(() => setJustTeleported(false), 50);
+  
+      onTeleportComplete?.(); // ✅ resets forceTeleport in parent
     }
-  }, [teleport, initialPosition, spawnRotationY]);
+  }, [teleport, initialPosition, spawnRotationY]);  
 
   useEffect(() => {
     if (!trapToPlace || !characterRef.current) return;
@@ -247,42 +258,42 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     const handleKey = (e) => {
       if (e.key === "p") {
         console.log("🔑 Key P pressed. Starting crouch sequence...");
-  
+
         if (!standToCrouchActionRef.current || !characterRef.current || !mixerRef.current) {
           console.error("❌ Missing animation references.");
           return;
         }
-  
+
         // 🚫 Prevent movement logic from running during the crouch
         setIsPlacingTrap(true);
         setTrapToPlace(null); // in case it was from trap placement
         hasStartedPlacingRef.current = true;
-  
+
         // 🛑 Stop movement by forcing the target to current position
         const currentPos = characterRef.current.translation();
         setTargetPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
-  
+
         // ✅ Force play stand-to-crouch cleanly
         standToCrouchActionRef.current.reset();
         standToCrouchActionRef.current.weight = 1;
         standToCrouchActionRef.current.play();
-  
+
         // ❌ Fade out walk/run/idle immediately
         idleActionRef.current.weight = 0;
         walkActionRef.current.weight = 0;
         runActionRef.current.weight = 0;
-  
+
         // 🔁 Hook animation finish event
         mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished); // clean cleanup
         mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
       }
     };
-  
+
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
-  
-  
+
+
   return (
     <RigidBody
       ref={characterRef}
@@ -315,7 +326,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
           ref={modelRef}
           object={characterModel}
           scale={1}
-          rotation={[0, Math.PI, 0]}
         />
       ) : (
         <mesh>

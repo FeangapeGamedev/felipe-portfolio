@@ -13,7 +13,7 @@ const getSpawnPosition = (room, direction) =>
   direction === "forward" ? room.spawnPositionForward : room.spawnPositionBackward;
 
 const getSpawnRotation = (direction) =>
-  direction === "forward" ? 0 : Math.PI;
+  direction === "forward" ? Math.PI : 0;
 
 const GameContext = createContext();
 
@@ -31,18 +31,21 @@ export const GameProvider = ({ children }) => {
       console.warn(`🚨 Room ID ${newRoomId} not found in roomData`);
       return;
     }
-
+  
     const movementKey = `${currentRoomId}-${newRoomId}`;
     const direction = roomTransitions[movementKey] || "forward";
-
+  
     setDoorDirection(direction);
-    setSpawnRotationY(getSpawnRotation(direction));
+    const rotation = getSpawnRotation(direction);
 
+    setSpawnRotationY(rotation);
+  
     const spawnPosition = getSpawnPosition(newRoom, direction);
-
+  
     setCurrentRoomId(newRoomId);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
   };
+  
 
   useEffect(() => {
     if (!currentRoom) return;

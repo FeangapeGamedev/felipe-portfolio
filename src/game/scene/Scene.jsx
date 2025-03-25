@@ -42,6 +42,7 @@ const Scene = ({
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
     setInitialPosition(targetPosition.clone());
+    setForceTeleport(true);
   }, [currentRoom]);
 
 
@@ -74,7 +75,7 @@ const Scene = ({
         />
       ))}
 
-      <Physics>
+      <Physics debug>
         <Room
           key={`room-${currentRoom.id}`}
           isPaused={isPaused}
@@ -86,9 +87,9 @@ const Scene = ({
           <Character
             key={`character-${currentRoom.id}-${doorDirection}`}
             initialPosition={initialPosition}
+            teleport={forceTeleport}
+            onTeleportComplete={() => setForceTeleport(false)}
             isPaused={isPaused}
-            teleport={forceTeleport} // ✅ pass teleport flag
-            onTeleportComplete={() => setForceTeleport(false)} // ✅ reset after teleport
           />
         )}
 
