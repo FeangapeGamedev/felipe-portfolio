@@ -40,57 +40,59 @@ const Inventory = ({ onClose }) => {
   );
 
   return (
-    <div className="inventory-container">
-      {/* Upper Ribbon */}
-      <div className="inventory-ribbon">
-        <span>INVENTORY</span>
-        <button className="close-button" onClick={onClose}>X</button>
-      </div>
-
-      {/* Main Layout: Avatar & Tools */}
-      <div className="inventory-main">
-        {/* Left Column: Avatar & Active Skills */}
-        <div className="left-column">
-          <div className="frame-container avatar-frame" onClick={() => setSelectedTool(null)}>
-            <h4 className="frame-title">Avatar</h4>
-            <img 
-              src={`${import.meta.env.BASE_URL}pxArt.webp`} 
-              alt="Avatar" 
-              className="avatar-img" 
-              loading="lazy" 
-            />
-          </div>
-
-          <div className="frame-container active-skills-container">
-            <h4 className="frame-title">Active Skills</h4>
-            <ul className="active-skills-list">
-              {["Game Design", "System Design", "User Experience Design", "Gameplay Programming", "Modeling"].map((skill, index) => (
-                <li key={index}>{skill}</li>
-              ))}
-            </ul>
-          </div>
+    <div className="safe-area">
+      <div className="inventory-container">
+        {/* Upper Ribbon */}
+        <div className="inventory-ribbon">
+          <span>INVENTORY</span>
+          <button className="close-button" onClick={onClose}>X</button>
         </div>
 
-        {/* Right Column: Tools Section */}
-        <div className="right-column">
-          <div className="frame-container tools-frame">
-            <h4 className="frame-title">Tools</h4>
-            <div className="tools-grid">
-              {tools.map((tool) => (
-                <div key={tool.name} className="tool-item" onClick={() => setSelectedTool(tool)}>
-                  {tool.icon}
-                </div>
-              ))}
+        {/* Main Layout: Avatar & Tools */}
+        <div className="inventory-main">
+          {/* Left Column: Avatar & Active Skills */}
+          <div className="left-column">
+            <div className="frame-container avatar-frame" onClick={() => setSelectedTool(null)}>
+              <h4 className="frame-title">Avatar</h4>
+              <img 
+                src={`${import.meta.env.BASE_URL}pxArt.webp`} 
+                alt="Avatar" 
+                className="avatar-img" 
+                loading="lazy" 
+              />
+            </div>
+
+            <div className="frame-container active-skills-container">
+              <h4 className="frame-title">Active Skills</h4>
+              <ul className="active-skills-list">
+                {["Game Design", "System Design", "User Experience Design", "Gameplay Programming", "Modeling"].map((skill, index) => (
+                  <li key={index}>{skill}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Right Column: Tools Section */}
+          <div className="right-column">
+            <div className="frame-container tools-frame">
+              <h4 className="frame-title">Tools</h4>
+              <div className="tools-grid">
+                {tools.map((tool) => (
+                  <div key={tool.name} className="tool-item" onClick={() => setSelectedTool(tool)}>
+                    {tool.icon}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Description Section */}
-      <div className="frame-container description-frame">
-        <h4 className="frame-title">Description</h4>
-        <div className="description-content">
-          {selectedTool ? <p>{selectedTool.description}</p> : aboutMe}
+        {/* Description Section */}
+        <div className="frame-container description-frame">
+          <h4 className="frame-title">Description</h4>
+          <div className="description-content">
+            {selectedTool ? <p>{selectedTool.description}</p> : aboutMe}
+          </div>
         </div>
       </div>
     </div>

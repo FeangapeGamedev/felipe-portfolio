@@ -4,13 +4,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90vw;             /* ✅ Responsive for smaller screens */
-    max-width: 900px;        /* ✅ Matches Inventory & Contact */
-    min-height: 700px;       /* ✅ Consistent base height */
-    max-height: 90vh;        /* ✅ Prevents overflow */
+    width: min(90vw, 900px);
+    height: auto;
+    max-height: 90vh;
     background: #1a1a1a;
     border: 8px solid #555;
-    padding: 10px;
+    padding: clamp(10px, 2vw, 30px);
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
     font-family: "Press Start 2P", sans-serif;
     color: white;
@@ -19,9 +18,10 @@
     align-items: center;
     justify-content: flex-start;
     z-index: 1000;
-    overflow-y: auto;        /* ✅ Scrolls vertically if needed */
-    overflow-x: hidden;      /* ✅ Prevents horizontal scroll */
+    overflow-y: auto;
+    overflow-x: hidden;
     box-sizing: border-box;
+    font-size: clamp(0.75rem, 1vw, 1rem);
 }
 
 /* 🔹 Header */
@@ -119,66 +119,9 @@
     line-height: 1.5;
 }
 
-/* 🔹 Responsive Adjustments */
-@media (max-width: 768px) {
-    .projects-container {
-        width: 90%;
-        min-height: auto;
-    }
-
-    .projects-grid {
-        grid-template-columns: repeat(1, 1fr); /* ✅ Stack to 1 column on smaller screens */
-        gap: 20px;
-    }
-
-    .project-frame {
-        max-width: 280px;
-        padding: 15px;
-    }
-
-    .project-image {
-        max-width: 200px;
-        height: 160px;
-    }
-
-    .project-title {
-        font-size: 13px;
-    }
-
-    .project-description {
-        font-size: 11px;
+@media (max-width: 700px), (max-height: 700px) {
+    .projects-container,{
+      transform: scale(0.9) translate(-55%, -55%);
     }
 }
-
-@media (max-width: 768px) {
-    .projects-container {
-        width: 90vw;
-        min-height: auto;
-        max-height: 90vh;
-        padding: 15px;
-    }
-
-    .projects-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 20px;
-    }
-
-    .project-frame {
-        max-width: 280px;
-        padding: 15px;
-    }
-
-    .project-image {
-        max-width: 200px;
-        height: 160px;
-    }
-
-    .project-title {
-        font-size: 13px;
-    }
-
-    .project-description {
-        font-size: 11px;
-    }
-}
+  

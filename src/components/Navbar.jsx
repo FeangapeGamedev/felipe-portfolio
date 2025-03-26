@@ -5,8 +5,8 @@ const Navbar = ({ onInventoryClick, onProjectsClick, onContactClick }) => {
   return (
     <div className="navbar">
       <span>Felipe Garcia <br /> Game Designer</span>
-      <nav>
-        <ul className="text-xs">
+      <div className="navbar-buttons">
+        <ul>
           <li>
             <a role="button" className="about-button" onClick={onInventoryClick}>
               About
@@ -23,7 +23,7 @@ const Navbar = ({ onInventoryClick, onProjectsClick, onContactClick }) => {
             </a>
           </li>
         </ul>
-      </nav>
+      </div>
     </div>
   );
 };

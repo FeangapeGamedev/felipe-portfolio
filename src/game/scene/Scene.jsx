@@ -69,7 +69,7 @@ const Scene = ({
         makeDefault
         position={[7.55, 5, 10]}
         rotation={[-Math.PI / 10, Math.PI / 5, 0.2]}
-        zoom={90}
+        zoom={80}
       />
 
       <ResponsiveOrthoZoom />

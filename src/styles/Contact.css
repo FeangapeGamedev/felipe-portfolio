@@ -4,13 +4,12 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw;             /* ✅ Responsive width for smaller screens */
-  max-width: 900px;        /* ✅ Matches inventory size */
-  min-height: 700px;       /* ✅ Keeps original height */
-  max-height: 90vh;        /* ✅ Prevents it from going off screen */
+  width: min(90vw, 900px);          /* Responsive width */
+  height: auto;
+  max-height: 90vh;                 /* Prevents overflow */
   background: #1a1a1a;
   border: 8px solid #555;
-  padding: 10px;
+  padding: clamp(10px, 2vw, 30px);  /* Responsive padding */
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
   font-family: "Press Start 2P", sans-serif;
   color: white;
@@ -19,10 +18,12 @@
   align-items: center;
   justify-content: flex-start;
   z-index: 1000;
-  overflow-y: auto;        /* ✅ Allows vertical scroll if needed */
-  overflow-x: hidden;      /* ✅ Prevents horizontal scroll */
+  overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
+  font-size: clamp(0.75rem, 1vw, 1rem); /* Responsive text size */
 }
+
 
 
 /* Contact Header - Styled Like Ribbon */
@@ -208,15 +209,9 @@
   background-repeat: no-repeat;
 }
 
-@media (max-width: 768px) {
-  .contact-bottom-section {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .contact-resume,
-  .contact-social {
-    width: 100%;
+@media (max-width: 700px), (max-height: 700px) {
+  .contact-container {
+    transform: scale(0.9) translate(-55%, -55%);
   }
 }
+

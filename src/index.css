@@ -84,4 +84,11 @@ body::after {
 .ui-layer > * {
   pointer-events: auto;
 }
+.safe-area {
+  margin: 3vh 3vw;
+  max-height: 94vh;
+  max-width: 94vw;
+  box-sizing: border-box;
+}
+
 

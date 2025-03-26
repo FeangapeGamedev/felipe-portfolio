@@ -4,11 +4,12 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 450px;                /* ✅ fixed width */
-  height: auto;                /* allow it to grow slightly with content */
+  width: min(90vw, 900px);
+  height: auto;
+  max-height: 90vh;
   background: #1a1a1a;
   border: 8px solid #555;
-  padding: 10px;
+  padding: clamp(10px, 2vw, 30px);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
   font-family: "Press Start 2P", sans-serif;
   color: white;
@@ -17,6 +18,10 @@
   align-items: center;
   justify-content: flex-start;
   z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  font-size: clamp(0.75rem, 1vw, 1rem);
 }
 
 /* Keep content neatly wrapped */
@@ -113,3 +118,8 @@
   justify-content: center;
 }
 
+@media (max-width: 700px), (max-height: 700px) {
+  .popup-panel, {
+    transform: scale(0.9) translate(-55%, -55%);
+  }
+}
