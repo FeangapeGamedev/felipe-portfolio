@@ -1,8 +1,7 @@
 // Scene.jsx
-import React, { useEffect, useState } from "react";
-import { OrthographicCamera } from "@react-three/drei"; // Keep only OrthographicCamera here
-import { useThree } from "@react-three/fiber"; // Correct import for useThree
-import { Physics } from "@react-three/rapier";
+import React, { useEffect, useRef } from "react";
+import { OrthographicCamera } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 import { useGame } from "../state/GameContext.jsx";
 import { CharacterController } from "./CharacterController.jsx";
 import { Character } from "./Character.jsx";
@@ -10,23 +9,35 @@ import SpotLightManager from "../state/SpotLightManager.jsx";
 import Room from './Room.jsx';
 import useTrapPlacement from "../survivor/useTrapPlacement.jsx";
 
-
 // 📐 Responsive zoom adjustment for orthographic camera
 const ResponsiveOrthoZoom = () => {
   const { camera, size } = useThree();
+  const lastAspect = useRef(null);
 
   useEffect(() => {
     if (camera.isOrthographicCamera) {
-      const DESIGN_WIDTH = 3440;
-      const DESIGN_HEIGHT = 1440;
+      const DESIGN_WIDTH = 1920;
+      const DESIGN_HEIGHT = 1080;
       const designAspect = DESIGN_WIDTH / DESIGN_HEIGHT;
       const currentAspect = size.width / size.height;
 
-      const baseZoom = 90;
+      if (lastAspect.current && Math.abs(lastAspect.current - currentAspect) < 0.01) {
+        return;
+      }
+
+      // 🔁 Adjust zoom based on resolution as well
+      const screenArea = size.width * size.height;
+      let baseZoom = 80;
+
+      if (screenArea < 1000000) baseZoom = 75; // smaller screens
+      if (screenArea < 700000) baseZoom = 70; // even smaller
+      if (screenArea < 500000) baseZoom = 65; // mobile-tier screens
+
       const zoomFactor = currentAspect / designAspect;
       camera.zoom = baseZoom * zoomFactor;
-
       camera.updateProjectionMatrix();
+
+      lastAspect.current = currentAspect;
     }
   }, [camera, size]);
 
@@ -64,7 +75,7 @@ const Scene = ({
   }, [currentRoom]);
 
   return (
-    <group>
+    <>
       <OrthographicCamera
         makeDefault
         position={[7.55, 5, 10]}
@@ -93,29 +104,27 @@ const Scene = ({
         />
       ))}
 
-      <Physics>
-        <Room
-          key={`room-${currentRoom.id}`}
+      <Room
+        key={`room-${currentRoom.id}`}
+        isPaused={isPaused}
+        onProjectSelect={onProjectSelect}
+        onShowCodeFrame={onShowCodeFrame}
+      />
+
+      {initialPosition && (
+        <Character
+          key={`character-${currentRoom.id}-${doorDirection}`}
+          initialPosition={initialPosition}
+          teleport={forceTeleport}
+          onTeleportComplete={() => setForceTeleport(false)}
           isPaused={isPaused}
-          onProjectSelect={onProjectSelect}
-          onShowCodeFrame={onShowCodeFrame}
         />
+      )}
 
-        {initialPosition && (
-          <Character
-            key={`character-${currentRoom.id}-${doorDirection}`}
-            initialPosition={initialPosition}
-            teleport={forceTeleport}
-            onTeleportComplete={() => setForceTeleport(false)}
-            isPaused={isPaused}
-          />
-        )}
-
-        <CharacterController isPaused={isPaused} />
-      </Physics>
+      <CharacterController isPaused={isPaused} />
 
       {TrapPreview}
-    </group>
+    </>
   );
 };
 
