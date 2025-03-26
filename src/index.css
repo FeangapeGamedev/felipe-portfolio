@@ -66,3 +66,22 @@ body::after {
   justify-content: center;
   z-index: 9999;
 }
+
+/* 🔹 UI Layer Wrapper - Floating above 3D Canvas */
+.ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none; /* Allows clicks to pass through unless overridden */
+  padding: 2vh 2vw;      /* Safe padding for all UI elements */
+  box-sizing: border-box;
+}
+
+/* 🔹 Re-enable pointer events for UI elements inside */
+.ui-layer > * {
+  pointer-events: auto;
+}
+

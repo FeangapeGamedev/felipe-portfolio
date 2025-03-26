@@ -1,12 +1,37 @@
+// Scene.jsx
 import React, { useEffect, useState } from "react";
-import { OrthographicCamera } from "@react-three/drei";
+import { OrthographicCamera } from "@react-three/drei"; // Keep only OrthographicCamera here
+import { useThree } from "@react-three/fiber"; // Correct import for useThree
 import { Physics } from "@react-three/rapier";
 import { useGame } from "../state/GameContext.jsx";
 import { CharacterController } from "./CharacterController.jsx";
 import { Character } from "./Character.jsx";
 import SpotLightManager from "../state/SpotLightManager.jsx";
 import Room from './Room.jsx';
-import useTrapPlacement from "../survivor/useTrapPlacement.jsx"; // ✅ Import your hook
+import useTrapPlacement from "../survivor/useTrapPlacement.jsx";
+
+
+// 📐 Responsive zoom adjustment for orthographic camera
+const ResponsiveOrthoZoom = () => {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    if (camera.isOrthographicCamera) {
+      const DESIGN_WIDTH = 3440;
+      const DESIGN_HEIGHT = 1440;
+      const designAspect = DESIGN_WIDTH / DESIGN_HEIGHT;
+      const currentAspect = size.width / size.height;
+
+      const baseZoom = 90;
+      const zoomFactor = currentAspect / designAspect;
+      camera.zoom = baseZoom * zoomFactor;
+
+      camera.updateProjectionMatrix();
+    }
+  }, [camera, size]);
+
+  return null;
+};
 
 const Scene = ({
   isPaused,
@@ -17,24 +42,17 @@ const Scene = ({
   setPlacementMode,
   trapCharges,
   setTrapCharges,
-  initialPosition,      // ✅ receive from App.jsx
-  setInitialPosition,   // ✅ receive this too
+  initialPosition,
+  setInitialPosition,
   forceTeleport,
   setForceTeleport,
 }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
 
-
-  // ✅ Safely use trap placement inside Canvas
   const { TrapPreview } = useTrapPlacement({
     placementMode,
     onPlaced: (trapType, position) => {
-      // Decrease trap charge
-      setTrapCharges(prev => ({
-        ...prev,
-        [trapType]: 0
-      }));
-      // Exit placement mode
+      setTrapCharges(prev => ({ ...prev, [trapType]: 0 }));
       setPlacementMode(null);
     }
   });
@@ -45,7 +63,6 @@ const Scene = ({
     setForceTeleport(true);
   }, [currentRoom]);
 
-
   return (
     <group>
       <OrthographicCamera
@@ -54,6 +71,8 @@ const Scene = ({
         rotation={[-Math.PI / 10, Math.PI / 5, 0.2]}
         zoom={90}
       />
+
+      <ResponsiveOrthoZoom />
 
       <ambientLight intensity={0.7} color="#ffffff" />
 
@@ -64,7 +83,6 @@ const Scene = ({
         castShadow
       />
 
-      {/* Spotlights */}
       {currentRoom.lights.map((light, index) => (
         <SpotLightManager
           key={index}
@@ -96,7 +114,6 @@ const Scene = ({
         <CharacterController isPaused={isPaused} />
       </Physics>
 
-      {/* ✅ Render trap preview if active */}
       {TrapPreview}
     </group>
   );

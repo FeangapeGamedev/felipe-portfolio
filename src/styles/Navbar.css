@@ -1,53 +1,69 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Iceland&display=swap');
 
-
-
 .navbar {
-  position: absolute;
+  position: fixed; /* Fix the navbar to the left side */
   top: 0;
   left: 0;
-  width: 99%;
-  background: linear-gradient(to bottom, #2b2b2b 10%, rgba(255, 255, 255, 0.1) 50%, #2b2b2b 90%);
+  height: 100%; /* Full height of the screen */
+  width: 10%; /* Set the navbar width */
+  background: linear-gradient(to bottom, #1a1a1a, #2b2b2b); /* Gradient from dark to dark grey */
   color: white;
-  font-size: 1.5rem;
+  font-size: 2rem; /* Base font size */
   font-weight: 400;
   font-style: normal;
-  padding: 1rem;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 0; /* Remove extra padding */
+  box-shadow: 4px 0px 6px rgba(0, 0, 0, 0.3); /* Shadow on the right side */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  flex-direction: column; /* Stack items vertically */
+  justify-content: flex-start; /* Align items to the top */
+  align-items: stretch; /* Ensure all contents stretch to fit the navbar width */
   z-index: 50;
   font-family: "Iceland", serif;
+  border-right: 2px solid #444; /* Add a border to the right side of the navbar */
 }
-  
+
+.navbar span {
+  font-size: 40px; /* Increase the size of the span text */
+  width: 100%; /* Ensure the span text fits within the navbar */
+  text-align: center; /* Center the span text */
+  box-sizing: border-box; /* Include padding and border in the width */
+  margin-bottom: 3rem; /* Add space below the text */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+}
+
 .navbar ul {
   display: flex;
-  flex-direction: row; /* Ensure items are in a row */
-  gap: 2rem;
+  flex-direction: column; /* Stack items vertically */
+  gap: 2rem; /* Add more spacing between items */
   text-transform: uppercase;
-  margin-left: auto; /* Pushes links to the right */
-  padding-right: 4rem; /* Adjust right padding to control position */
-  list-style: none; /* Ensure there are no bullet points */
-  align-items: center; /* Aligns items vertically */
+  margin: 0; /* Remove extra margin */
+  padding: 0; /* Remove padding */
+  list-style: none; /* Remove bullet points */
+  width: 100%; /* Ensure the list spans the full width of the navbar */
+  justify-content: flex-start; /* Align items to the top */
+  height: 100%; /* Make the ul take the full height of the navbar */
+  margin-top: 20rem; /* Move the buttons lower */
 }
 
-  
- .navbar a {
-    color: white;
-    text-decoration: none;
-    transition: color 0.2s ease-in-out;
-    cursor: pointer;
-  }
+.navbar a {
+  color: white;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  cursor: pointer;
+  padding: 1rem; /* Add padding to make the buttons larger */
+  width: 100%; /* Make the buttons span the full width of the navbar */
+  text-align: center; /* Center the text inside the buttons */
+  box-sizing: border-box; /* Ensure padding and border are included in the width */
+  display: block; /* Ensure the anchor behaves like a block element */
+  font-size: 1.5rem; /* Adjust the text size for the buttons */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+}
 
-  .navbar span {
-    font-size: 35px;
-  }
-  
-  .navbar a:hover {
-    color: #b0b0b0; /* Subtle hover effect */
-  }
-  
+.navbar a:hover {
+  color: black; /* Change text color to black */
+  background-color: white; /* Full white background on hover */
+}

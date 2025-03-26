@@ -95,9 +95,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       mixerRef.current.update(delta);
     }
 
-    // Prevent movement updates during the crouching sequence
     if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap) return;
-
 
     const characterPos = characterRef.current.translation();
     const posX = characterPos.x;
@@ -158,14 +156,11 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     );
 
     if (!isWalking && !isRunning) {
-      return; // ✅ skip rotation when idle
+      return;
     }
 
-    console.log("🔄 useFrame is rotating model during movement");
     modelRef.current.quaternion.slerp(targetQuaternion, turnSpeed * delta);
-
   });
-
 
   useEffect(() => {
     if (isPlacingTrap) return;
@@ -175,7 +170,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     walkActionRef.current.setEffectiveWeight(isWalking && !isRunning ? 1 : 0);
     runActionRef.current.setEffectiveWeight(isWalking && isRunning ? 1 : 0);
   }, [isIdle, isWalking, isRunning, isPlacingTrap]);
-
 
   const onCrouchAnimationFinished = (e) => {
     const finishedAction = e.action;
@@ -194,7 +188,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       setTrapToPlace(null);
       hasStartedPlacingRef.current = false;
 
-      // 👇 Explicitly fade in the idle animation
       blendTo(idleActionRef.current, 1);
       blendTo(walkActionRef.current, 0.2);
       blendTo(runActionRef.current, 0.2);
@@ -202,7 +195,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       restoreMovementWeights();
     }
   };
-
 
   useEffect(() => {
     if (targetPosition) {
@@ -213,25 +205,24 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
       characterRef.current.setTranslation(initialPosition, true);
-  
+
       if (modelRef.current) {
         modelRef.current.quaternion.setFromEuler(
-          new THREE.Euler(0, spawnRotationY, 0) // Apply Y-axis rotation
+          new THREE.Euler(0, spawnRotationY, 0)
         );
-        console.log("✅ Applied spawn rotation:", spawnRotationY);
       }
-  
+
       setTargetPosition(null);
       setIsIdle(true);
       setIsWalking(false);
       setIsRunning(false);
-  
+
       setJustTeleported(true);
       setTimeout(() => setJustTeleported(false), 50);
-  
-      onTeleportComplete?.(); // ✅ resets forceTeleport in parent
+
+      onTeleportComplete?.();
     }
-  }, [teleport, initialPosition, spawnRotationY]);  
+  }, [teleport, initialPosition, spawnRotationY]);
 
   useEffect(() => {
     if (!trapToPlace || !characterRef.current) return;
@@ -257,34 +248,27 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "p") {
-        console.log("🔑 Key P pressed. Starting crouch sequence...");
-
         if (!standToCrouchActionRef.current || !characterRef.current || !mixerRef.current) {
           console.error("❌ Missing animation references.");
           return;
         }
 
-        // 🚫 Prevent movement logic from running during the crouch
         setIsPlacingTrap(true);
-        setTrapToPlace(null); // in case it was from trap placement
+        setTrapToPlace(null);
         hasStartedPlacingRef.current = true;
 
-        // 🛑 Stop movement by forcing the target to current position
         const currentPos = characterRef.current.translation();
         setTargetPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
 
-        // ✅ Force play stand-to-crouch cleanly
         standToCrouchActionRef.current.reset();
         standToCrouchActionRef.current.weight = 1;
         standToCrouchActionRef.current.play();
 
-        // ❌ Fade out walk/run/idle immediately
         idleActionRef.current.weight = 0;
         walkActionRef.current.weight = 0;
         runActionRef.current.weight = 0;
 
-        // 🔁 Hook animation finish event
-        mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished); // clean cleanup
+        mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
         mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
       }
     };
@@ -292,7 +276,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
-
 
   return (
     <RigidBody

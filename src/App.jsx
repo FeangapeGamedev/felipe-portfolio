@@ -160,95 +160,95 @@ function App() {
           <p>Loading...</p>
         </div>
       )}
-
+  
       <Suspense fallback={null}>
-        {activeSection === "project-details" && selectedProject && (
-          <ProjectDetails
-            project={selectedProject}
-            onClose={() => {
-              setSelectedProject(null);
-              setActiveSection("game");
-            }}
-            onBack={() => {
-              setSelectedProject(null);
-              setActiveSection("projects");
-            }}
-            disableBackButton={disableBackButton}
-          />
-        )}
-
-        {activeSection === "inventory" && (
-          <Inventory onClose={() => setActiveSection("game")} />
-        )}
-
-        {activeSection === "contact" && (
-          <Contact onClose={() => setActiveSection("game")} />
-        )}
-
-        {activeSection === "projects" && (
-          <Projects
-            onClose={() => setActiveSection("game")}
-            onProjectClick={(project) => {
-              setSelectedProject(project);
-              setActiveSection("project-details");
-              setDisableBackButton(false);
-            }}
-          />
-        )}
-
-        {activeSection === "code-frame" && (
-          <CodeFrame
-            className="popup-frame"
-            doorPassKey={doorPassKey}
-            onCorrectPassKey={handleCorrectPassKey}
-            onClose={() => {
-              setActiveSection("game");
-              setShowErrorPopup(true);
-            }}
-          />
-        )}
-
-        {showErrorPopup && (
-          <ErrorCodePopup
-            message="ACCESS DENIED – TRY AGAIN"
-            onClose={() => setShowErrorPopup(false)}
-          />
-        )}
-
-        <Navbar
-          onInventoryClick={() =>
-            setActiveSection(
-              activeSection === "inventory" ? "game" : "inventory"
-            )
-          }
-          onProjectsClick={() =>
-            setActiveSection(
-              activeSection === "projects" ? "game" : "projects"
-            )
-          }
-          onContactClick={() => setActiveSection("contact")}
-        />
-
+        {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
           <Physics>
             <Scene
-             isPaused={isPaused}
-             onProjectSelect={handleProjectSelect}
-             onShowCodeFrame={handleShowCodeFrame}
-             onRoomChange={handleRoomChange}
-             placementMode={placementMode}
-             setPlacementMode={setPlacementMode}
-             trapCharges={trapCharges}
-             setTrapCharges={setTrapCharges}
-             initialPosition={initialPosition}          // ✅
-             setInitialPosition={setInitialPosition}    // ✅
-             forceTeleport={forceTeleport}              // ✅
-             setForceTeleport={setForceTeleport}        // ✅
+              isPaused={isPaused}
+              onProjectSelect={handleProjectSelect}
+              onShowCodeFrame={handleShowCodeFrame}
+              onRoomChange={handleRoomChange}
+              placementMode={placementMode}
+              setPlacementMode={setPlacementMode}
+              trapCharges={trapCharges}
+              setTrapCharges={setTrapCharges}
+              initialPosition={initialPosition}
+              setInitialPosition={setInitialPosition}
+              forceTeleport={forceTeleport}
+              setForceTeleport={setForceTeleport}
             />
           </Physics>
         </Canvas>
+  
+        {/* ✅ Floating UI Layer */}
+        <div className="ui-layer">
+          <Navbar
+            onInventoryClick={() =>
+              setActiveSection(activeSection === "inventory" ? "game" : "inventory")
+            }
+            onProjectsClick={() =>
+              setActiveSection(activeSection === "projects" ? "game" : "projects")
+            }
+            onContactClick={() => setActiveSection("contact")}
+          />
+  
+          {activeSection === "project-details" && selectedProject && (
+            <ProjectDetails
+              project={selectedProject}
+              onClose={() => {
+                setSelectedProject(null);
+                setActiveSection("game");
+              }}
+              onBack={() => {
+                setSelectedProject(null);
+                setActiveSection("projects");
+              }}
+              disableBackButton={disableBackButton}
+            />
+          )}
+  
+          {activeSection === "inventory" && (
+            <Inventory onClose={() => setActiveSection("game")} />
+          )}
+  
+          {activeSection === "contact" && (
+            <Contact onClose={() => setActiveSection("game")} />
+          )}
+  
+          {activeSection === "projects" && (
+            <Projects
+              onClose={() => setActiveSection("game")}
+              onProjectClick={(project) => {
+                setSelectedProject(project);
+                setActiveSection("project-details");
+                setDisableBackButton(false);
+              }}
+            />
+          )}
+  
+          {activeSection === "code-frame" && (
+            <CodeFrame
+              className="popup-frame"
+              doorPassKey={doorPassKey}
+              onCorrectPassKey={handleCorrectPassKey}
+              onClose={() => {
+                setActiveSection("game");
+                setShowErrorPopup(true);
+              }}
+            />
+          )}
+  
+          {showErrorPopup && (
+            <ErrorCodePopup
+              message="ACCESS DENIED – TRY AGAIN"
+              onClose={() => setShowErrorPopup(false)}
+            />
+          )}
+        </div>
       </Suspense>
-
+  
       {currentRoom?.id === 3 && !showLoadingScreen && (
         <SurvivorGameManager
           placementMode={placementMode}
@@ -262,12 +262,12 @@ function App() {
           restartSurvivorGame={restartSurvivorGame}
         />
       )}
-
+  
       {!showLoadingScreen && showWelcomePopup && (
         <WelcomePopup onClose={() => setShowWelcomePopup(false)} />
       )}
     </>
   );
-}
+}  
 
 export default App;
