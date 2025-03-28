@@ -20,7 +20,7 @@ import CodeFrame from "./components/CodeFrame";
 import ErrorCodePopup from "./components/ErrorCodePopup";
 import WelcomePopup from "./components/WelcomePopup";
 import * as THREE from "three";
-import { roomData } from "./game/data/roomData"; 
+import { roomData } from "./game/data/roomData";
 
 
 
@@ -39,6 +39,8 @@ function App() {
   const [showIntro, setShowIntro] = useState(true); // 👋 Show intro popup
   const [forceTeleport, setForceTeleport] = useState(false);
   const [initialPosition, setInitialPosition] = useState(null);
+  const [selectedTrapType, setSelectedTrapType] = useState(null);
+  const [isPlacingTrap, setIsPlacingTrap] = useState(false);
 
 
   const { changeRoom, currentRoom, doorDirection } = useGame();
@@ -56,7 +58,7 @@ function App() {
     blender: 1,
     vr: 1,
   });
-  
+
 
 
 
@@ -138,7 +140,7 @@ function App() {
       unreal: 1,
       vr: 1,
     });
-    
+
 
     setPlacementMode(null);
     setPrepTime(60);     // ⏱️ reset timer
@@ -160,7 +162,7 @@ function App() {
           <p>Loading...</p>
         </div>
       )}
-  
+
       <Suspense fallback={null}>
         {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
@@ -178,10 +180,14 @@ function App() {
               setInitialPosition={setInitialPosition}
               forceTeleport={forceTeleport}
               setForceTeleport={setForceTeleport}
+              selectedTrapType={selectedTrapType}
+              setSelectedTrapType={setSelectedTrapType}
+              isPlacingTrap={isPlacingTrap}
+              setIsPlacingTrap={setIsPlacingTrap}
             />
           </Physics>
         </Canvas>
-  
+
         {/* ✅ Floating UI Layer */}
         <div className="ui-layer">
           <Navbar
@@ -193,7 +199,7 @@ function App() {
             }
             onContactClick={() => setActiveSection("contact")}
           />
-  
+
           {activeSection === "project-details" && selectedProject && (
             <ProjectDetails
               project={selectedProject}
@@ -208,15 +214,15 @@ function App() {
               disableBackButton={disableBackButton}
             />
           )}
-  
+
           {activeSection === "inventory" && (
             <Inventory onClose={() => setActiveSection("game")} />
           )}
-  
+
           {activeSection === "contact" && (
             <Contact onClose={() => setActiveSection("game")} />
           )}
-  
+
           {activeSection === "projects" && (
             <Projects
               onClose={() => setActiveSection("game")}
@@ -227,7 +233,7 @@ function App() {
               }}
             />
           )}
-  
+
           {activeSection === "code-frame" && (
             <CodeFrame
               className="popup-frame"
@@ -239,7 +245,7 @@ function App() {
               }}
             />
           )}
-  
+
           {showErrorPopup && (
             <ErrorCodePopup
               message="ACCESS DENIED – TRY AGAIN"
@@ -248,11 +254,9 @@ function App() {
           )}
         </div>
       </Suspense>
-  
+
       {currentRoom?.id === 3 && !showLoadingScreen && (
         <SurvivorGameManager
-          placementMode={placementMode}
-          setPlacementMode={setPlacementMode}
           trapCharges={trapCharges}
           setTrapCharges={setTrapCharges}
           prepTime={prepTime}
@@ -260,14 +264,22 @@ function App() {
           showIntro={showIntro}
           setShowIntro={setShowIntro}
           restartSurvivorGame={restartSurvivorGame}
+          selectedTrapType={selectedTrapType}
+          setSelectedTrapType={setSelectedTrapType}
+          onArmTrap={() => {
+            if (!selectedTrapType || isPlacingTrap) return;
+            setIsPlacingTrap(true);
+          }}
+          isPlacingTrap={isPlacingTrap}
         />
+
       )}
-  
+
       {!showLoadingScreen && showWelcomePopup && (
         <WelcomePopup onClose={() => setShowWelcomePopup(false)} />
       )}
     </>
   );
-}  
+}
 
 export default App;

@@ -1,5 +1,5 @@
 // Scene.jsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { OrthographicCamera } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useGame } from "../state/GameContext.jsx";
@@ -57,15 +57,27 @@ const Scene = ({
   setInitialPosition,
   forceTeleport,
   setForceTeleport,
+  selectedTrapType, // Remove duplicate state declaration
+  setSelectedTrapType, // Remove duplicate state declaration
+  isPlacingTrap, // Remove duplicate state declaration
+  setIsPlacingTrap, // Remove duplicate state declaration
 }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
+
+  // Trap-related state
+  const [placedTraps, setPlacedTraps] = useState([]); // Keep only this local state
+
+  const handleArmTrap = () => {
+    if (!selectedTrapType || isPlacingTrap) return;
+    setIsPlacingTrap(true);
+  };
 
   const { TrapPreview } = useTrapPlacement({
     placementMode,
     onPlaced: (trapType, position) => {
-      setTrapCharges(prev => ({ ...prev, [trapType]: 0 }));
+      setTrapCharges((prev) => ({ ...prev, [trapType]: 0 }));
       setPlacementMode(null);
-    }
+    },
   });
 
   useEffect(() => {
@@ -118,12 +130,39 @@ const Scene = ({
           teleport={forceTeleport}
           onTeleportComplete={() => setForceTeleport(false)}
           isPaused={isPaused}
+          selectedTrapType={selectedTrapType}
+          isPlacingTrap={isPlacingTrap}
+          setIsPlacingTrap={setIsPlacingTrap} // ✅ Add this line
+          onTrapPlaced={(trapType, position) => {
+            setTrapCharges((prev) => ({
+              ...prev,
+              [trapType]: Math.max(0, prev[trapType] - 1),
+            }));
+            setPlacedTraps((prev) => [...prev, { type: trapType, position }]);
+            setIsPlacingTrap(false);
+            setSelectedTrapType(null);
+          }}
         />
       )}
 
-      <CharacterController isPaused={isPaused} />
+      <CharacterController isPaused={isPaused || isPlacingTrap} />
 
       {TrapPreview}
+
+      {placedTraps.map((trap, i) => (
+        <mesh key={i} position={trap.position}>
+          <boxGeometry args={[1, 0.1, 1]} />
+          <meshStandardMaterial
+            color={{
+              unity: "#224b55",
+              unreal: "#3f2a47",
+              react: "#1e3a5f",
+              blender: "#5a2c16",
+              vr: "#3d1f1f",
+            }[trap.type] || "white"}
+          />
+        </mesh>
+      ))}
     </>
   );
 };
