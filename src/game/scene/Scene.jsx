@@ -8,6 +8,7 @@ import { Character } from "./Character.jsx";
 import SpotLightManager from "../state/SpotLightManager.jsx";
 import Room from './Room.jsx';
 import useTrapPlacement from "../survivor/useTrapPlacement.jsx";
+import * as THREE from 'three';
 
 // 📐 Responsive zoom adjustment for orthographic camera
 const ResponsiveOrthoZoom = () => {
@@ -48,37 +49,23 @@ const Scene = ({
   isPaused,
   onProjectSelect,
   onShowCodeFrame,
-  onRoomChange,
   placementMode,
-  setPlacementMode,
-  trapCharges,
   setTrapCharges,
   initialPosition,
   setInitialPosition,
   forceTeleport,
   setForceTeleport,
-  selectedTrapType, // Remove duplicate state declaration
-  setSelectedTrapType, // Remove duplicate state declaration
-  isPlacingTrap, // Remove duplicate state declaration
-  setIsPlacingTrap, // Remove duplicate state declaration
+  selectedTrapType, 
+  setSelectedTrapType, 
+  isPlacingTrap, 
+  setIsPlacingTrap,
 }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
 
   // Trap-related state
   const [placedTraps, setPlacedTraps] = useState([]); // Keep only this local state
 
-  const handleArmTrap = () => {
-    if (!selectedTrapType || isPlacingTrap) return;
-    setIsPlacingTrap(true);
-  };
-
-  const { TrapPreview } = useTrapPlacement({
-    placementMode,
-    onPlaced: (trapType, position) => {
-      setTrapCharges((prev) => ({ ...prev, [trapType]: 0 }));
-      setPlacementMode(null);
-    },
-  });
+  const { TrapPreview } = useTrapPlacement({ placementMode });
 
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
@@ -128,17 +115,38 @@ const Scene = ({
           key={`character-${currentRoom.id}-${doorDirection}`}
           initialPosition={initialPosition}
           teleport={forceTeleport}
-          onTeleportComplete={() => setForceTeleport(false)}
+          onTeleportComplete={() => {
+            console.log("🚀 Teleport complete. Force teleport reset.");
+            setForceTeleport(false);
+          }}
           isPaused={isPaused}
           selectedTrapType={selectedTrapType}
           isPlacingTrap={isPlacingTrap}
-          setIsPlacingTrap={setIsPlacingTrap} // ✅ Add this line
+          setIsPlacingTrap={setIsPlacingTrap}
           onTrapPlaced={(trapType, position) => {
-            setTrapCharges((prev) => ({
-              ...prev,
-              [trapType]: Math.max(0, prev[trapType] - 1),
-            }));
-            setPlacedTraps((prev) => [...prev, { type: trapType, position }]);
+            console.log("🧩 Scene received trap placement:", trapType, position);
+
+            // Log trap charges before and after update
+            setTrapCharges((prev) => {
+              console.log("⚡ Trap charge before:", prev[trapType]);
+              const updated = {
+                ...prev,
+                [trapType]: Math.max(0, prev[trapType] - 1),
+              };
+              console.log("📉 Trap charge after:", updated[trapType]);
+              return updated;
+            });
+
+            // Log placed traps before and after update
+            setPlacedTraps((prev) => {
+              console.log("🔄 Previous traps:", prev);
+              const updated = [...prev, { type: trapType, position }];
+              console.log("🆕 New trap list:", updated);
+              return updated;
+            });
+
+            // Log state changes for trap placement
+            console.log("✅ Trap placement complete. Resetting placement state.");
             setIsPlacingTrap(false);
             setSelectedTrapType(null);
           }}
@@ -150,7 +158,7 @@ const Scene = ({
       {TrapPreview}
 
       {placedTraps.map((trap, i) => (
-        <mesh key={i} position={trap.position}>
+        <mesh key={i} position={new THREE.Vector3(trap.position.x, trap.position.y, trap.position.z)}>
           <boxGeometry args={[1, 0.1, 1]} />
           <meshStandardMaterial
             color={{

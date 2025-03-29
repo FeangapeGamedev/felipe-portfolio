@@ -5,7 +5,6 @@ import TrapUI from "../../components/TrapUI";
 
 const SurvivorGameManager = ({
   trapCharges,
-  setTrapCharges,
   prepTime,
   setPrepTime,
   showIntro,
@@ -22,29 +21,48 @@ const SurvivorGameManager = ({
   useEffect(() => {
     if (showIntro || prepTime <= 0) return;
     const interval = setInterval(() => {
-      setPrepTime(prev => prev - 1);
+      setPrepTime((prev) => {
+        return prev - 1;
+      });
     }, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [prepTime, showIntro]);
 
   useEffect(() => {
     if (prepTime === 0) {
-      console.log("🧟 Enemies incoming!");
+      console.log("🧟 Enemies incoming! Prep time is over.");
       // TODO: Spawn enemies
     }
   }, [prepTime]);
 
+  const handleTrapArm = (trapType) => {
+    console.log("🪤 Trap armed:", trapType);
+    onArmTrap(trapType);
+  };
+
   return (
     <>
       {/* Survivor Mode Intro */}
-      {showIntro && <SurvivorIntroPopup onClose={() => setShowIntro(false)} />}
+      {showIntro && (
+        <SurvivorIntroPopup
+          onClose={() => {
+            console.log("🎬 Survivor intro closed.");
+            setShowIntro(false);
+          }}
+        />
+      )}
 
       {/* Trap UI */}
       <TrapUI
         trapCharges={trapCharges}
         selectedTrapType={selectedTrapType}
-        setSelectedTrapType={setSelectedTrapType}
-        onArmTrap={onArmTrap}
+        setSelectedTrapType={(type) => {
+          console.log("🎯 Trap type selected:", type);
+          setSelectedTrapType(type);
+        }}
+        onArmTrap={handleTrapArm}
         isPlacingTrap={isPlacingTrap}
         prepTime={prepTime}
         showIntro={showIntro}
@@ -81,7 +99,10 @@ const SurvivorGameManager = ({
         }}
       >
         <button
-          onClick={restartSurvivorGame}
+          onClick={() => {
+            console.log("🔄 Restarting survivor game.");
+            restartSurvivorGame();
+          }}
           style={{
             padding: "10px 16px",
             fontSize: "14px",

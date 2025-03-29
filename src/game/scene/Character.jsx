@@ -49,6 +49,24 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     actionRef.fadeIn(0.2).play();
   };
 
+  const stopAllAnimations = () => {
+    idleActionRef.current?.stop();
+    walkActionRef.current?.stop();
+    runActionRef.current?.stop();
+    crouchToStandingActionRef.current?.stop();
+    crouchIdleActionRef.current?.stop();
+    standToCrouchActionRef.current?.stop();
+  };
+
+  const zeroAllWeights = () => {
+    idleActionRef.current.weight = 0;
+    walkActionRef.current.weight = 0;
+    runActionRef.current.weight = 0;
+    crouchToStandingActionRef.current.weight = 0;
+    crouchIdleActionRef.current.weight = 0;
+    standToCrouchActionRef.current.weight = 0;
+  };
+
   useEffect(() => {
     if (characterModel && animations.length > 0) {
       mixerRef.current = new AnimationMixer(characterModel);
@@ -75,13 +93,17 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       walkActionRef.current.timeScale = 1.8;
       runActionRef.current.timeScale = 1;
 
-      idleActionRef.current.play();
-      walkActionRef.current.play();
-      runActionRef.current.play();
-
+      // Initialize weights
       idleActionRef.current.weight = 1;
       walkActionRef.current.weight = 0;
       runActionRef.current.weight = 0;
+      standToCrouchActionRef.current.weight = 0; // Set crouching weights to 0
+      crouchIdleActionRef.current.weight = 0;    // Set crouching weights to 0
+      crouchToStandingActionRef.current.weight = 0; // Set crouching weights to 0
+
+      idleActionRef.current.play();
+      walkActionRef.current.play();
+      runActionRef.current.play();
 
       mixerRef.current.update(0);
     } else {
@@ -174,34 +196,41 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     const finishedAction = e.action;
 
     if (finishedAction === standToCrouchActionRef.current) {
-      standToCrouchActionRef.current.fadeOut(0.2);
       blendTo(crouchIdleActionRef.current);
     } else if (finishedAction === crouchIdleActionRef.current) {
+      // Fade out crouch idle
       crouchIdleActionRef.current.fadeOut(0.2);
-      blendTo(crouchToStandingActionRef.current);
-    } else if (finishedAction === crouchToStandingActionRef.current) {
-      crouchToStandingActionRef.current.stop();
+
       crouchToStandingActionRef.current.reset();
+      crouchToStandingActionRef.current.setLoop(LoopOnce, 1);
+      crouchToStandingActionRef.current.clampWhenFinished = true;
+      crouchToStandingActionRef.current.setEffectiveWeight(1);
+      
+      // 🔄 Instead of hard play, use fadeIn
+      crouchToStandingActionRef.current.fadeIn(0.2).play();
+      
+    } else if (finishedAction === crouchToStandingActionRef.current) {
       mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
 
-      if (onTrapPlaced && trapToPlace) {
-        onTrapPlaced(trapToPlace.type, trapToPlace.position);
-      }
-
-      setIsPlacingTrap(false);
+      // Clear trap and unlock input
+      if (trapToPlace) onTrapPlaced?.(trapToPlace.type, trapToPlace.position);
       setTrapToPlace(null);
+      setIsPlacingTrap(false);
       hasStartedPlacingRef.current = false;
 
-      // ✅ Restart idle animation and ensure proper weights
+      // Clear crouch weights
+      crouchToStandingActionRef.current.weight = 0;
+      crouchIdleActionRef.current.weight = 0;
+      standToCrouchActionRef.current.weight = 0;
+
+      // Restore movement logic (let movement code handle walk/run/idle)
+      // 🔄 Restart idle, walk, and run animations (in case they were stopped)
       idleActionRef.current.reset().play();
       walkActionRef.current.reset().play();
       runActionRef.current.reset().play();
 
-      idleActionRef.current.weight = 1;
-      walkActionRef.current.weight = 0;
-      runActionRef.current.weight = 0;
-
-      restoreMovementWeights(); // Re-sync to current movement state
+      // ✅ Restore movement weights next frame
+      restoreMovementWeights();
     }
   };
 
@@ -252,55 +281,52 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     if (!trapToPlace || !characterRef.current) return;
 
     const characterPos = characterRef.current.translation();
-    const distance = trapToPlace.position.distanceTo(new THREE.Vector3(
-      characterPos.x, characterPos.y, characterPos.z
-    ));
+    const distance = trapToPlace.position.distanceTo(
+      new THREE.Vector3(characterPos.x, characterPos.y, characterPos.z)
+    );
 
     if (distance < stopThreshold && !hasStartedPlacingRef.current) {
       hasStartedPlacingRef.current = true;
       setIsPlacingTrap(true);
+
+      // ✅ Freeze movement so character won't slide during animation
+      if (characterRef.current) {
+        characterRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true); // Zero linear velocity
+        characterRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true); // Zero angular velocity
+      }
+
       if (standToCrouchActionRef.current) {
         blendTo(standToCrouchActionRef.current);
         idleActionRef.current.weight = 0;
         walkActionRef.current.weight = 0;
         runActionRef.current.weight = 0;
       }
-      mixerRef.current.addEventListener("finished", () => {
-        onTrapPlaced(selectedTrapType); // Notify trap placement
-        setIsPlacingTrap(false);
-        setTrapToPlace(null);
-        hasStartedPlacingRef.current = false;
 
-        blendTo(idleActionRef.current, 1);
-        blendTo(walkActionRef.current, 0.2);
-        blendTo(runActionRef.current, 0.2);
-
-        restoreMovementWeights();
-      });
+      mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
+      mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
     }
-  }, [trapToPlace, selectedTrapType, onTrapPlaced]);
+
+  }, [trapToPlace, selectedTrapType]);
 
   useEffect(() => {
-    if (!isPlacingTrap || !selectedTrapType || !characterRef.current) return;
+    if (!isPlacingTrap || !selectedTrapType || !characterRef.current || hasStartedPlacingRef.current) return;
 
-    const currentPos = characterRef.current.translation();
-    setTargetPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
+    const pos = characterRef.current.translation();
+    const trapPos = new THREE.Vector3(pos.x, pos.y, pos.z);
 
-    setTrapToPlace({
-      type: selectedTrapType,
-      position: new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z),
-    });
+    console.log("🎯 Trap setup initiated:", selectedTrapType, trapPos);
 
+    setTrapToPlace({ type: selectedTrapType, position: trapPos });
+    setTargetPosition(trapPos);
     hasStartedPlacingRef.current = true;
 
-    if (standToCrouchActionRef.current) {
-      standToCrouchActionRef.current.reset();
-      standToCrouchActionRef.current.weight = 1;
-      standToCrouchActionRef.current.play();
+    // ✅ Stop all animations and reset weights
+    stopAllAnimations();
+    zeroAllWeights();
 
-      idleActionRef.current.weight = 0;
-      walkActionRef.current.weight = 0;
-      runActionRef.current.weight = 0;
+    // ✅ Start crouch sequence
+    if (standToCrouchActionRef.current && mixerRef.current) {
+      blendTo(standToCrouchActionRef.current);
 
       mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
       mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);

@@ -77,27 +77,35 @@ export const CharacterController = ({ isPaused }) => {
         setLastClickedObject(firstInteractive.object.userData.id);
 
         if (collidingObject !== firstInteractive.object.userData.id) {
-          setTargetPosition({
+          if (isPausedRef.current) {
+            return;
+          }
+          const targetPosition = {
             position: new THREE.Vector3(
               firstInteractive.point.x,
               firstInteractive.point.y,
               firstInteractive.point.z
             ),
             run: isDoubleClick,
-          });
+          };
+          setTargetPosition(targetPosition);
         }
 
         setCurrentInteractive(firstInteractive.object.userData);
       } else if (firstFloorHit) {
         setLastClickedObject(null);
-        setTargetPosition({
+        if (isPausedRef.current) {
+          return;
+        }
+        const targetPosition = {
           position: new THREE.Vector3(
             firstFloorHit.point.x,
             firstFloorHit.point.y,
             firstFloorHit.point.z
           ),
           run: isDoubleClick,
-        });
+        };
+        setTargetPosition(targetPosition);
         setCurrentInteractive(null);
       }
     };
@@ -128,6 +136,9 @@ export const CharacterController = ({ isPaused }) => {
       window.removeEventListener("collisionEnter", handleCollisionEnter);
       window.removeEventListener("collisionExit", handleCollisionExit);
     };
+  }, []);
+
+  useEffect(() => {
   }, []);
 
   return null;
