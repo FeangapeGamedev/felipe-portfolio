@@ -3,7 +3,7 @@ export const roomData = [
     id: 1,
     name: "Introduction Room",
     position: [0, 0, 0],
-    spawnPositionForward: [0, 0, 6],
+    spawnPositionForward: [-3, 0, -3],
     spawnPositionBackward: [-4, 0, -6],
     width: 15,
     depth: 15,
@@ -232,7 +232,7 @@ export const roomData = [
     id: 3,
     name: "Danger Room",
     position: [0, 0, 0],
-    spawnPositionForward: [5, 0, 6 ],
+    spawnPositionForward: [5, 0, 6],
     spawnPositionBackward: [0, 0, -4],
     width: 15,
     depth: 15,
@@ -255,10 +255,21 @@ export const roomData = [
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/SciFiDoor.glb",
         scale: [0.9, 0.9, 0.9],
         transparency: 0.2,
-        userData: { raycastable: true, isInteractive: true, id: "door4", },
+        userData: { raycastable: true, isInteractive: true, id: "door4" },
       },
     ],
     props: [], // Ensure props is an array
-    lights: [],
+    lights: [
+      {
+        position: [0, 4.5, 0], // Center of the room, elevated
+        targetPosition: [0, 0, 0], // Aiming directly at the center of the floor
+        intensity: 15, // Bright enough to cover most of the room
+        color: 0xffffff, // Neutral white light
+        angle: Math.PI / 2, // Wide beam angle to cover the room
+        penumbra: 0.3, // Slightly soft edges
+        decay: 2, // Light fades naturally
+        distance: 30, // Covers most of the room
+      },
+    ],
   },
 ];

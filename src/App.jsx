@@ -41,6 +41,7 @@ function App() {
   const [initialPosition, setInitialPosition] = useState(null);
   const [selectedTrapType, setSelectedTrapType] = useState(null);
   const [isPlacingTrap, setIsPlacingTrap] = useState(false);
+  const [placedTraps, setPlacedTraps] = useState([]);
 
 
   const { changeRoom, currentRoom, doorDirection } = useGame();
@@ -130,8 +131,8 @@ function App() {
   };
 
   const restartSurvivorGame = () => {
-    changeRoom(3); // Respawn into Room 3
-
+    changeRoom(3); // Trigger room change (will cause Scene to update)
+  
     setTrapCharges({
       unity: 1,
       blender: 1,
@@ -139,20 +140,21 @@ function App() {
       unreal: 1,
       vr: 1,
     });
-
-
-    setPlacementMode(null);
-    setPrepTime(60);     // ⏱️ reset timer
-    setShowIntro(true);  // 🧾 show popup again
-
-    // ✅ Force teleport after room loads
+  
+    setPlacedTraps([]); // Clear all trap meshes
+    setPrepTime(60);
+    setShowIntro(true);
+    setSelectedTrapType(null);
+    setIsPlacingTrap(false);
+  
+    // ⏳ Delay teleport assignment until Scene has switched to Room 3
     setTimeout(() => {
-      setInitialPosition(new THREE.Vector3(...roomData[2].spawnPositionForward)); // Room 3's spawn
-      setForceTeleport(true); // trigger teleport
-    }, 200); // slight delay to allow Room 3 to render
+      const spawn = new THREE.Vector3(...roomData[2].spawnPositionForward);
+      setInitialPosition(spawn);
+      setForceTeleport(true); // ✅ This should now trigger teleport
+    }, 300); // Delay can be adjusted slightly
   };
-
-
+  
 
   return (
     <>
@@ -165,7 +167,7 @@ function App() {
       <Suspense fallback={null}>
         {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
-          <Physics>
+          <Physics debug>
             <Scene
               isPaused={isPaused}
               onProjectSelect={handleProjectSelect}
@@ -181,6 +183,9 @@ function App() {
               setSelectedTrapType={setSelectedTrapType}
               isPlacingTrap={isPlacingTrap}
               setIsPlacingTrap={setIsPlacingTrap}
+              placedTraps={placedTraps}
+              setPlacedTraps={setPlacedTraps}
+              restartSurvivorGame={restartSurvivorGame}
             />
           </Physics>
         </Canvas>

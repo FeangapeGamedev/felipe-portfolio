@@ -8,6 +8,7 @@ import { Character } from "./Character.jsx";
 import SpotLightManager from "../state/SpotLightManager.jsx";
 import Room from './Room.jsx';
 import * as THREE from 'three';
+import Trap from "./Trap";
 
 // 📐 Responsive zoom adjustment for orthographic camera
 const ResponsiveOrthoZoom = () => {
@@ -57,9 +58,11 @@ const Scene = ({
   setSelectedTrapType,
   isPlacingTrap,
   setIsPlacingTrap,
+  restartSurvivorGame,
+  placedTraps,
+  setPlacedTraps,
 }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
-  const [placedTraps, setPlacedTraps] = useState([]);
 
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
@@ -72,7 +75,7 @@ const Scene = ({
 
     if (currentRoom.id !== 3) {
       console.log("🚮 Leaving Survivor Mode. Clearing traps.");
-      setPlacedTraps([]);
+      setPlacedTraps([]); // Clear traps when leaving Survivor Mode
     }
   }, [currentRoom]);
 
@@ -150,30 +153,11 @@ const Scene = ({
       {currentRoom.id === 3 && placedTraps.map((trap, i) => {
         const position = new THREE.Vector3(trap.position.x, 0.5, trap.position.z);
 
-        console.log(`📦 Trap ${i}:`, position);
-
         return (
-          <mesh key={i} position={position}>
-            <boxGeometry args={[1, 0.1, 1]} />
-            <meshStandardMaterial
-              color={{
-                unity: "#224b55",
-                unreal: "#3f2a47",
-                react: "#1e3a5f",
-                blender: "#5a2c16",
-                vr: "#3d1f1f",
-              }[trap.type] || "white"}
-            />
-          </mesh>
+          <Trap key={i} type={trap.type} position={position} />
         );
       })}
 
-      {currentRoom.id === 3 && (
-        <mesh position={[0, 0.5, 0]}>
-          <boxGeometry args={[1, 0.1, 1]} />
-          <meshStandardMaterial color="limegreen" />
-        </mesh>
-      )}
     </>
   );
 };

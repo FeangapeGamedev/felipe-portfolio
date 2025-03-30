@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { RigidBody, CuboidCollider } from "@react-three/rapier";
+import { RigidBody, CuboidCollider, interactionGroups } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
@@ -265,25 +265,28 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
 
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
+      console.log("🌀 Teleporting to:", initialPosition.toArray()); // ✅ Add this
+  
       characterRef.current.setTranslation(initialPosition, true);
-
+  
       if (modelRef.current) {
         modelRef.current.quaternion.setFromEuler(
           new THREE.Euler(0, spawnRotationY, 0)
         );
       }
-
+  
       setTargetPosition(null);
       setIsIdle(true);
       setIsWalking(false);
       setIsRunning(false);
-
+  
       setJustTeleported(true);
       setTimeout(() => setJustTeleported(false), 50);
-
+  
       onTeleportComplete?.();
     }
   }, [teleport, initialPosition, spawnRotationY]);
+  
 
   useEffect(() => {
     if (!trapToPlaceRef.current || !characterRef.current) return;
@@ -320,7 +323,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     if (!isPlacingTrap || !selectedTrapType || !characterRef.current || hasStartedPlacingRef.current) return;
 
     const pos = characterRef.current.translation();
-    const trapPos = new THREE.Vector3(pos.x, 0.5, pos.z); // 🔥 Force Y to 0.5
+    const trapPos = new THREE.Vector3(pos.x, 0.1, pos.z); // 🔥 Force Y to 0.5
 
     console.log("🎯 Trap setup initiated:", selectedTrapType, trapPos);
 
@@ -342,14 +345,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
     }
   }, [isPlacingTrap, selectedTrapType]);
-
-  // useEffect(() => {
-  //   if (trapToPlaceRef.current && !hasPlacedTrapRef.current) {
-  //     console.log("📦 Calling onTrapPlaced from Character", trapToPlaceRef.current);
-  //     onTrapPlaced?.(trapToPlaceRef.current.type, trapToPlaceRef.current.position);
-  //     hasPlacedTrapRef.current = true; // ✅ Mark as placed
-  //   }
-  // }, [trapToPlaceRef.current, onTrapPlaced]);
 
   return (
     <RigidBody
@@ -377,7 +372,11 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
         }
       }}
     >
-      <CuboidCollider args={[0.35, 1, 0.35]} position={[0, 1, 0]} />
+      <CuboidCollider
+        args={[0.35, 1, 0.35]}
+        position={[0, 1, 0]}
+        collisionGroups={interactionGroups(0b0010, 0b1110)} // Character = group 2, collides with groups 2-4
+      />
       {characterModel ? (
         <primitive
           ref={modelRef}
