@@ -7,7 +7,6 @@ import { CharacterController } from "./CharacterController.jsx";
 import { Character } from "./Character.jsx";
 import SpotLightManager from "../state/SpotLightManager.jsx";
 import Room from './Room.jsx';
-import useTrapPlacement from "../survivor/useTrapPlacement.jsx";
 import * as THREE from 'three';
 
 // 📐 Responsive zoom adjustment for orthographic camera
@@ -49,23 +48,18 @@ const Scene = ({
   isPaused,
   onProjectSelect,
   onShowCodeFrame,
-  placementMode,
   setTrapCharges,
   initialPosition,
   setInitialPosition,
   forceTeleport,
   setForceTeleport,
-  selectedTrapType, 
-  setSelectedTrapType, 
-  isPlacingTrap, 
+  selectedTrapType,
+  setSelectedTrapType,
+  isPlacingTrap,
   setIsPlacingTrap,
 }) => {
   const { currentRoom, targetPosition, doorDirection } = useGame();
-
-  // Trap-related state
-  const [placedTraps, setPlacedTraps] = useState([]); // Keep only this local state
-
-  const { TrapPreview } = useTrapPlacement({ placementMode });
+  const [placedTraps, setPlacedTraps] = useState([]);
 
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
@@ -73,6 +67,16 @@ const Scene = ({
     setForceTeleport(true);
   }, [currentRoom]);
 
+  useEffect(() => {
+    if (!currentRoom) return;
+
+    if (currentRoom.id !== 3) {
+      console.log("🚮 Leaving Survivor Mode. Clearing traps.");
+      setPlacedTraps([]);
+    }
+  }, [currentRoom]);
+
+  // ✅ Debug log to check trap count
   return (
     <>
       <OrthographicCamera
@@ -124,29 +128,17 @@ const Scene = ({
           isPlacingTrap={isPlacingTrap}
           setIsPlacingTrap={setIsPlacingTrap}
           onTrapPlaced={(trapType, position) => {
-            console.log("🧩 Scene received trap placement:", trapType, position);
+            if (currentRoom.id !== 3) return;
 
-            // Log trap charges before and after update
-            setTrapCharges((prev) => {
-              console.log("⚡ Trap charge before:", prev[trapType]);
-              const updated = {
-                ...prev,
-                [trapType]: Math.max(0, prev[trapType] - 1),
-              };
-              console.log("📉 Trap charge after:", updated[trapType]);
-              return updated;
-            });
+            setTrapCharges((prev) => ({
+              ...prev,
+              [trapType]: Math.max(0, prev[trapType] - 1),
+            }));
 
-            // Log placed traps before and after update
-            setPlacedTraps((prev) => {
-              console.log("🔄 Previous traps:", prev);
-              const updated = [...prev, { type: trapType, position }];
-              console.log("🆕 New trap list:", updated);
-              return updated;
-            });
+            setPlacedTraps((prev) => [...prev, { type: trapType, position }]);
 
-            // Log state changes for trap placement
-            console.log("✅ Trap placement complete. Resetting placement state.");
+            console.log("🚩 Trap placed:", { trapType, position });
+
             setIsPlacingTrap(false);
             setSelectedTrapType(null);
           }}
@@ -155,22 +147,33 @@ const Scene = ({
 
       <CharacterController isPaused={isPaused || isPlacingTrap} />
 
-      {TrapPreview}
+      {currentRoom.id === 3 && placedTraps.map((trap, i) => {
+        const position = new THREE.Vector3(trap.position.x, 0.5, trap.position.z);
 
-      {placedTraps.map((trap, i) => (
-        <mesh key={i} position={new THREE.Vector3(trap.position.x, trap.position.y, trap.position.z)}>
+        console.log(`📦 Trap ${i}:`, position);
+
+        return (
+          <mesh key={i} position={position}>
+            <boxGeometry args={[1, 0.1, 1]} />
+            <meshStandardMaterial
+              color={{
+                unity: "#224b55",
+                unreal: "#3f2a47",
+                react: "#1e3a5f",
+                blender: "#5a2c16",
+                vr: "#3d1f1f",
+              }[trap.type] || "white"}
+            />
+          </mesh>
+        );
+      })}
+
+      {currentRoom.id === 3 && (
+        <mesh position={[0, 0.5, 0]}>
           <boxGeometry args={[1, 0.1, 1]} />
-          <meshStandardMaterial
-            color={{
-              unity: "#224b55",
-              unreal: "#3f2a47",
-              react: "#1e3a5f",
-              blender: "#5a2c16",
-              vr: "#3d1f1f",
-            }[trap.type] || "white"}
-          />
+          <meshStandardMaterial color="limegreen" />
         </mesh>
-      ))}
+      )}
     </>
   );
 };

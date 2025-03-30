@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useGame } from "../state/GameContext";
 import SurvivorIntroPopup from "../../components/SurvivorIntroPopup";
 import TrapUI from "../../components/TrapUI";
 
@@ -15,7 +14,6 @@ const SurvivorGameManager = ({
   onArmTrap,
   isPlacingTrap,
 }) => {
-  const { currentRoom } = useGame();
 
   // Start countdown after closing intro
   useEffect(() => {

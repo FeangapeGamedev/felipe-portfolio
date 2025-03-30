@@ -50,7 +50,6 @@ function App() {
   const isPaused = activeSection !== "game" || showWelcomePopup;
 
   // 👇 Trap placement state (shared between Scene + SurvivorGameManager)
-  const [placementMode, setPlacementMode] = useState(null);
   const [trapCharges, setTrapCharges] = useState({
     unity: 1,
     unreal: 1,
@@ -172,8 +171,6 @@ function App() {
               onProjectSelect={handleProjectSelect}
               onShowCodeFrame={handleShowCodeFrame}
               onRoomChange={handleRoomChange}
-              placementMode={placementMode}
-              setPlacementMode={setPlacementMode}
               trapCharges={trapCharges}
               setTrapCharges={setTrapCharges}
               initialPosition={initialPosition}
