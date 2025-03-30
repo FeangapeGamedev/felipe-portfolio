@@ -167,7 +167,7 @@ function App() {
       <Suspense fallback={null}>
         {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
-          <Physics debug>
+          <Physics>
             <Scene
               isPaused={isPaused}
               onProjectSelect={handleProjectSelect}

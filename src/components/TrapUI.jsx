@@ -1,5 +1,5 @@
-// TrapUI.jsx
 import React from "react";
+import "../styles/TrapUI.css";
 
 const trapColors = {
   unity: "#224b55",
@@ -9,11 +9,20 @@ const trapColors = {
   vr: "#3d1f1f",
 };
 
+const trapNames = {
+  unity: "Unity Field",
+  unreal: "Unreal Dimension",
+  react: "Reactive Pulse",
+  blender: "Anomaly Blender",
+  vr: "Nullspace Snare",
+};
+
 const TrapUI = ({
   trapCharges,
   selectedTrapType,
   setSelectedTrapType,
   onArmTrap,
+  onResetGame, // ✅ Receive here
   isPlacingTrap,
   prepTime,
   showIntro,
@@ -25,54 +34,58 @@ const TrapUI = ({
   };
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        bottom: "20px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "flex",
-        gap: "16px",
-        zIndex: 10,
-      }}
-    >
-      {Object.entries(trapCharges).map(([trap, count]) => (
+    <div className="trapbar">
+      <span>TRAPS</span>
+      <ul>
+        {Object.entries(trapCharges).map(([trap, count]) => (
+          <li key={trap}>
+            <button
+              className={`trap-button ${selectedTrapType === trap ? "selected" : ""}`}
+              onClick={() => onToolClicked(trap)}
+              disabled={count === 0 || prepTime <= 0 || showIntro}
+              style={{
+                backgroundColor: trapColors[trap],
+                opacity: showIntro ? 0.3 : 1,
+              }}
+            >
+              <span className="trap-label">{trapNames[trap]}</span>
+              <span className="trap-count">({count} left)</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <div className="arm-button-container">
         <button
-          key={trap}
-          onClick={() => onToolClicked(trap)}
-          disabled={count === 0 || prepTime <= 0 || showIntro}
+          className="arm-trap-button"
+          onClick={onArmTrap}
+          disabled={
+            !selectedTrapType || isPlacingTrap || prepTime <= 0 || showIntro
+          }
           style={{
-            padding: "14px 22px",
-            fontSize: "16px",
-            borderRadius: "30px",
-            background: trapColors[trap] || "#333",
-            color: "#fff",
-            border: selectedTrapType === trap ? "2px solid yellow" : "1px solid #888",
-            cursor: count > 0 && prepTime > 0 ? "pointer" : "not-allowed",
             opacity: showIntro ? 0.3 : 1,
+            cursor:
+              selectedTrapType && prepTime > 0 ? "pointer" : "not-allowed",
           }}
         >
-          {trap.toUpperCase()} ({count})
+          ARM TRAP
         </button>
-      ))}
+      </div>
 
-      {/* Arm Trap Button */}
-      <button
-        onClick={onArmTrap}
-        disabled={!selectedTrapType || isPlacingTrap || prepTime <= 0 || showIntro}
-        style={{
-          padding: "14px 22px",
-          fontSize: "16px",
-          borderRadius: "30px",
-          background: "#555",
-          color: "#fff",
-          border: "2px solid #aaa",
-          cursor: selectedTrapType && prepTime > 0 ? "pointer" : "not-allowed",
-          opacity: showIntro ? 0.3 : 1,
-        }}
-      >
-        ARM TRAP
-      </button>
+      {/* ✅ Reset Button */}
+      <div className="reset-button-container">
+        <button
+          className="reset-trap-button"
+          onClick={onResetGame}
+          disabled={showIntro}
+          style={{
+            opacity: showIntro ? 0.3 : 1,
+            cursor: showIntro ? "not-allowed" : "pointer",
+          }}
+        >
+          RESET GAME
+        </button>
+      </div>
     </div>
   );
 };

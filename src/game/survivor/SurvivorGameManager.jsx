@@ -14,7 +14,6 @@ const SurvivorGameManager = ({
   onArmTrap,
   isPlacingTrap,
 }) => {
-
   // Start countdown after closing intro
   useEffect(() => {
     if (showIntro || prepTime <= 0) return;
@@ -64,6 +63,7 @@ const SurvivorGameManager = ({
         isPlacingTrap={isPlacingTrap}
         prepTime={prepTime}
         showIntro={showIntro}
+        onResetGame={restartSurvivorGame} // ✅ Pass reset function to TrapUI
       />
 
       {/* Prep Timer */}
@@ -86,34 +86,6 @@ const SurvivorGameManager = ({
           Prep Time: {prepTime}s
         </div>
       )}
-
-      {/* 🔁 Restart Game Button */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          right: "20px",
-          zIndex: 10,
-        }}
-      >
-        <button
-          onClick={() => {
-            console.log("🔄 Restarting survivor game.");
-            restartSurvivorGame();
-          }}
-          style={{
-            padding: "10px 16px",
-            fontSize: "14px",
-            borderRadius: "10px",
-            background: "#333",
-            color: "#fff",
-            border: "1px solid #888",
-            cursor: "pointer",
-          }}
-        >
-          🔁 Restart Game
-        </button>
-      </div>
     </>
   );
 };
