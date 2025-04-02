@@ -9,6 +9,7 @@ import SpotLightManager from "../state/SpotLightManager.jsx";
 import Room from './Room.jsx';
 import * as THREE from 'three';
 import Trap from "./Trap";
+import EnemyComponent from "./EnemyComponent";
 
 // 📐 Responsive zoom adjustment for orthographic camera
 const ResponsiveOrthoZoom = () => {
@@ -61,14 +62,17 @@ const Scene = ({
   restartSurvivorGame,
   placedTraps,
   setPlacedTraps,
+  enemySpawned, // Prop to control enemy spawning
 }) => {
-  const { currentRoom, targetPosition, doorDirection } = useGame();
+  const { currentRoom, targetPosition, doorDirection, playerPosition } = useGame();
+
 
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
     setInitialPosition(targetPosition.clone());
     setForceTeleport(true);
   }, [currentRoom]);
+
 
   useEffect(() => {
     if (!currentRoom) return;
@@ -77,7 +81,7 @@ const Scene = ({
       console.log("🚮 Leaving Survivor Mode. Clearing traps.");
       setPlacedTraps([]); // Clear traps when leaving Survivor Mode
     }
-  }, [currentRoom]);
+  }, [currentRoom, setPlacedTraps]);
 
   // ✅ Debug log to check trap count
   return (
@@ -158,6 +162,10 @@ const Scene = ({
         );
       })}
 
+      {/* Render EnemyComponent only in room 3 when enemySpawned is true */}
+      {currentRoom.id === 3 && enemySpawned && (
+        <EnemyComponent playerPosition={playerPosition} />
+      )}
     </>
   );
 };

@@ -1,3 +1,4 @@
+// gameContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { roomData } from "../data/roomData.js";
 import * as THREE from "three";
@@ -22,6 +23,8 @@ export const GameProvider = ({ children }) => {
   const [targetPosition, setTargetPosition] = useState(null);
   const [doorDirection, setDoorDirection] = useState("forward");
   const [spawnRotationY, setSpawnRotationY] = useState(0);
+  // NEW: State to track the player's position.
+  const [playerPosition, setPlayerPosition] = useState(new THREE.Vector3(0, 0, 0));
 
   const currentRoom = roomData.find(room => room.id === currentRoomId) || null;
 
@@ -37,25 +40,19 @@ export const GameProvider = ({ children }) => {
   
     setDoorDirection(direction);
     const rotation = getSpawnRotation(direction);
-
     setSpawnRotationY(rotation);
   
     const spawnPosition = getSpawnPosition(newRoom, direction);
-  
     setCurrentRoomId(newRoomId);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
   };
   
-
   useEffect(() => {
     if (!currentRoom) return;
-
     const spawnPosition = getSpawnPosition(currentRoom, doorDirection);
     const rotation = getSpawnRotation(doorDirection);
-
     setSpawnRotationY(rotation);
     setTargetPosition(new THREE.Vector3(...spawnPosition));
-
   }, [currentRoomId, doorDirection]);
 
   return (
@@ -66,7 +63,9 @@ export const GameProvider = ({ children }) => {
       setTargetPosition,
       changeRoom,
       doorDirection,
-      spawnRotationY // 👈 now available to Character.jsx
+      spawnRotationY,
+      playerPosition,      // now available to all consumers
+      setPlayerPosition,   // so you can update the player's position
     }}>
       {children}
     </GameContext.Provider>

@@ -26,7 +26,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   const [isColliding, setIsColliding] = useState(false);
   const hasStartedPlacingRef = useRef(false);
 
-  const { targetPosition, setTargetPosition, spawnRotationY } = useGame();
+  const { targetPosition, setTargetPosition, spawnRotationY, setPlayerPosition } = useGame();
 
   const walkSpeed = 0.014;
   const runSpeed = 0.035;
@@ -115,6 +115,12 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   useFrame((_, delta) => {
     if (mixerRef.current) {
       mixerRef.current.update(delta);
+    }
+
+    // Update player position in the GameContext on every frame
+    if (characterRef.current) {
+      const currentPos = characterRef.current.translation();
+      setPlayerPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
     }
 
     if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap) return;
@@ -266,27 +272,27 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
       console.log("🌀 Teleporting to:", initialPosition.toArray()); // ✅ Add this
-  
+
       characterRef.current.setTranslation(initialPosition, true);
-  
+
       if (modelRef.current) {
         modelRef.current.quaternion.setFromEuler(
           new THREE.Euler(0, spawnRotationY, 0)
         );
       }
-  
+
       setTargetPosition(null);
       setIsIdle(true);
       setIsWalking(false);
       setIsRunning(false);
-  
+
       setJustTeleported(true);
       setTimeout(() => setJustTeleported(false), 50);
-  
+
       onTeleportComplete?.();
     }
   }, [teleport, initialPosition, spawnRotationY]);
-  
+
 
   useEffect(() => {
     if (!trapToPlaceRef.current || !characterRef.current) return;

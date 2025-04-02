@@ -22,9 +22,6 @@ import WelcomePopup from "./components/WelcomePopup";
 import * as THREE from "three";
 import { roomData } from "./game/data/roomData";
 
-
-
-
 function App() {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -35,14 +32,14 @@ function App() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [doorPassKey] = useState("1958");
-  const [prepTime, setPrepTime] = useState(60); // ⏱️ 60s prep
+  const [prepTime, setPrepTime] = useState(5); // ⏱️ 60s prep
   const [showIntro, setShowIntro] = useState(true); // 👋 Show intro popup
   const [forceTeleport, setForceTeleport] = useState(false);
   const [initialPosition, setInitialPosition] = useState(null);
   const [selectedTrapType, setSelectedTrapType] = useState(null);
   const [isPlacingTrap, setIsPlacingTrap] = useState(false);
   const [placedTraps, setPlacedTraps] = useState([]);
-
+  const [enemySpawned, setEnemySpawned] = useState(false); // New state for enemy spawn
 
   const { changeRoom, currentRoom, doorDirection } = useGame();
   const previousRoomId = useRef(null);
@@ -58,9 +55,6 @@ function App() {
     blender: 1,
     vr: 1,
   });
-
-
-
 
   // Show Welcome popup only once after everything has loaded
   useEffect(() => {
@@ -132,7 +126,7 @@ function App() {
 
   const restartSurvivorGame = () => {
     changeRoom(3); // Trigger room change (will cause Scene to update)
-  
+
     setTrapCharges({
       unity: 1,
       blender: 1,
@@ -140,13 +134,14 @@ function App() {
       unreal: 1,
       vr: 1,
     });
-  
+
     setPlacedTraps([]); // Clear all trap meshes
-    setPrepTime(60);
+    setPrepTime(2);
     setShowIntro(true);
     setSelectedTrapType(null);
     setIsPlacingTrap(false);
-  
+    setEnemySpawned(false); // Reset enemy spawn state
+
     // ⏳ Delay teleport assignment until Scene has switched to Room 3
     setTimeout(() => {
       const spawn = new THREE.Vector3(...roomData[2].spawnPositionForward);
@@ -154,7 +149,6 @@ function App() {
       setForceTeleport(true); // ✅ This should now trigger teleport
     }, 300); // Delay can be adjusted slightly
   };
-  
 
   return (
     <>
@@ -186,6 +180,7 @@ function App() {
               placedTraps={placedTraps}
               setPlacedTraps={setPlacedTraps}
               restartSurvivorGame={restartSurvivorGame}
+              enemySpawned={enemySpawned} // Pass enemy spawn state
             />
           </Physics>
         </Canvas>
@@ -273,8 +268,8 @@ function App() {
             setIsPlacingTrap(true);
           }}
           isPlacingTrap={isPlacingTrap}
+          onEnemySpawn={() => setEnemySpawned(true)} // Trigger enemy spawn
         />
-
       )}
 
       {!showLoadingScreen && showWelcomePopup && (

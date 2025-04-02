@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import SurvivorIntroPopup from "../../components/SurvivorIntroPopup";
 import TrapUI from "../../components/TrapUI";
+import { useGame } from "../state/GameContext.jsx"; // Access currentRoom from your game context
 
 const SurvivorGameManager = ({
   trapCharges,
@@ -13,26 +14,28 @@ const SurvivorGameManager = ({
   setSelectedTrapType,
   onArmTrap,
   isPlacingTrap,
+  onEnemySpawn, // callback to spawn enemy
 }) => {
+  const { currentRoom } = useGame();
+
   // Start countdown after closing intro
   useEffect(() => {
     if (showIntro || prepTime <= 0) return;
     const interval = setInterval(() => {
-      setPrepTime((prev) => {
-        return prev - 1;
-      });
+      setPrepTime((prev) => prev - 1);
     }, 1000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [prepTime, showIntro]);
+    return () => clearInterval(interval);
+  }, [prepTime, showIntro, setPrepTime]);
 
+  // When prep time is over, spawn enemy if we're in room 3.
   useEffect(() => {
     if (prepTime === 0) {
       console.log("🧟 Enemies incoming! Prep time is over.");
-      // TODO: Spawn enemies
+      if (currentRoom && currentRoom.id === 3) {
+        onEnemySpawn(); // Trigger enemy spawn
+      }
     }
-  }, [prepTime]);
+  }, [prepTime, currentRoom, onEnemySpawn]);
 
   const handleTrapArm = (trapType) => {
     console.log("🪤 Trap armed:", trapType);
@@ -63,11 +66,11 @@ const SurvivorGameManager = ({
         isPlacingTrap={isPlacingTrap}
         prepTime={prepTime}
         showIntro={showIntro}
-        onResetGame={restartSurvivorGame} // ✅ Pass reset function to TrapUI
+        onResetGame={restartSurvivorGame} // Pass reset function to TrapUI
       />
 
       {/* Prep Timer */}
-      {!showIntro && (
+      {!showIntro && prepTime > 0 && (
         <div
           style={{
             position: "absolute",
