@@ -59,7 +59,6 @@ const Scene = ({
   setSelectedTrapType,
   isPlacingTrap,
   setIsPlacingTrap,
-  restartSurvivorGame,
   placedTraps,
   setPlacedTraps,
   enemySpawned, // Prop to control enemy spawning

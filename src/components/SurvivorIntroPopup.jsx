@@ -7,18 +7,17 @@ const SurvivorIntroPopup = ({ onClose }) => {
     <div className="safe-area">
       <div className="welcome-overlay">
         <PopupPanel title="Survivor Mode" onClose={onClose}>
-          <p>You’ve entered the final room.</p>
+          <p>Welcome, Survivor!</p>
           <p>
-            You have <strong>60 seconds</strong> to place your traps.<br />
-            When time’s up, enemies will enter and chase you down.
+            In each round, you have <strong>20 seconds</strong> to set your traps.
+            Race around the room, position yourself strategically, and use the buttons on the left panel to select and arm your traps.
           </p>
           <p>
-            Place 1 trap of each type by clicking the trap buttons<br />
-            and placing them strategically around the room.
+            Lure the monsters into your deadly traps and outsmart the horde. Stay sharp, and may your wits keep you alive!
           </p>
           <hr style={{ width: "100%", margin: "1rem 0" }} />
           <p style={{ fontSize: "12px", opacity: 0.8 }}>
-            Move to lure enemies into traps and survive!
+            Time is ticking... Good luck!
           </p>
         </PopupPanel>
       </div>

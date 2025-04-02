@@ -32,7 +32,7 @@ function App() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [doorPassKey] = useState("1958");
-  const [prepTime, setPrepTime] = useState(5); // ⏱️ 60s prep
+  const [prepTime, setPrepTime] = useState(20); // ⏱️ 20s prep
   const [showIntro, setShowIntro] = useState(true); // 👋 Show intro popup
   const [forceTeleport, setForceTeleport] = useState(false);
   const [initialPosition, setInitialPosition] = useState(null);
@@ -136,7 +136,7 @@ function App() {
     });
 
     setPlacedTraps([]); // Clear all trap meshes
-    setPrepTime(2);
+    setPrepTime(20); // Reset prep time
     setShowIntro(true);
     setSelectedTrapType(null);
     setIsPlacingTrap(false);

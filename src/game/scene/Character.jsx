@@ -24,6 +24,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   const [isRunning, setIsRunning] = useState(false);
   const [isIdle, setIsIdle] = useState(true);
   const [isColliding, setIsColliding] = useState(false);
+  const [disableMovement, setDisableMovement] = useState(false); // Step 1: Add movement lock state
   const hasStartedPlacingRef = useRef(false);
 
   const { targetPosition, setTargetPosition, spawnRotationY, setPlayerPosition } = useGame();
@@ -123,7 +124,8 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       setPlayerPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
     }
 
-    if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap) return;
+    // Step 2: Check disableMovement before processing movement
+    if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap || disableMovement) return;
 
     const characterPos = characterRef.current.translation();
     const posX = characterPos.x;
@@ -245,6 +247,9 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       setIsPlacingTrap(false);
       hasStartedPlacingRef.current = false;
       hasPlacedTrapRef.current = false;
+
+      // Step 4: Unlock movement after animation finishes
+      setDisableMovement(false);
     }
   };
 
@@ -261,6 +266,9 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       characterRef.current &&
       !hasStartedPlacingRef.current
     ) {
+      // Step 3: Lock movement during trap placement
+      setDisableMovement(true);
+
       const pos = characterRef.current.translation();
       const trapPosition = new THREE.Vector3(pos.x, 0.5, pos.z); // 🔥 Force Y to 0.5
 
