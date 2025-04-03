@@ -2,7 +2,6 @@
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider, interactionGroups } from "@react-three/rapier";
-import * as THREE from "three";
 
 const trapColors = {
   unity: "#224b55",
@@ -12,7 +11,6 @@ const trapColors = {
   vr: "#3d1f1f",
 };
 
-// Collision groups
 const TRAP_GROUP = 0b0001;   // Group 1
 const ENEMY_GROUP = 0b0010;  // Group 2
 
@@ -23,9 +21,8 @@ const Trap = ({ position, type = "unity" }) => {
 
   useFrame((_, delta) => {
     clock.current += delta;
-
     if (meshRef.current) {
-      // Float + pulse + rotate
+      // Float, pulse, and rotate.
       meshRef.current.position.y = baseY.current + Math.sin(clock.current * 2) * 0.1;
       meshRef.current.rotation.x += delta * 0.5;
       const pulse = 0.6 + Math.sin(clock.current * 4) * 0.4;
@@ -48,8 +45,10 @@ const Trap = ({ position, type = "unity" }) => {
         />
       </mesh>
 
+      {/* Add a name to the collider so enemy can detect it */}
       <CuboidCollider
-        args={[0.25, 0.25, 0.25]}
+        name="trap"
+        args={[0.25, 1, 0.25]}
         position={[0, 0, 0]}
         collisionGroups={interactionGroups(TRAP_GROUP, ENEMY_GROUP)}
       />

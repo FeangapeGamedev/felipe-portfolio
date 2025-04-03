@@ -163,7 +163,10 @@ const Scene = ({
 
       {/* Render EnemyComponent only in room 3 when enemySpawned is true */}
       {currentRoom.id === 3 && enemySpawned && (
-        <EnemyComponent playerPosition={playerPosition} />
+        <EnemyComponent
+          playerPosition={playerPosition}
+          onDeath={() => setEnemySpawned(false)}
+        />
       )}
     </>
   );

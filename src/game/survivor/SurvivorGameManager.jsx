@@ -30,7 +30,6 @@ const SurvivorGameManager = ({
   // When prep time is over, spawn enemy if we're in room 3.
   useEffect(() => {
     if (prepTime === 0) {
-      console.log("🧟 Enemies incoming! Prep time is over.");
       if (currentRoom && currentRoom.id === 3) {
         onEnemySpawn(); // Trigger enemy spawn
       }

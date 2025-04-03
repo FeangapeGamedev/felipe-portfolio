@@ -1,16 +1,10 @@
-// Enemy.jsx
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export default class Enemy {
-  // The loaded model will be stored in a static property.
   static model = null;
 
-  /**
-   * Call this static method once (for example, during app initialization)
-   * so that the model is loaded before creating any enemy instances.
-   */
   static load() {
     return new Promise((resolve, reject) => {
       const loader = new GLTFLoader();
@@ -34,31 +28,56 @@ export default class Enemy {
       throw new Error('Enemy model not loaded. Call Enemy.load() before creating an instance.');
     }
 
-    // Clone model and set up mixer and animations as before...
-    this.model = clone(Enemy.model.scene);
-    this.mixer = new THREE.AnimationMixer(this.model);
+    // Clone the enemy model.
+    const clonedModel = clone(Enemy.model.scene);
+    clonedModel.updateMatrixWorld(true);
+
+    // Compute bounding box and center of the cloned model.
+    const box = new THREE.Box3().setFromObject(clonedModel);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const minY = box.min.y;
+
+    // Adjust the model's position so its base is at Y = 0.
+    clonedModel.position.set(
+      clonedModel.position.x - box.getCenter(new THREE.Vector3()).x, // Center horizontally
+      clonedModel.position.y - minY, // Align base to Y = 0
+      clonedModel.position.z - box.getCenter(new THREE.Vector3()).z
+    );
+
+    // Create a group to hold the visual model.
+    this.group = new THREE.Group();
+    this.group.add(clonedModel);
+
+    // Now the enemy's "computed" translation is stored in this.group.position.
+    // For movement, we’ll track it in a separate vector.
+    this.translation = new THREE.Vector3().copy(this.group.position);
+
+    // Save collider properties.
+    // Adjust the collider position to match the model's bounding box.
+    this.colliderSize = [0.5, size.y / 2, 0.5];
+    this.colliderPosition = [0, size.y / 2, 0]; // Center the collider vertically around the body.
+
+    // Set up the animation mixer using the cloned model.
+    this.mixer = new THREE.AnimationMixer(clonedModel);
     this.animations = {};
     Enemy.model.animations.forEach((clip) => {
       this.animations[clip.name.toLowerCase()] = this.mixer.clipAction(clip);
     });
 
     // Set initial state and thresholds.
-    this.state = "wander"; // possible states: "wander", "chase", "attack"
-    this.followThreshold = 7;  // for example, chase if within 7 units
-    this.attackThreshold = 1;   // attack if within 1 unit
-    // Initialize wander state variables:
-    this.wanderSubstate = "idle"; 
-    this.idleTime = this._getRandomIdleTime();
-    this.wanderTarget = null; // We'll generate this when needed.
+    this.state = "wander"; // "wander", "chase", "attack", "dead"
+    this.followThreshold = 7;
+    this.attackThreshold = 1;
+    // Initialize wander target based on the current translation.
+    this.translation.copy(this.group.position);
+    this.wanderTarget = this._getRandomWanderPoint();
 
     // Start with idle animation.
     this.currentAnimation = null;
     this.playAnimation('idle');
   }
 
-  /**
-   * Play a given animation by name.
-   */
   playAnimation(name) {
     const action = this.animations[name.toLowerCase()];
     if (!action) {
@@ -72,124 +91,85 @@ export default class Enemy {
     this.currentAnimation = action;
   }
 
-  /**
-   * Update the animation mixer.
-   * @param {number} delta - The time elapsed since the last frame.
-   */
   update(delta) {
     this.mixer.update(delta);
   }
 
-  /**
-   * Update enemy behavior using a simple FSM (Finite State Machine).
-   * @param {THREE.Vector3} playerPosition - The player's current position.
-   * @param {number} delta - The time elapsed since the last frame.
-   */
   updateBehavior(playerPosition, delta) {
-    const enemyPosition = this.model.position;
-    const distanceToPlayer = enemyPosition.distanceTo(playerPosition);
+    // Use our computed translation (this.translation) for movement.
+    const distanceToPlayer = this.translation.distanceTo(playerPosition);
 
-    console.log(
-      "[Enemy] Distance to player:", distanceToPlayer.toFixed(2),
-      "AttackThreshold:", this.attackThreshold,
-      "FollowThreshold:", this.followThreshold,
-      "CurrentState:", this.state,
-      "WanderSubstate:", this.wanderSubstate
-    );
-
-    // Attack state
+    // Attack state: if player is within attack threshold.
     if (distanceToPlayer < this.attackThreshold) {
       if (this.state !== "attack") {
         console.log("[Enemy] Switching to ATTACK state");
         this.state = "attack";
         this.playAnimation("attack");
       }
-      return;
+      return; // Do not update translation while attacking.
     }
 
-    // Chase state
+    // Chase state: if player is within follow threshold.
     if (distanceToPlayer < this.followThreshold) {
       if (this.state !== "chase") {
         console.log("[Enemy] Switching to CHASE state");
         this.state = "chase";
         this.playAnimation("run");
       }
-      const directionToPlayer = new THREE.Vector3().subVectors(playerPosition, enemyPosition).normalize();
-      const chaseSpeed = 2.5; // Updated chase speed
-      enemyPosition.add(directionToPlayer.multiplyScalar(chaseSpeed * delta));
-      // Rotate enemy to face the player
-      const chaseTarget = new THREE.Vector3().addVectors(enemyPosition, directionToPlayer);
-      this.model.lookAt(chaseTarget);
+      const directionToPlayer = new THREE.Vector3().subVectors(playerPosition, this.translation).normalize();
+      const chaseSpeed = 2.5;
+      this.translation.add(directionToPlayer.multiplyScalar(chaseSpeed * delta));
+      const chaseTarget = new THREE.Vector3().addVectors(this.translation, directionToPlayer);
+      this.group.lookAt(chaseTarget);
       return;
     }
 
-    // Wander state (player is far)
+    // Wander state: if player is far.
     if (this.state !== "wander") {
       console.log("[Enemy] Switching to WANDER state");
       this.state = "wander";
-      // Initialize wander substate to idle and set a random idle time.
-      this.wanderSubstate = "idle";
-      this.idleTime = this._getRandomIdleTime();
-      this.playAnimation("idle");
+      this.wanderTarget = this._getRandomWanderPoint();
+      this.playAnimation("walk");
     }
-
-    // Handle the wander substates
-    if (this.wanderSubstate === "idle") {
-      // Count down the idle timer.
-      this.idleTime -= delta;
-      if (this.idleTime <= 0) {
-        // Switch to move state: pick a new wander target.
-        this.wanderSubstate = "move";
-        this.wanderTarget = this._getRandomWanderPoint();
-        console.log("[Enemy] Idle complete. Switching to MOVE state. New target:", this.wanderTarget);
+    if (!this.wanderTarget) {
+      this.wanderTarget = this._getRandomWanderPoint();
+    }
+    const distanceToTarget = this.translation.distanceTo(this.wanderTarget);
+    if (distanceToTarget < 0.2) {
+      this.wanderTarget = this._getRandomWanderPoint();
+    } else {
+      const direction = new THREE.Vector3().subVectors(this.wanderTarget, this.translation).normalize();
+      const wanderSpeed = 1;
+      this.translation.add(direction.multiplyScalar(wanderSpeed * delta));
+      const newTarget = new THREE.Vector3().addVectors(this.translation, direction);
+      this.group.lookAt(newTarget);
+      if (this.currentAnimation !== this.animations["walk"]) {
+        console.log("[Enemy] Wandering: switching to WALK animation");
         this.playAnimation("walk");
       }
-    } else if (this.wanderSubstate === "move") {
-      // Move toward wander target.
-      if (!this.wanderTarget) {
-        this.wanderTarget = this._getRandomWanderPoint();
-      }
-      const distanceToTarget = enemyPosition.distanceTo(this.wanderTarget);
-      if (distanceToTarget < 0.2) {
-        // Arrived: switch back to idle.
-        this.wanderSubstate = "idle";
-        this.idleTime = this._getRandomIdleTime();
-        console.log("[Enemy] Arrived at wander target. Switching to IDLE for", this.idleTime.toFixed(2), "seconds");
-        this.playAnimation("idle");
-      } else {
-        // Continue moving toward target.
-        const direction = new THREE.Vector3().subVectors(this.wanderTarget, enemyPosition).normalize();
-        const wanderSpeed = 1; // Adjust wander speed as needed
-        enemyPosition.add(direction.multiplyScalar(wanderSpeed * delta));
-        // Rotate enemy to face the wander target.
-        const newTarget = new THREE.Vector3().addVectors(enemyPosition, direction);
-        this.model.lookAt(newTarget);
-        if (this.currentAnimation !== this.animations["walk"]) {
-          console.log("[Enemy] Wandering: switching to WALK animation");
-          this.playAnimation("walk");
-        }
-      }
     }
   }
 
-  /**
-   * Helper function to get a random point for wandering.
-   * This version uses fixed boundaries (adjust as needed for your room).
-   */
-  _getRandomWanderPoint() {
-    const minX = -10, maxX = 10;  // Adjust boundaries to your room dimensions
-    const minZ = -10, maxZ = 10;
-    const randomX = Math.random() * (maxX - minX) + minX;
-    const randomZ = Math.random() * (maxZ - minZ) + minZ;
-    // Return an absolute point within these boundaries. You can fix the Y value as needed.
-    return new THREE.Vector3(randomX, this.model.position.y, randomZ);
+  die(callback) {
+    if (this.state === "dead") return;
+    console.log("[Enemy] Dying...");
+    this.state = "dead";
+    Object.values(this.animations).forEach((action) => action.stop());
+    if (this.animations["die"]) {
+      this.playAnimation("die");
+    }
+    setTimeout(() => {
+      console.log("[Enemy] Die animation complete, removing enemy.");
+      if (callback) callback();
+    }, 1000);
   }
 
-  /**
-   * Helper function for random idle time.
-   * Returns a random idle time between 2 and 6 seconds.
-   */
-  _getRandomIdleTime() {
-    return Math.random() * 4 + 2;
+  _getRandomWanderPoint() {
+    const minX = -10, maxX = 10;
+    const minZ = -10, maxZ = 10;
+    const randomX = Math.random() * (maxX - minX) + minX;
+    const randomZ = Math.random() * (maxZ - minZ) + maxZ;
+    // Use the current translation's y so that the point is at ground level.
+    return new THREE.Vector3(randomX, this.translation.y, randomZ);
   }
 }
