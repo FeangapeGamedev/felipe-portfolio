@@ -32,7 +32,7 @@ function App() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [doorPassKey] = useState("1958");
-  const [prepTime, setPrepTime] = useState(2); // ⏱️ 20s prep
+  const [prepTime, setPrepTime] = useState(20); // ⏱️ 20s prep
   const [showIntro, setShowIntro] = useState(true); // 👋 Show intro popup
   const [forceTeleport, setForceTeleport] = useState(false);
   const [initialPosition, setInitialPosition] = useState(null);
@@ -161,7 +161,7 @@ function App() {
       <Suspense fallback={null}>
         {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
-          <Physics debug>
+          <Physics>
             <Scene
               isPaused={isPaused}
               onProjectSelect={handleProjectSelect}
