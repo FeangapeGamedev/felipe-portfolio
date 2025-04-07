@@ -28,9 +28,15 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
 
   const handleCollision = (event) => {
     const otherName = event.colliderObject.name;
+
     if (otherName?.toLowerCase().includes("trap")) {
+      console.log("💥 Enemy collided with a trap:", otherName);
+
       if (enemyInstance && enemyInstance.state !== "dead") {
-        enemyInstance.die(() => onDeath?.());
+        enemyInstance.die(() => {
+          console.log("☠️ Enemy died from trap");
+          onDeath?.();
+        });
       }
     }
   };
@@ -54,10 +60,11 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
       type="dynamic"
       colliders={false}
       angularFactor={[0, 1, 0]}
-      linearDamping={0.3}
-      angularDamping={0.5}
+      linearDamping={3}
+      angularDamping={5}
+      restitution={0}
       onCollisionEnter={handleCollision}
-      collisionGroups={interactionGroups(0b0010, 0b1100)} // group 2, collides with traps (4) and player (8)
+      collisionGroups={interactionGroups(0b0010, 0b1111)} // group 2, collides with 1 (trap), 4, and 8
     >
       <primitive object={enemyInstance.group} />
       <CuboidCollider

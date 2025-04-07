@@ -44,21 +44,11 @@ export default class Enemy {
     );
 
     this.group = new THREE.Group();
+    this.group.add(clonedModel);
 
     // Collider config
-    this.colliderSize = [0.5, size.y / 2, 0.5];
+    this.colliderSize = [0.5, 1, 0.5];
     this.colliderPosition = [0, size.y / 2, 0];
-
-    // Visual debug collider box (for dev only)
-    const colliderMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(this.colliderSize[0] * 2, this.colliderSize[1] * 2, this.colliderSize[2] * 2),
-      new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true, transparent: true, opacity: 0.25 })
-    );
-    colliderMesh.name = 'enemy-collider';
-    colliderMesh.position.set(...this.colliderPosition);
-
-    this.group.add(clonedModel);
-    this.group.add(colliderMesh);
 
     // Animation setup
     this.mixer = new THREE.AnimationMixer(clonedModel);
@@ -69,7 +59,7 @@ export default class Enemy {
 
     this.state = "wander";
     this.followThreshold = 7;
-    this.attackThreshold = 1;
+    this.attackThreshold = 0.7;
     this.wanderTarget = this._getRandomWanderPoint();
     this.currentAnimation = null;
     this.rigidBody = null;
@@ -79,6 +69,20 @@ export default class Enemy {
 
   setPhysicsControl(rigidBody) {
     this.rigidBody = rigidBody;
+
+    // Set the type of the enemy collider to "Enemy"
+    this.rigidBody.type = "Enemy";
+
+    // Add collision detection for colliders of type "Trap"
+    this.rigidBody.onCollisionEnter = (event) => {
+      const otherType = event.colliderObject?.type; // Check the type of the colliding object
+      if (otherType === "Trap") {
+        console.log("💥 Enemy collided with a trap!");
+        this.die(() => {
+          console.log("☠️ Enemy died from trap collision");
+        });
+      }
+    };
   }
 
   playAnimation(name) {
@@ -100,9 +104,17 @@ export default class Enemy {
 
     const pos = this.rigidBody.translation();
     const position = new THREE.Vector3(pos.x, pos.y, pos.z);
-    const distanceToPlayer = position.distanceTo(playerPosition);
+    const direction = new THREE.Vector3().subVectors(playerPosition, position);
+    const distance = direction.length();
 
-    if (distanceToPlayer < this.attackThreshold) {
+    // Stop movement if too close to the player
+    if (distance < 0.6) {
+      this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      return;
+    }
+
+    // Attack state: if player is within attack threshold
+    if (distance < this.attackThreshold) {
       if (this.state !== "attack") {
         this.state = "attack";
         this.playAnimation("attack");
@@ -111,45 +123,65 @@ export default class Enemy {
       return;
     }
 
-    if (distanceToPlayer < this.followThreshold) {
+    // Chase state: if player is within follow threshold
+    if (distance < this.followThreshold) {
       if (this.state !== "chase") {
         this.state = "chase";
         this.playAnimation("run");
       }
-      const direction = new THREE.Vector3().subVectors(playerPosition, position);
-      const distance = direction.length();
+
       if (distance > 0.1) {
         direction.normalize();
         const chaseSpeed = 3.5;
-        this.rigidBody.setLinvel({
-          x: direction.x * chaseSpeed,
-          y: 0,
-          z: direction.z * chaseSpeed
-        }, true);
-        this.group.lookAt(new THREE.Vector3().addVectors(position, direction));
+
+        // Smooth out velocity changes
+        const targetVel = new THREE.Vector3(direction.x * chaseSpeed, 0, direction.z * chaseSpeed);
+        const currentVel = new THREE.Vector3().copy(this.rigidBody.linvel());
+        const smoothedVel = currentVel.lerp(targetVel, 0.1); // Smooth transition
+        this.rigidBody.setLinvel(smoothedVel, true);
+
+        const lookAtTarget = new THREE.Vector3().addVectors(position, direction);
+        this.group.lookAt(lookAtTarget);
+      } else {
+        this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
       }
       return;
     }
 
+    // Wander state: if player is far
     if (this.state !== "wander") {
       this.state = "wander";
       this.wanderTarget = this._getRandomWanderPoint();
-      this.playAnimation("walk");
+      this.playAnimation("walk"); // Ensure "walk" animation is played
     }
 
-    const direction = new THREE.Vector3().subVectors(this.wanderTarget, position);
-    const distance = direction.length();
-    if (distance > 0.1) {
-      direction.normalize();
-      const wanderSpeed = 1.5;
-      this.rigidBody.setLinvel({
-        x: direction.x * wanderSpeed,
-        y: 0,
-        z: direction.z * wanderSpeed
-      }, true);
-      this.group.lookAt(new THREE.Vector3().addVectors(position, direction));
+    if (!this.wanderTarget) {
+      this.wanderTarget = this._getRandomWanderPoint();
+    }
+
+    const wanderDirection = new THREE.Vector3().subVectors(this.wanderTarget, position);
+    const wanderDistance = wanderDirection.length();
+
+    if (wanderDistance > 0.1) {
+      wanderDirection.normalize();
+      const wanderSpeed = 1;
+
+      // Smooth out wander velocity
+      const targetVel = new THREE.Vector3(wanderDirection.x * wanderSpeed, 0, wanderDirection.z * wanderSpeed);
+      const currentVel = new THREE.Vector3().copy(this.rigidBody.linvel());
+      const smoothedVel = currentVel.lerp(targetVel, 0.1); // Smooth transition
+      this.rigidBody.setLinvel(smoothedVel, true);
+
+      const lookAtTarget = new THREE.Vector3().addVectors(position, wanderDirection);
+      this.group.lookAt(lookAtTarget);
+
+      // Ensure "walk" animation is playing during wandering
+      if (this.state === "wander" && this.currentAnimation !== this.animations["walk"]) {
+        this.playAnimation("walk");
+      }
     } else {
       this.wanderTarget = this._getRandomWanderPoint();
+      this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
     }
   }
 
@@ -158,8 +190,8 @@ export default class Enemy {
     this.state = "dead";
 
     if (this.rigidBody) {
-      this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
-      this.rigidBody.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      this.rigidBody.setLinvel({ x: 0, y: 1, z: 0 }, true);
+      this.rigidBody.setAngvel({ x: 0, y: 1, z: 0 }, true);
     }
 
     Object.values(this.animations).forEach((action) => action.stop());

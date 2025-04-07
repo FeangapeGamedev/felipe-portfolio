@@ -156,12 +156,12 @@ function App() {
         <div className="loading-screen">
           <p>Loading...</p>
         </div>
-      )}
+      )}y
 
       <Suspense fallback={null}>
         {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
-          <Physics>
+          <Physics debug>
             <Scene
               isPaused={isPaused}
               onProjectSelect={handleProjectSelect}
