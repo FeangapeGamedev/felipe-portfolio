@@ -11,7 +11,7 @@ const trapColors = {
   vr: "#3d1f1f",
 };
 
-const Trap = ({ position, type = "unity" }) => {
+const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
   const meshRef = useRef();
   const clock = useRef(0);
   const baseY = useRef(position.y);
@@ -46,14 +46,14 @@ const Trap = ({ position, type = "unity" }) => {
       {/* Collider to detect collisions with enemies */}
       <CuboidCollider
         name="trap"
-        type= "trap"
+        type="Trap"
         args={[0.25, 1, 0.25]}
         position={[0, 0, 0]}
         onCollisionEnter={(event) => {
           const otherType = event.colliderObject?.type; // Check the type of the colliding object
           if (otherType === "Enemy") {
             console.log("💥 Enemy collided with trap!");
-            // Add any additional logic for when an enemy collides with the trap
+            if (onTrapConsumed) onTrapConsumed(index); // Call the callback with the index
           }
         }}
       />

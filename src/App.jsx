@@ -40,6 +40,7 @@ function App() {
   const [isPlacingTrap, setIsPlacingTrap] = useState(false);
   const [placedTraps, setPlacedTraps] = useState([]);
   const [enemySpawned, setEnemySpawned] = useState(false); // New state for enemy spawn
+  const [gameEnd, setGameEnd] = useState(false); // Track if the game has ended
 
   const { changeRoom, currentRoom, doorDirection } = useGame();
   const previousRoomId = useRef(null);
@@ -141,6 +142,7 @@ function App() {
     setSelectedTrapType(null);
     setIsPlacingTrap(false);
     setEnemySpawned(false); // Reset enemy spawn state
+    setGameEnd(false); // Reset game end flag
 
     // ⏳ Delay teleport assignment until Scene has switched to Room 3
     setTimeout(() => {
@@ -181,6 +183,12 @@ function App() {
               setPlacedTraps={setPlacedTraps}
               restartSurvivorGame={restartSurvivorGame}
               enemySpawned={enemySpawned} // Pass enemy spawn state
+              setEnemySpawned={setEnemySpawned} // Pass setEnemySpawned function
+              onEnemyDeath={() => {
+                setEnemySpawned(false); // Remove the enemy
+                setGameEnd(true); // Mark the game as ended
+                console.log("Enemy defeated. Game has ended.");
+              }}
             />
           </Physics>
         </Canvas>
@@ -263,12 +271,14 @@ function App() {
           restartSurvivorGame={restartSurvivorGame}
           selectedTrapType={selectedTrapType}
           setSelectedTrapType={setSelectedTrapType}
-          onArmTrap={() => {
-            if (!selectedTrapType || isPlacingTrap) return;
-            setIsPlacingTrap(true);
+          onArmTrap={(trapType) => {
+            if (!trapType || isPlacingTrap) return;
+            setIsPlacingTrap(true); // Set placing trap state
+            console.log(`🪤 Placing trap of type: ${trapType}`);
           }}
           isPlacingTrap={isPlacingTrap}
           onEnemySpawn={() => setEnemySpawned(true)} // Trigger enemy spawn
+          gameEnd={gameEnd} // ✅ Pass gameEnd state
         />
       )}
 

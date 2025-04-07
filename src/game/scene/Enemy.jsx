@@ -70,8 +70,13 @@ export default class Enemy {
   setPhysicsControl(rigidBody) {
     this.rigidBody = rigidBody;
 
-    // Set the type of the enemy collider to "Enemy"
-    this.rigidBody.type = "Enemy";
+    // Access the Rapier rigid body instance directly
+    const rapierRigidBody = rigidBody.current; // Use the ref to access the Rapier instance
+
+    if (rapierRigidBody) {
+      // Restrict rotation on the x and z axes
+      rapierRigidBody.lockRotations(true, false); // Lock x and z rotations, allow y-axis rotation
+    }
 
     // Add collision detection for colliders of type "Trap"
     this.rigidBody.onCollisionEnter = (event) => {
@@ -142,6 +147,8 @@ export default class Enemy {
 
         const lookAtTarget = new THREE.Vector3().addVectors(position, direction);
         this.group.lookAt(lookAtTarget);
+        this.group.rotation.x = 0; // Prevent tilting on the x-axis
+        this.group.rotation.z = 0; // Prevent tilting on the z-axis
       } else {
         this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
       }
@@ -174,6 +181,8 @@ export default class Enemy {
 
       const lookAtTarget = new THREE.Vector3().addVectors(position, wanderDirection);
       this.group.lookAt(lookAtTarget);
+      this.group.rotation.x = 0; // Prevent tilting on the x-axis
+      this.group.rotation.z = 0; // Prevent tilting on the z-axis
 
       // Ensure "walk" animation is playing during wandering
       if (this.state === "wander" && this.currentAnimation !== this.animations["walk"]) {

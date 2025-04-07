@@ -62,6 +62,8 @@ const Scene = ({
   placedTraps,
   setPlacedTraps,
   enemySpawned, // Prop to control enemy spawning
+  setEnemySpawned, // Add this prop
+  onEnemyDeath, // Add this prop
 }) => {
   const { currentRoom, targetPosition, doorDirection, playerPosition } = useGame();
 
@@ -157,7 +159,28 @@ const Scene = ({
         const position = new THREE.Vector3(trap.position.x, 0.5, trap.position.z);
 
         return (
-          <Trap key={i} type={trap.type} position={position} />
+          <Trap
+            key={`trap-${trap.type}-${i}`}
+            type={trap.type}
+            position={position}
+            index={i}
+            onTrapConsumed={(index) => {
+              setPlacedTraps((prevTraps) => {
+                const newTraps = [...prevTraps];
+                const removedTrap = newTraps.splice(index, 1)[0];
+
+                // ♻️ Recharge one trap of that type
+                setTrapCharges((charges) => ({
+                  ...charges,
+                  [removedTrap.type]: (charges[removedTrap.type] || 0) + 1,
+                }));
+
+                console.log(`🧯 Trap consumed: ${removedTrap.type}, recharging 1 charge.`);
+
+                return newTraps;
+              });
+            }}
+          />
         );
       })}
 
@@ -165,7 +188,14 @@ const Scene = ({
       {currentRoom.id === 3 && enemySpawned && (
         <EnemyComponent
           playerPosition={playerPosition}
-          onDeath={() => setEnemySpawned(false)}
+          onDeath={() => {
+            if (typeof setEnemySpawned === "function") {
+              setEnemySpawned(false); // ✅ Remove enemy from scene
+            }
+            if (typeof onEnemyDeath === "function") {
+              onEnemyDeath(); // ✅ Notify App to trigger gameEnd
+            }
+          }}
         />
       )}
     </>

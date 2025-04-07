@@ -5,6 +5,7 @@ import { useGame } from "../state/GameContext.jsx"; // Access currentRoom from y
 
 const SurvivorGameManager = ({
   trapCharges,
+  setTrapCharges,
   prepTime,
   setPrepTime,
   showIntro,
@@ -14,7 +15,8 @@ const SurvivorGameManager = ({
   setSelectedTrapType,
   onArmTrap,
   isPlacingTrap,
-  onEnemySpawn, // callback to spawn enemy
+  onEnemySpawn,
+  gameEnd, // ✅ Destructure gameEnd
 }) => {
   const { currentRoom } = useGame();
 
@@ -27,18 +29,19 @@ const SurvivorGameManager = ({
     return () => clearInterval(interval);
   }, [prepTime, showIntro, setPrepTime]);
 
-  // When prep time is over, spawn enemy if we're in room 3.
+ 
   useEffect(() => {
-    if (prepTime === 0) {
+    if (prepTime === 0 && !isPlacingTrap && !gameEnd) {
       if (currentRoom && currentRoom.id === 3) {
-        onEnemySpawn(); // Trigger enemy spawn
+        onEnemySpawn(); // ✅ Safe spawn
       }
     }
-  }, [prepTime, currentRoom, onEnemySpawn]);
+  }, [prepTime, currentRoom, isPlacingTrap, gameEnd, onEnemySpawn]);
 
   const handleTrapArm = (trapType) => {
+    if (!trapType || isPlacingTrap) return; // Ensure a trap type is selected and not already placing
     console.log("🪤 Trap armed:", trapType);
-    onArmTrap(trapType);
+    onArmTrap(trapType); // Trigger the onArmTrap callback
   };
 
   return (
