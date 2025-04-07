@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider, interactionGroups } from "@react-three/rapier";
-import * as THREE from "three";
 import Enemy from "./Enemy";
 
 const EnemyComponent = ({ playerPosition, onDeath }) => {
   const rigidBodyRef = useRef();
   const [enemyInstance, setEnemyInstance] = useState(null);
+  const [isDead, setIsDead] = useState(false); // Track if the enemy is dead
   const [rigidBodyReady, setRigidBodyReady] = useState(false);
 
   useEffect(() => {
@@ -28,21 +28,19 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
 
   const handleCollision = (event) => {
     const otherName = event.colliderObject.name;
-
     if (otherName?.toLowerCase().includes("trap")) {
-      console.log("💥 Enemy collided with a trap:", otherName);
-
       if (enemyInstance && enemyInstance.state !== "dead") {
         enemyInstance.die(() => {
-          console.log("☠️ Enemy died from trap");
-          onDeath?.();
+          console.log("☠️ Enemy died from trap, removing from scene");
+          setIsDead(true); // Trigger unmount
+          onDeath?.(); // Notify parent (Scene) if needed
         });
       }
     }
   };
 
   useFrame((_, delta) => {
-    if (!enemyInstance || !rigidBodyReady) return;
+    if (!enemyInstance || !rigidBodyReady || isDead) return;
 
     enemyInstance.update(delta);
 
@@ -54,7 +52,9 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
     rigidBodyRef.current.setRotation({ x: 0, y: rotation.y, z: 0 }, true);
   });
 
-  return enemyInstance ? (
+  if (isDead || !enemyInstance) return null; // Unmount enemy if dead
+
+  return (
     <RigidBody
       ref={rigidBodyRef}
       type="dynamic"
@@ -64,7 +64,7 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
       angularDamping={5}
       restitution={0}
       onCollisionEnter={handleCollision}
-      collisionGroups={interactionGroups(0b0010, 0b1111)} // group 2, collides with 1 (trap), 4, and 8
+      collisionGroups={interactionGroups(0b0010, 0b1111)}
     >
       <primitive object={enemyInstance.group} />
       <CuboidCollider
@@ -72,7 +72,7 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
         position={enemyInstance.colliderPosition}
       />
     </RigidBody>
-  ) : null;
+  );
 };
 
 export default EnemyComponent;

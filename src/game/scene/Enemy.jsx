@@ -199,9 +199,10 @@ export default class Enemy {
       this.playAnimation("die");
     }
 
+    // Delay to allow death animation to finish before cleanup
     setTimeout(() => {
-      if (callback) callback();
-    }, 1000);
+      callback?.(); // Notify React to unmount
+    }, 4000); // Match this to your die animation duration
   }
 
   _getRandomWanderPoint() {
