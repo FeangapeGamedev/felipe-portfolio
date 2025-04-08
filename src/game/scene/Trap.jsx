@@ -50,11 +50,14 @@ const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
         args={[0.25, 1, 0.25]}
         position={[0, 0, 0]}
         onCollisionEnter={(event) => {
-          const otherType = event.colliderObject?.type; // Check the type of the colliding object
-          if (otherType === "Enemy") {
-            console.log("💥 Enemy collided with trap!");
-            if (onTrapConsumed) onTrapConsumed(index); // Call the callback with the index
+          const otherName = event.colliderObject?.name || event.colliderObject?.userData?.name; // Access name or userData
+          if (otherName !== "enemy") {
+            // Ignore collisions with anything that is not named "enemy"
+            return;
           }
+          console.log(`Collision detected with: ${otherName}`); // Log collision with enemy
+          console.log(`Triggering onTrapConsumed for trap index: ${index}`); // Log trap consumption
+          if (onTrapConsumed) onTrapConsumed(index); // Call the callback with the index
         }}
       />
     </RigidBody>

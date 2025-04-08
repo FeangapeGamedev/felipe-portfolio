@@ -58,6 +58,7 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
     <RigidBody
       ref={rigidBodyRef}
       type="dynamic"
+      name = "enemy"
       colliders={false}
       angularFactor={[0, 1, 0]}
       linearDamping={3}
@@ -68,6 +69,7 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
     >
       <primitive object={enemyInstance.group} />
       <CuboidCollider
+        name="enemy"
         args={enemyInstance.colliderSize}
         position={enemyInstance.colliderPosition}
       />

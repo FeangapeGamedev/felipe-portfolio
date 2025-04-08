@@ -166,8 +166,11 @@ const Scene = ({
             index={i}
             onTrapConsumed={(index) => {
               setPlacedTraps((prevTraps) => {
+                console.log("Current traps:", prevTraps); // Log current traps
                 const newTraps = [...prevTraps];
                 const removedTrap = newTraps.splice(index, 1)[0];
+                console.log("Updated traps:", newTraps); // Log updated traps
+                console.log(`Removed trap: ${removedTrap.type} at index: ${index}`); // Log removed trap details
 
                 // ♻️ Recharge one trap of that type
                 setTrapCharges((charges) => ({
