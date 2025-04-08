@@ -1,7 +1,7 @@
-// /game/scene/Trap.jsx
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
+import Explosion from "../effects/Explosion"; // Make sure this path is correct
 
 const trapColors = {
   unity: "#224b55",
@@ -15,11 +15,11 @@ const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
   const meshRef = useRef();
   const clock = useRef(0);
   const baseY = useRef(position.y);
+  const [exploded, setExploded] = useState(false);
 
   useFrame((_, delta) => {
     clock.current += delta;
-    if (meshRef.current) {
-      // Float, pulse, and rotate.
+    if (meshRef.current && !exploded) {
       meshRef.current.position.y = baseY.current + Math.sin(clock.current * 2) * 0.1;
       meshRef.current.rotation.x += delta * 0.5;
       const pulse = 0.6 + Math.sin(clock.current * 4) * 0.4;
@@ -28,39 +28,55 @@ const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
   });
 
   return (
-    <RigidBody
-      type="fixed"
-      position={[position.x, position.y, position.z]}
-      colliders={false}
-      name="trap" // Add name to RigidBody for debugging
-    >
-      <mesh ref={meshRef} castShadow>
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
-        <meshStandardMaterial
-          color={trapColors[type] || "white"}
-          emissive={trapColors[type] || "white"}
-          emissiveIntensity={1}
-        />
-      </mesh>
+    <>
+      {!exploded && (
+        <RigidBody
+          type="fixed"
+          position={[position.x, position.y, position.z]}
+          colliders={false}
+          name="trap"
+        >
+          <mesh ref={meshRef} castShadow>
+            <boxGeometry args={[0.5, 0.5, 0.5]} />
+            <meshStandardMaterial
+              color={trapColors[type] || "white"}
+              emissive={trapColors[type] || "white"}
+              emissiveIntensity={1}
+            />
+          </mesh>
 
-      {/* Collider to detect collisions with enemies */}
-      <CuboidCollider
-        name="trap"
-        type="Trap"
-        args={[0.25, 1, 0.25]}
-        position={[0, 0, 0]}
-        onCollisionEnter={(event) => {
-          const otherName = event.colliderObject?.name || event.colliderObject?.userData?.name; // Access name or userData
-          if (otherName !== "enemy") {
-            // Ignore collisions with anything that is not named "enemy"
-            return;
-          }
-          console.log(`Collision detected with: ${otherName}`); // Log collision with enemy
-          console.log(`Triggering onTrapConsumed for trap index: ${index}`); // Log trap consumption
-          if (onTrapConsumed) onTrapConsumed(index); // Call the callback with the index
-        }}
-      />
-    </RigidBody>
+          <CuboidCollider
+            name="trap"
+            type="sensor"
+            args={[0.25, 1, 0.25]}
+            onCollisionEnter={(event) => {
+              const otherName =
+                event.colliderObject?.name || event.colliderObject?.userData?.name;
+
+              if (otherName !== "enemy") return;
+
+              console.log(`🔥 Trap triggered by: ${otherName}`);
+              setExploded(true); // Trigger explosion visual
+
+              // Delay trap removal by 1 second to allow explosion effect
+              setTimeout(() => {
+                console.log(`🧯 Removing trap index ${index}`);
+                if (onTrapConsumed) onTrapConsumed(index);
+              }, 1000);
+            }}
+          />
+        </RigidBody>
+      )}
+
+      {exploded && (
+        <Explosion
+          position={[position.x, position.y + 0.5, position.z]} // Slightly lifted for visibility
+          onComplete={() => {
+            console.log("💥 Explosion animation complete");
+          }}
+        />
+      )}
+    </>
   );
 };
 
