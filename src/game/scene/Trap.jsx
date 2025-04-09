@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import Explosion from "../effects/Explosion"; // Make sure this path is correct
+import GlobalConstants from "../utils/GlobalConstants.js";
 
 const trapColors = {
   unity: "#224b55",
@@ -49,6 +50,10 @@ const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
             name="trap"
             type="sensor"
             args={[0.25, 1, 0.25]}
+            collisionGroups={GlobalConstants.createInteractionGroup(
+              GlobalConstants.TRAP_GROUP,
+              GlobalConstants.CHARACTER_GROUP // Interacts with everything except characters
+            )}
             onCollisionEnter={(event) => {
               const otherName =
                 event.colliderObject?.name || event.colliderObject?.userData?.name;

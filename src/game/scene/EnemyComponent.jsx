@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody, CuboidCollider, interactionGroups } from "@react-three/rapier";
+import { RigidBody, CuboidCollider} from "@react-three/rapier";
 import Enemy from "./Enemy";
 
 const EnemyComponent = ({ playerPosition, onDeath }) => {
@@ -65,7 +65,6 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
       angularDamping={5}
       restitution={0}
       onCollisionEnter={handleCollision}
-      collisionGroups={interactionGroups(0b0010, 0b1111)}
     >
       <primitive object={enemyInstance.group} />
       <CuboidCollider

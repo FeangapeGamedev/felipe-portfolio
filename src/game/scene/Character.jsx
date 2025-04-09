@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
-import { RigidBody, CuboidCollider, interactionGroups } from "@react-three/rapier";
+import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { AnimationMixer, LoopRepeat, LoopOnce } from "three";
 import { useGame } from "../state/GameContext.jsx";
+import GlobalConstants from "../utils/GlobalConstants.js";
 
 export const Character = ({ initialPosition, isPaused, teleport = false, onTeleportComplete = () => { }, selectedTrapType, setIsPlacingTrap, isPlacingTrap, onTrapPlaced = () => { } }) => {
   const characterRef = useRef();
@@ -371,6 +372,10 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       angularFactor={[0, 1, 0]}
       linearDamping={0.5}
       angularDamping={0.5}
+      collisionGroups={GlobalConstants.createInteractionGroup(
+        GlobalConstants.CHARACTER_GROUP,
+        GlobalConstants.TRAP_GROUP // Interacts with everything except traps
+      )}
       onCollisionEnter={(event) => {
         const colliderName = event.colliderObject.name;
         if (colliderName === "character" || colliderName === "floor") return;
@@ -389,7 +394,6 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       <CuboidCollider
         args={[0.35, 1, 0.35]}
         position={[0, 1, 0]}
-        collisionGroups={interactionGroups(0b0010, 0b1110)} // Character = group 2, collides with groups 2-4
       />
       {characterModel ? (
         <primitive
