@@ -57,7 +57,7 @@ export default class Enemy {
 
     this.state = "wander";
     this.followThreshold = 7;
-    this.attackThreshold = 1.5;
+    this.attackThreshold = 1.2;
     this.wanderTarget = this._getRandomWanderPoint();
     this.currentAnimation = null;
     this.rigidBody = null;
@@ -105,7 +105,6 @@ export default class Enemy {
     const position = new THREE.Vector3(pos.x, pos.y, pos.z);
     const direction = new THREE.Vector3().subVectors(playerPosition, position);
     const distance = direction.length();
-    console.log("📏 Distance to player:", distance);
 
     if (distance < this.attackThreshold) {
       if (this.state !== "attack" && this.attackCooldown <= 0) {

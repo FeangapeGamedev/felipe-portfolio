@@ -3,8 +3,9 @@ import React, { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import Enemy from "./Enemy";
+import * as THREE from "three"; // Ensure THREE is imported for Vector3 calculations
 
-const EnemyComponent = ({ playerPosition, onDeath }) => {
+const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
   const rigidBodyRef = useRef();
   const [enemyInstance, setEnemyInstance] = useState(null);
   const [isDead, setIsDead] = useState(false);
@@ -48,9 +49,22 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
 
     if (playerPosition) {
       enemyInstance.updateBehavior(playerPosition, delta);
-    }
 
-    console.log("🧠 Current Enemy State:", enemyInstance.state);
+      // Detect if the player is nearby while the enemy is attacking
+      if (
+        enemyInstance?.state === "attack" &&
+        rigidBodyRef.current
+      ) {
+        const enemyPos = rigidBodyRef.current.translation();
+        const distance = playerPosition.distanceTo(
+          new THREE.Vector3(enemyPos.x, enemyPos.y, enemyPos.z)
+        );
+
+        if (distance < 1.2) {
+          onPlayerHit?.();
+        }
+      }
+    }
   });
 
   if (isDead || !enemyInstance) return null;

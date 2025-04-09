@@ -1,5 +1,5 @@
 // Scene.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { OrthographicCamera } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { useGame } from "../state/GameContext.jsx";
@@ -61,19 +61,29 @@ const Scene = ({
   setIsPlacingTrap,
   placedTraps,
   setPlacedTraps,
-  enemySpawned, // Prop to control enemy spawning
-  setEnemySpawned, // Add this prop
-  onEnemyDeath, // Add this prop
+  enemySpawned,
+  setEnemySpawned,
+  onEnemyDeath,
+  characterRef, // Add characterRef to props
+  isPlayerDead,
+  setIsPlayerDead,
 }) => {
   const { currentRoom, targetPosition, doorDirection, playerPosition } = useGame();
 
+  const handlePlayerDeath = () => {
+    if (!isPlayerDead) {
+      console.log("☠️ Player has died!");
+      characterRef.current?.playDieAnimation?.(); // Call method on Character
+      setIsPlayerDead(true);
+      // Optionally: reset game, show game over, etc.
+    }
+  };
 
   useEffect(() => {
     if (!currentRoom || !targetPosition) return;
     setInitialPosition(targetPosition.clone());
     setForceTeleport(true);
   }, [currentRoom]);
-
 
   useEffect(() => {
     if (!currentRoom) return;
@@ -84,7 +94,6 @@ const Scene = ({
     }
   }, [currentRoom, setPlacedTraps]);
 
-  // ✅ Debug log to check trap count
   return (
     <>
       <OrthographicCamera
@@ -124,6 +133,7 @@ const Scene = ({
 
       {initialPosition && (
         <Character
+          ref={characterRef} // Assign ref
           key={`character-${currentRoom.id}-${doorDirection}`}
           initialPosition={initialPosition}
           teleport={forceTeleport}
@@ -150,53 +160,55 @@ const Scene = ({
             setIsPlacingTrap(false);
             setSelectedTrapType(null);
           }}
+          onPlayerDeath={handlePlayerDeath} // Pass handlePlayerDeath
         />
       )}
 
       <CharacterController isPaused={isPaused || isPlacingTrap} />
 
-      {currentRoom.id === 3 && placedTraps.map((trap, i) => {
-        const position = new THREE.Vector3(trap.position.x, 0.5, trap.position.z);
+      {currentRoom.id === 3 &&
+        placedTraps.map((trap, i) => {
+          const position = new THREE.Vector3(trap.position.x, 0.5, trap.position.z);
 
-        return (
-          <Trap
-            key={`trap-${trap.type}-${i}`}
-            type={trap.type}
-            position={position}
-            index={i}
-            onTrapConsumed={(index) => {
-              setPlacedTraps((prevTraps) => {
-                console.log("Current traps:", prevTraps); // Log current traps
-                const newTraps = [...prevTraps];
-                const removedTrap = newTraps.splice(index, 1)[0];
-                console.log("Updated traps:", newTraps); // Log updated traps
-                console.log(`Removed trap: ${removedTrap.type} at index: ${index}`); // Log removed trap details
+          return (
+            <Trap
+              key={`trap-${trap.type}-${i}`}
+              type={trap.type}
+              position={position}
+              index={i}
+              onTrapConsumed={(index) => {
+                setPlacedTraps((prevTraps) => {
+                  console.log("Current traps:", prevTraps); // Log current traps
+                  const newTraps = [...prevTraps];
+                  const removedTrap = newTraps.splice(index, 1)[0];
+                  console.log("Updated traps:", newTraps); // Log updated traps
+                  console.log(`Removed trap: ${removedTrap.type} at index: ${index}`); // Log removed trap details
 
-                // ♻️ Recharge one trap of that type
-                setTrapCharges((charges) => ({
-                  ...charges,
-                  [removedTrap.type]: (charges[removedTrap.type] || 0) + 1,
-                }));
+                  // ♻️ Recharge one trap of that type
+                  setTrapCharges((charges) => ({
+                    ...charges,
+                    [removedTrap.type]: (charges[removedTrap.type] || 0) + 1,
+                  }));
 
-                console.log(`🧯 Trap consumed: ${removedTrap.type}, recharging 1 charge.`);
+                  console.log(`🧯 Trap consumed: ${removedTrap.type}, recharging 1 charge.`);
 
-                return newTraps;
-              });
-            }}
-          />
-        );
-      })}
+                  return newTraps;
+                });
+              }}
+            />
+          );
+        })}
 
-      {/* Render EnemyComponent only in room 3 when enemySpawned is true */}
       {currentRoom.id === 3 && enemySpawned && (
         <EnemyComponent
           playerPosition={playerPosition}
           onDeath={() => {
-            if (typeof setEnemySpawned === "function") {
-              setEnemySpawned(false); // ✅ Remove enemy from scene
-            }
-            if (typeof onEnemyDeath === "function") {
-              onEnemyDeath(); // ✅ Notify App to trigger gameEnd
+            setEnemySpawned?.(false); // ✅ Remove enemy from scene
+            onEnemyDeath?.(); // ✅ Notify App to trigger gameEnd
+          }}
+          onPlayerHit={() => {
+            if (!isPlayerDead) {
+              handlePlayerDeath(); // ✅ Trigger player death
             }
           }}
         />

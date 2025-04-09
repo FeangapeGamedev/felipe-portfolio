@@ -1,15 +1,13 @@
+// App.jsx
 import { useState, useEffect, Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
-
 import "./index.css";
 
-// Game Data & State
 import { projects } from "./game/data/projectsData";
 import { useGame } from "./game/state/GameContext";
 import SurvivorGameManager from "./game/survivor/SurvivorGameManager";
 
-// Components
 import Scene from "./game/scene/Scene";
 import Navbar from "./components/Navbar";
 import Inventory from "./components/Inventory";
@@ -32,23 +30,25 @@ function App() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [doorPassKey] = useState("1958");
-  const [prepTime, setPrepTime] = useState(20); // ⏱️ 20s prep
-  const [showIntro, setShowIntro] = useState(true); // 👋 Show intro popup
+
+  const [prepTime, setPrepTime] = useState(20);
+  const [showIntro, setShowIntro] = useState(true);
   const [forceTeleport, setForceTeleport] = useState(false);
   const [initialPosition, setInitialPosition] = useState(null);
   const [selectedTrapType, setSelectedTrapType] = useState(null);
   const [isPlacingTrap, setIsPlacingTrap] = useState(false);
   const [placedTraps, setPlacedTraps] = useState([]);
-  const [enemySpawned, setEnemySpawned] = useState(false); // New state for enemy spawn
-  const [gameEnd, setGameEnd] = useState(false); // Track if the game has ended
+  const [enemySpawned, setEnemySpawned] = useState(false);
+  const [gameEnd, setGameEnd] = useState(false);
+  const [isPlayerDead, setIsPlayerDead] = useState(false); // ✅ Track death state
 
-  const { changeRoom, currentRoom, doorDirection } = useGame();
+  const { changeRoom, currentRoom } = useGame();
   const previousRoomId = useRef(null);
   const loadingStartTime = useRef(null);
+  const characterRef = useRef();
 
   const isPaused = activeSection !== "game" || showWelcomePopup;
 
-  // 👇 Trap placement state (shared between Scene + SurvivorGameManager)
   const [trapCharges, setTrapCharges] = useState({
     unity: 1,
     unreal: 1,
@@ -57,7 +57,6 @@ function App() {
     vr: 1,
   });
 
-  // Show Welcome popup only once after everything has loaded
   useEffect(() => {
     if (!hasMounted && !showLoadingScreen) {
       setHasMounted(true);
@@ -65,17 +64,13 @@ function App() {
     }
   }, [hasMounted, showLoadingScreen]);
 
-  // Auto-close error popup
   useEffect(() => {
     if (showErrorPopup) {
-      const timer = setTimeout(() => {
-        setShowErrorPopup(false);
-      }, 3000);
+      const timer = setTimeout(() => setShowErrorPopup(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showErrorPopup]);
 
-  // Show loading screen on all room changes with a minimum duration
   useEffect(() => {
     const from = previousRoomId.current;
     const to = currentRoom?.id;
@@ -86,47 +81,19 @@ function App() {
       setShowLoadingScreen(true);
 
       const MIN_LOADING_DURATION = 800;
+      const elapsed = Date.now() - loadingStartTime.current;
+      const remaining = Math.max(MIN_LOADING_DURATION - elapsed, 0);
 
-      const checkTimer = setTimeout(() => {
-        const now = Date.now();
-        const elapsed = now - loadingStartTime.current;
-        const remaining = Math.max(MIN_LOADING_DURATION - elapsed, 0);
+      const timer = setTimeout(() => {
+        setShowLoadingScreen(false);
+      }, remaining);
 
-        setTimeout(() => {
-          setShowLoadingScreen(false);
-        }, remaining);
-      }, 0);
-
-      return () => clearTimeout(checkTimer);
+      return () => clearTimeout(timer);
     }
   }, [currentRoom]);
 
-  const handleCorrectPassKey = () => {
-    setShowCodeFrame(false);
-    setActiveSection("game");
-    setShowLoadingScreen(true);
-    changeRoom(3);
-  };
-
-  const handleProjectSelect = (projectId) => {
-    const project = projects.find((p) => p.id === projectId);
-    setSelectedProject(project);
-    setActiveSection("project-details");
-    setDisableBackButton(true);
-  };
-
-  const handleShowCodeFrame = () => {
-    setShowCodeFrame(true);
-    setActiveSection("code-frame");
-  };
-
-  const handleRoomChange = (roomId) => {
-    setShowLoadingScreen(true);
-    changeRoom(roomId);
-  };
-
   const restartSurvivorGame = () => {
-    changeRoom(3); // Trigger room change (will cause Scene to update)
+    changeRoom(3);
 
     setTrapCharges({
       unity: 1,
@@ -136,20 +103,24 @@ function App() {
       vr: 1,
     });
 
-    setPlacedTraps([]); // Clear all trap meshes
-    setPrepTime(20); // Reset prep time
+    setPlacedTraps([]);
+    setPrepTime(20);
     setShowIntro(true);
     setSelectedTrapType(null);
     setIsPlacingTrap(false);
-    setEnemySpawned(false); // Reset enemy spawn state
-    setGameEnd(false); // Reset game end flag
+    setEnemySpawned(false);
+    setGameEnd(false);
+    setIsPlayerDead(false); // ✅ Reset death state
 
-    // ⏳ Delay teleport assignment until Scene has switched to Room 3
     setTimeout(() => {
       const spawn = new THREE.Vector3(...roomData[2].spawnPositionForward);
       setInitialPosition(spawn);
-      setForceTeleport(true); // ✅ This should now trigger teleport
-    }, 300); // Delay can be adjusted slightly
+      setForceTeleport(true);
+
+      setTimeout(() => {
+        characterRef.current?.revive?.();
+      }, 100);
+    }, 300);
   };
 
   return (
@@ -158,17 +129,27 @@ function App() {
         <div className="loading-screen">
           <p>Loading...</p>
         </div>
-      )}y
+      )}
 
       <Suspense fallback={null}>
-        {/* ✅ Canvas (pure 3D stuff) */}
         <Canvas shadows>
           <Physics debug>
             <Scene
               isPaused={isPaused}
-              onProjectSelect={handleProjectSelect}
-              onShowCodeFrame={handleShowCodeFrame}
-              onRoomChange={handleRoomChange}
+              onProjectSelect={(id) => {
+                const project = projects.find((p) => p.id === id);
+                setSelectedProject(project);
+                setActiveSection("project-details");
+                setDisableBackButton(true);
+              }}
+              onShowCodeFrame={() => {
+                setShowCodeFrame(true);
+                setActiveSection("code-frame");
+              }}
+              onRoomChange={(roomId) => {
+                setShowLoadingScreen(true);
+                changeRoom(roomId);
+              }}
               trapCharges={trapCharges}
               setTrapCharges={setTrapCharges}
               initialPosition={initialPosition}
@@ -182,18 +163,19 @@ function App() {
               placedTraps={placedTraps}
               setPlacedTraps={setPlacedTraps}
               restartSurvivorGame={restartSurvivorGame}
-              enemySpawned={enemySpawned} // Pass enemy spawn state
-              setEnemySpawned={setEnemySpawned} // Pass setEnemySpawned function
+              enemySpawned={enemySpawned}
+              setEnemySpawned={setEnemySpawned}
               onEnemyDeath={() => {
-                setEnemySpawned(false); // Remove the enemy
-                setGameEnd(true); // Mark the game as ended
-                console.log("Enemy defeated. Game has ended.");
+                setEnemySpawned(false);
+                setGameEnd(true);
               }}
+              characterRef={characterRef}
+              isPlayerDead={isPlayerDead} // ✅ Pass death state
+              setIsPlayerDead={setIsPlayerDead} // ✅ Pass setter
             />
           </Physics>
         </Canvas>
 
-        {/* ✅ Floating UI Layer */}
         <div className="ui-layer">
           <Navbar
             onInventoryClick={() =>
@@ -220,14 +202,8 @@ function App() {
             />
           )}
 
-          {activeSection === "inventory" && (
-            <Inventory onClose={() => setActiveSection("game")} />
-          )}
-
-          {activeSection === "contact" && (
-            <Contact onClose={() => setActiveSection("game")} />
-          )}
-
+          {activeSection === "inventory" && <Inventory onClose={() => setActiveSection("game")} />}
+          {activeSection === "contact" && <Contact onClose={() => setActiveSection("game")} />}
           {activeSection === "projects" && (
             <Projects
               onClose={() => setActiveSection("game")}
@@ -238,19 +214,22 @@ function App() {
               }}
             />
           )}
-
           {activeSection === "code-frame" && (
             <CodeFrame
               className="popup-frame"
               doorPassKey={doorPassKey}
-              onCorrectPassKey={handleCorrectPassKey}
+              onCorrectPassKey={() => {
+                setShowCodeFrame(false);
+                setActiveSection("game");
+                setShowLoadingScreen(true);
+                changeRoom(3);
+              }}
               onClose={() => {
                 setActiveSection("game");
                 setShowErrorPopup(true);
               }}
             />
           )}
-
           {showErrorPopup && (
             <ErrorCodePopup
               message="ACCESS DENIED – TRY AGAIN"
@@ -260,7 +239,7 @@ function App() {
         </div>
       </Suspense>
 
-      {currentRoom?.id === 3 && !showLoadingScreen && (
+      {!showLoadingScreen && currentRoom?.id === 3 && (
         <SurvivorGameManager
           trapCharges={trapCharges}
           setTrapCharges={setTrapCharges}
@@ -271,14 +250,14 @@ function App() {
           restartSurvivorGame={restartSurvivorGame}
           selectedTrapType={selectedTrapType}
           setSelectedTrapType={setSelectedTrapType}
-          onArmTrap={(trapType) => {
-            if (!trapType || isPlacingTrap) return;
-            setIsPlacingTrap(true); // Set placing trap state
-            console.log(`🪤 Placing trap of type: ${trapType}`);
-          }}
           isPlacingTrap={isPlacingTrap}
-          onEnemySpawn={() => setEnemySpawned(true)} // Trigger enemy spawn
-          gameEnd={gameEnd} // ✅ Pass gameEnd state
+          onArmTrap={(type) => {
+            if (!type || isPlacingTrap) return;
+            setIsPlacingTrap(true);
+            console.log(`🪤 Placing trap of type: ${type}`);
+          }}
+          onEnemySpawn={() => setEnemySpawned(true)}
+          gameEnd={gameEnd}
         />
       )}
 

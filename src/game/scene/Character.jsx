@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
@@ -7,7 +13,16 @@ import { AnimationMixer, LoopRepeat, LoopOnce } from "three";
 import { useGame } from "../state/GameContext.jsx";
 import GlobalConstants from "../utils/GlobalConstants.js";
 
-export const Character = ({ initialPosition, isPaused, teleport = false, onTeleportComplete = () => { }, selectedTrapType, setIsPlacingTrap, isPlacingTrap, onTrapPlaced = () => { } }) => {
+export const Character = forwardRef(({
+  initialPosition,
+  isPaused,
+  teleport = false,
+  onTeleportComplete = () => { },
+  selectedTrapType,
+  setIsPlacingTrap,
+  isPlacingTrap,
+  onTrapPlaced = () => { },
+}, ref) => {
   const characterRef = useRef();
   const modelRef = useRef();
   const mixerRef = useRef(null);
@@ -17,15 +32,17 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   const standToCrouchActionRef = useRef(null);
   const crouchIdleActionRef = useRef(null);
   const crouchToStandingActionRef = useRef(null);
+  const dieActionRef = useRef(null);
   const hasPlacedTrapRef = useRef(false);
-  const trapToPlaceRef = useRef(null); // ✅ Use ref instead of state
+  const trapToPlaceRef = useRef(null);
 
   const [justTeleported, setJustTeleported] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [isIdle, setIsIdle] = useState(true);
   const [isColliding, setIsColliding] = useState(false);
-  const [disableMovement, setDisableMovement] = useState(false); // Step 1: Add movement lock state
+  const [disableMovement, setDisableMovement] = useState(false);
+  const [modelInstanceKey, setModelInstanceKey] = useState(0);
   const hasStartedPlacingRef = useRef(false);
 
   const { targetPosition, setTargetPosition, spawnRotationY, setPlayerPosition } = useGame();
@@ -37,7 +54,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
   const turnSpeed = 7;
 
   const { scene: characterModel, animations } = useGLTF(
-    "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/ccCharacterAnimated.glb"
+    "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Character.glb"
   );
 
   const restoreMovementWeights = () => {
@@ -59,6 +76,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     crouchToStandingActionRef.current?.stop();
     crouchIdleActionRef.current?.stop();
     standToCrouchActionRef.current?.stop();
+    dieActionRef.current?.stop();
   };
 
   const zeroAllWeights = () => {
@@ -68,17 +86,22 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     crouchToStandingActionRef.current.weight = 0;
     crouchIdleActionRef.current.weight = 0;
     standToCrouchActionRef.current.weight = 0;
+    dieActionRef.current.weight = 0;
   };
+
+  const getClipByName = (name) => animations.find((clip) => clip.name === name);
 
   useEffect(() => {
     if (characterModel && animations.length > 0) {
       mixerRef.current = new AnimationMixer(characterModel);
-      idleActionRef.current = mixerRef.current.clipAction(animations[2]); // Idle
-      walkActionRef.current = mixerRef.current.clipAction(animations[5]); // Walk
-      standToCrouchActionRef.current = mixerRef.current.clipAction(animations[1]); // Stand to Crouch
-      crouchIdleActionRef.current = mixerRef.current.clipAction(animations[0]); // Crouch Idle
-      crouchToStandingActionRef.current = mixerRef.current.clipAction(animations[4]); // Crouch to Stand
-      runActionRef.current = mixerRef.current.clipAction(animations[3]); // Run
+
+      idleActionRef.current = mixerRef.current.clipAction(getClipByName("Idle"));
+      walkActionRef.current = mixerRef.current.clipAction(getClipByName("Walk"));
+      runActionRef.current = mixerRef.current.clipAction(getClipByName("Run"));
+      standToCrouchActionRef.current = mixerRef.current.clipAction(getClipByName("StandToCrouch"));
+      crouchIdleActionRef.current = mixerRef.current.clipAction(getClipByName("CrouchIdle"));
+      crouchToStandingActionRef.current = mixerRef.current.clipAction(getClipByName("CrouchToStand"));
+      dieActionRef.current = mixerRef.current.clipAction(getClipByName("Die"));
 
       idleActionRef.current.setLoop(LoopRepeat, Infinity);
       walkActionRef.current.setLoop(LoopRepeat, Infinity);
@@ -87,6 +110,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       standToCrouchActionRef.current.setLoop(LoopOnce, 1);
       crouchIdleActionRef.current.setLoop(LoopOnce, 1);
       crouchToStandingActionRef.current.setLoop(LoopOnce, 1);
+      dieActionRef.current.setLoop(LoopOnce, 1);
 
       standToCrouchActionRef.current.clampWhenFinished = true;
       crouchIdleActionRef.current.clampWhenFinished = true;
@@ -100,9 +124,10 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       idleActionRef.current.weight = 1;
       walkActionRef.current.weight = 0;
       runActionRef.current.weight = 0;
-      standToCrouchActionRef.current.weight = 0; // Set crouching weights to 0
-      crouchIdleActionRef.current.weight = 0;    // Set crouching weights to 0
-      crouchToStandingActionRef.current.weight = 0; // Set crouching weights to 0
+      standToCrouchActionRef.current.weight = 0;
+      crouchIdleActionRef.current.weight = 0;
+      crouchToStandingActionRef.current.weight = 0;
+      dieActionRef.current.weight = 0;
 
       idleActionRef.current.play();
       walkActionRef.current.play();
@@ -119,14 +144,14 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       mixerRef.current.update(delta);
     }
 
+    // Prevent movement or actions if certain conditions are met
+    if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap || disableMovement) return;
+
     // Update player position in the GameContext on every frame
     if (characterRef.current) {
       const currentPos = characterRef.current.translation();
       setPlayerPosition(new THREE.Vector3(currentPos.x, currentPos.y, currentPos.z));
     }
-
-    // Step 2: Check disableMovement before processing movement
-    if (justTeleported || isPaused || !targetPosition || !characterRef.current || isColliding || isPlacingTrap || disableMovement) return;
 
     const characterPos = characterRef.current.translation();
     const posX = characterPos.x;
@@ -226,7 +251,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       crouchToStandingActionRef.current.setLoop(LoopOnce, 1);
       crouchToStandingActionRef.current.clampWhenFinished = true;
       crouchToStandingActionRef.current.setEffectiveWeight(1);
-      crouchToStandingActionRef.current.fadeIn(0.2).play();
+      crouchToStandingActionRef.current.reset().play();
     } else if (finishedAction === crouchToStandingActionRef.current) {
       console.log("✅ Finished: crouch → stand");
 
@@ -280,7 +305,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
 
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
-      console.log("🌀 Teleporting to:", initialPosition.toArray()); // ✅ Add this
+      console.log("🌀 Teleporting to:", initialPosition.toArray());
 
       characterRef.current.setTranslation(initialPosition, true);
 
@@ -289,6 +314,9 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
           new THREE.Euler(0, spawnRotationY, 0)
         );
       }
+
+      // ✅ Force model remount
+      setModelInstanceKey((k) => k + 1);
 
       setTargetPosition(null);
       setIsIdle(true);
@@ -302,6 +330,60 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
     }
   }, [teleport, initialPosition, spawnRotationY]);
 
+  const playDieAnimation = () => {
+    if (dieActionRef.current && mixerRef.current) {
+      console.log("💀 Playing character die animation");
+
+      stopAllAnimations();
+      zeroAllWeights();
+      
+      dieActionRef.current.reset();
+      dieActionRef.current.setLoop(LoopOnce, 1);
+      dieActionRef.current.clampWhenFinished = true;
+
+      // ⛔️ Avoid effectiveWeight — we’ll set weight explicitly
+      dieActionRef.current.weight = 1;
+
+      dieActionRef.current.play();
+
+      // ⚠️ Ensure mixer state is fully updated this frame
+      mixerRef.current.update(0);
+
+      setDisableMovement(true);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    playDieAnimation,
+
+    revive: () => {
+      console.log("🧟‍♂️ Reviving character...");
+
+      if (dieActionRef.current?.isRunning()) {
+        dieActionRef.current.stop();
+        dieActionRef.current.reset();
+        dieActionRef.current.weight = 0;
+        mixerRef.current.update(0); // 💥 force update after change
+      }
+
+      // Set idle as active animation
+      stopAllAnimations();
+      zeroAllWeights();
+
+
+      idleActionRef.current.reset().play();
+      walkActionRef.current.reset().play();
+      runActionRef.current.reset().play();
+
+      restoreMovementWeights();
+
+      // Reset movement flags
+      setDisableMovement(false);
+      setIsIdle(true);
+      setIsWalking(false);
+      setIsRunning(false);
+    }
+  }));
 
   useEffect(() => {
     if (!trapToPlaceRef.current || !characterRef.current) return;
@@ -397,6 +479,7 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       />
       {characterModel ? (
         <primitive
+          key={modelInstanceKey} // ✅ Forces remount
           ref={modelRef}
           object={characterModel}
           scale={1}
@@ -409,4 +492,4 @@ export const Character = ({ initialPosition, isPaused, teleport = false, onTelep
       )}
     </RigidBody>
   );
-};
+});
