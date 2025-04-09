@@ -1,12 +1,13 @@
+// EnemyComponent.jsx
 import React, { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody, CuboidCollider} from "@react-three/rapier";
+import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import Enemy from "./Enemy";
 
 const EnemyComponent = ({ playerPosition, onDeath }) => {
   const rigidBodyRef = useRef();
   const [enemyInstance, setEnemyInstance] = useState(null);
-  const [isDead, setIsDead] = useState(false); // Track if the enemy is dead
+  const [isDead, setIsDead] = useState(false);
   const [rigidBodyReady, setRigidBodyReady] = useState(false);
 
   useEffect(() => {
@@ -20,22 +21,23 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
 
   useEffect(() => {
     if (enemyInstance && rigidBodyRef.current && !enemyInstance.rigidBody) {
-      enemyInstance.setPhysicsControl(rigidBodyRef.current);
-      rigidBodyRef.current.setRotation({ x: 0, y: 0, z: 0 }, true);
+      enemyInstance.setPhysicsControl(rigidBodyRef);
       setRigidBodyReady(true);
     }
   }, [enemyInstance, rigidBodyRef.current]);
 
   const handleCollision = (event) => {
-    const otherName = event.colliderObject.name;
-    if (otherName?.toLowerCase().includes("trap")) {
+    const otherName = event.colliderObject.name?.toLowerCase();
+    if (otherName?.includes("trap")) {
       if (enemyInstance && enemyInstance.state !== "dead") {
         enemyInstance.die(() => {
           console.log("☠️ Enemy died from trap, removing from scene");
-          setIsDead(true); // Trigger unmount
-          onDeath?.(); // Notify parent (Scene) if needed
+          setIsDead(true);
+          onDeath?.();
         });
       }
+    } else if (enemyInstance && enemyInstance.state === "wander") {
+      enemyInstance.handleWanderCollision();
     }
   };
 
@@ -48,17 +50,16 @@ const EnemyComponent = ({ playerPosition, onDeath }) => {
       enemyInstance.updateBehavior(playerPosition, delta);
     }
 
-    const rotation = rigidBodyRef.current.rotation();
-    rigidBodyRef.current.setRotation({ x: 0, y: rotation.y, z: 0 }, true);
+    console.log("🧠 Current Enemy State:", enemyInstance.state);
   });
 
-  if (isDead || !enemyInstance) return null; // Unmount enemy if dead
+  if (isDead || !enemyInstance) return null;
 
   return (
     <RigidBody
       ref={rigidBodyRef}
       type="dynamic"
-      name = "enemy"
+      name="enemy"
       colliders={false}
       angularFactor={[0, 1, 0]}
       linearDamping={3}

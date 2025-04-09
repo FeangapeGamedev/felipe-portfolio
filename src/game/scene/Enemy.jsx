@@ -46,11 +46,9 @@ export default class Enemy {
     this.group = new THREE.Group();
     this.group.add(clonedModel);
 
-    // Collider config
     this.colliderSize = [0.5, 1, 0.5];
     this.colliderPosition = [0, size.y / 2, 0];
 
-    // Animation setup
     this.mixer = new THREE.AnimationMixer(clonedModel);
     this.animations = {};
     Enemy.model.animations.forEach((clip) => {
@@ -59,49 +57,45 @@ export default class Enemy {
 
     this.state = "wander";
     this.followThreshold = 7;
-    this.attackThreshold = 0.7;
+    this.attackThreshold = 1.5;
     this.wanderTarget = this._getRandomWanderPoint();
     this.currentAnimation = null;
     this.rigidBody = null;
+    this.wasBlocked = false;
+    this.attackCooldown = 0;
 
-    this.playAnimation('idle');
+    this.playAnimation("idle");
   }
 
-  setPhysicsControl(rigidBody) {
-    this.rigidBody = rigidBody;
-
-    // Access the Rapier rigid body instance directly
-    const rapierRigidBody = rigidBody.current; // Use the ref to access the Rapier instance
-
-    if (rapierRigidBody) {
-      // Restrict rotation on the x and z axes
-      rapierRigidBody.lockRotations(true, false); // Lock x and z rotations, allow y-axis rotation
+  setPhysicsControl(rigidBodyRef) {
+    this.rigidBody = rigidBodyRef.current;
+    if (this.rigidBody) {
+      this.rigidBody.lockRotations(true, false);
+      this.rigidBody.onCollisionEnter = (event) => {
+        const otherType = event.colliderObject?.type;
+        if (otherType === "Trap") {
+          console.log("💥 Enemy collided with a trap!");
+          this.die(() => console.log("☠️ Enemy died from trap collision"));
+        } else {
+          this.handleWanderCollision();
+        }
+      };
     }
-
-    // Add collision detection for colliders of type "Trap"
-    this.rigidBody.onCollisionEnter = (event) => {
-      const otherType = event.colliderObject?.type; // Check the type of the colliding object
-      if (otherType === "Trap") {
-        console.log("💥 Enemy collided with a trap!");
-        this.die(() => {
-          console.log("☠️ Enemy died from trap collision");
-        });
-      }
-    };
   }
 
   playAnimation(name) {
     const action = this.animations[name.toLowerCase()];
     if (!action) return;
     if (this.currentAnimation && this.currentAnimation !== action) {
-      this.currentAnimation.fadeOut(0.5);
+      this.currentAnimation.fadeOut(0.3);
     }
-    action.reset().fadeIn(0.5).play();
+    action.reset().fadeIn(0.3).play();
     this.currentAnimation = action;
   }
 
   update(delta) {
     this.mixer.update(delta);
+    if (this.attackCooldown > 0) this.attackCooldown -= delta;
   }
 
   updateBehavior(playerPosition, delta) {
@@ -111,26 +105,22 @@ export default class Enemy {
     const position = new THREE.Vector3(pos.x, pos.y, pos.z);
     const direction = new THREE.Vector3().subVectors(playerPosition, position);
     const distance = direction.length();
+    console.log("📏 Distance to player:", distance);
 
-    // Stop movement if too close to the player
-    if (distance < 0.6) {
-      this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
-      return;
-    }
-
-    // Attack state: if player is within attack threshold
     if (distance < this.attackThreshold) {
-      if (this.state !== "attack") {
+      if (this.state !== "attack" && this.attackCooldown <= 0) {
+        console.log("⚔️ State: ATTACK");
         this.state = "attack";
         this.playAnimation("attack");
+        this.attackCooldown = 1.5;
       }
       this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
       return;
     }
 
-    // Chase state: if player is within follow threshold
     if (distance < this.followThreshold) {
       if (this.state !== "chase") {
+        console.log("🏃 State: CHASE");
         this.state = "chase";
         this.playAnimation("run");
       }
@@ -138,32 +128,35 @@ export default class Enemy {
       if (distance > 0.1) {
         direction.normalize();
         const chaseSpeed = 3.5;
-
-        // Smooth out velocity changes
         const targetVel = new THREE.Vector3(direction.x * chaseSpeed, 0, direction.z * chaseSpeed);
         const currentVel = new THREE.Vector3().copy(this.rigidBody.linvel());
-        const smoothedVel = currentVel.lerp(targetVel, 0.1); // Smooth transition
+        const smoothedVel = currentVel.lerp(targetVel, 0.1);
         this.rigidBody.setLinvel(smoothedVel, true);
 
-        const lookAtTarget = new THREE.Vector3().addVectors(position, direction);
-        this.group.lookAt(lookAtTarget);
-        this.group.rotation.x = 0; // Prevent tilting on the x-axis
-        this.group.rotation.z = 0; // Prevent tilting on the z-axis
+        const angle = Math.atan2(direction.x, direction.z);
+        this.group.rotation.set(0, angle, 0);
       } else {
         this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
       }
       return;
     }
 
-    // Wander state: if player is far
     if (this.state !== "wander") {
+      console.log("🚶 State: WANDER");
       this.state = "wander";
       this.wanderTarget = this._getRandomWanderPoint();
-      this.playAnimation("walk"); // Ensure "walk" animation is played
+      this.playAnimation("walk");
     }
 
     if (!this.wanderTarget) {
       this.wanderTarget = this._getRandomWanderPoint();
+    }
+
+    if (this.wasBlocked) {
+      this.wasBlocked = false;
+      this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      this.wanderTarget = this._getRandomWanderPoint();
+      return;
     }
 
     const wanderDirection = new THREE.Vector3().subVectors(this.wanderTarget, position);
@@ -172,20 +165,15 @@ export default class Enemy {
     if (wanderDistance > 0.1) {
       wanderDirection.normalize();
       const wanderSpeed = 1;
-
-      // Smooth out wander velocity
       const targetVel = new THREE.Vector3(wanderDirection.x * wanderSpeed, 0, wanderDirection.z * wanderSpeed);
       const currentVel = new THREE.Vector3().copy(this.rigidBody.linvel());
-      const smoothedVel = currentVel.lerp(targetVel, 0.1); // Smooth transition
+      const smoothedVel = currentVel.lerp(targetVel, 0.1);
       this.rigidBody.setLinvel(smoothedVel, true);
 
-      const lookAtTarget = new THREE.Vector3().addVectors(position, wanderDirection);
-      this.group.lookAt(lookAtTarget);
-      this.group.rotation.x = 0; // Prevent tilting on the x-axis
-      this.group.rotation.z = 0; // Prevent tilting on the z-axis
+      const angle = Math.atan2(wanderDirection.x, wanderDirection.z);
+      this.group.rotation.set(0, angle, 0);
 
-      // Ensure "walk" animation is playing during wandering
-      if (this.state === "wander" && this.currentAnimation !== this.animations["walk"]) {
+      if (this.currentAnimation !== this.animations["walk"]) {
         this.playAnimation("walk");
       }
     } else {
@@ -208,10 +196,14 @@ export default class Enemy {
       this.playAnimation("die");
     }
 
-    // Delay to allow death animation to finish before cleanup
-    setTimeout(() => {
-      callback?.(); // Notify React to unmount
-    }, 4000); // Match this to your die animation duration
+    setTimeout(() => callback?.(), 4000);
+  }
+
+  handleWanderCollision() {
+    if (this.state === "wander") {
+      console.log("🚧 Wander collision detected, redirecting");
+      this.wasBlocked = true;
+    }
   }
 
   _getRandomWanderPoint() {
