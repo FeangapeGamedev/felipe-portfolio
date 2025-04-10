@@ -1,7 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SurvivorIntroPopup from "../../components/SurvivorIntroPopup";
 import TrapUI from "../../components/TrapUI";
-import { useGame } from "../state/GameContext.jsx"; // Access currentRoom from your game context
+import WinPopup from "../../components/WinPopup";
+import LosePopup from "../../components/LosePopup";
+import { useGame } from "../state/GameContext.jsx";
 
 const SurvivorGameManager = ({
   trapCharges,
@@ -16,11 +18,13 @@ const SurvivorGameManager = ({
   onArmTrap,
   isPlacingTrap,
   onEnemySpawn,
-  gameEnd, // ✅ Destructure gameEnd
+  gameEnd,
+  isPlayerDead,
+  spawnedEnemies,
 }) => {
   const { currentRoom } = useGame();
+  const [activeEndPopup, setActiveEndPopup] = useState(null); // "win" | "lose" | null
 
-  // Start countdown after closing intro
   useEffect(() => {
     if (showIntro || prepTime <= 0) return;
     const interval = setInterval(() => {
@@ -29,24 +33,42 @@ const SurvivorGameManager = ({
     return () => clearInterval(interval);
   }, [prepTime, showIntro, setPrepTime]);
 
- 
   useEffect(() => {
     if (prepTime === 0 && !isPlacingTrap && !gameEnd) {
       if (currentRoom && currentRoom.id === 3) {
-        onEnemySpawn(); // ✅ Safe spawn
+        onEnemySpawn();
       }
     }
   }, [prepTime, currentRoom, isPlacingTrap, gameEnd, onEnemySpawn]);
 
   const handleTrapArm = (trapType) => {
-    if (!trapType || isPlacingTrap) return; // Ensure a trap type is selected and not already placing
+    if (!trapType || isPlacingTrap) return;
     console.log("🪤 Trap armed:", trapType);
-    onArmTrap(trapType); // Trigger the onArmTrap callback
+    onArmTrap(trapType);
   };
+
+  const allTrapChargesEmpty = Object.values(trapCharges).every((charge) => charge === 0);
+  const enemiesRemain = spawnedEnemies.length > 0;
+  const playerLost = isPlayerDead || (allTrapChargesEmpty && enemiesRemain);
+  const playerWon = gameEnd && !playerLost;
+
+  useEffect(() => {
+    if (playerWon || playerLost) {
+      const timeout = setTimeout(() => {
+        setActiveEndPopup(playerWon ? "win" : "lose");
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [playerWon, playerLost]);
+
+  useEffect(() => {
+    setActiveEndPopup(null);
+  }, [prepTime]);
 
   return (
     <>
-      {/* Survivor Mode Intro */}
+      {/* Intro */}
       {showIntro && (
         <SurvivorIntroPopup
           onClose={() => {
@@ -68,10 +90,10 @@ const SurvivorGameManager = ({
         isPlacingTrap={isPlacingTrap}
         prepTime={prepTime}
         showIntro={showIntro}
-        onResetGame={restartSurvivorGame} // Pass reset function to TrapUI
+        onResetGame={restartSurvivorGame}
       />
 
-      {/* Prep Timer */}
+      {/* Timer */}
       {!showIntro && prepTime > 0 && (
         <div
           style={{
@@ -90,6 +112,15 @@ const SurvivorGameManager = ({
         >
           Prep Time: {prepTime}s
         </div>
+      )}
+
+      {/* ✅ Render Popups */}
+      {activeEndPopup === "win" && (
+        <WinPopup onClose={() => setActiveEndPopup(null)} />
+      )}
+
+      {activeEndPopup === "lose" && (
+        <LosePopup onClose={() => setActiveEndPopup(null)} />
       )}
     </>
   );

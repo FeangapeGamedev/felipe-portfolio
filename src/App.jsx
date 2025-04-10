@@ -41,6 +41,7 @@ function App() {
   const [enemySpawned, setEnemySpawned] = useState(false);
   const [gameEnd, setGameEnd] = useState(false);
   const [isPlayerDead, setIsPlayerDead] = useState(false); // ✅ Track death state
+  const [spawnedEnemies, setSpawnedEnemies] = useState([]);
 
   const { changeRoom, currentRoom } = useGame();
   const previousRoomId = useRef(null);
@@ -257,6 +258,8 @@ function App() {
             console.log(`🪤 Placing trap of type: ${type}`);
           }}
           onEnemySpawn={() => setEnemySpawned(true)}
+          isPlayerDead={isPlayerDead}
+          spawnedEnemies={spawnedEnemies}
           gameEnd={gameEnd}
         />
       )}
