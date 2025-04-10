@@ -11,17 +11,16 @@
   color: white;
   font-family: "Iceland", serif;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column; /* Ensure vertical stacking */
+  align-items: center; /* Center items horizontally */
   z-index: 50;
   box-shadow: -4px 0px 6px rgba(0, 0, 0, 0.4);
   border-left: 2px solid #444;
   padding-top: 1.5rem;
-  gap: 0.5rem;
+  gap: 0.5rem; /* Adjust spacing between all child elements */
   overflow: hidden;
 }
 
-/* Panel label */
 .trapbar span {
   font-size: clamp(0.8rem, 1.2vw, 1.3rem);
   text-align: center;
@@ -30,8 +29,6 @@
   color: #aaa;
 }
 
-
-/* Trap List */
 .trapbar ul {
   display: flex;
   flex-direction: column;
@@ -50,11 +47,11 @@
   justify-content: center;
 }
 
-/* Trap Buttons */
 .trap-button {
   position: relative;
-  width: 80%;
-  padding: 0.2rem 0.4rem;
+  width: 90%;
+  padding: 1rem 1rem;
+  top: 1rem;
   border-radius: 12px;
   text-align: center;
   color: white;
@@ -66,16 +63,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  gap: 1rem;
   white-space: normal;
   word-break: break-word;
   box-shadow: inset 0 0 4px #000;
   cursor: pointer;
+  background: #000; /* Black background */
+  color: white; /* White text */
+  border-color: white; /* White border */
 }
 
 .trap-button:hover:not(:disabled) {
-  transform: scale(1.03);
+  transform: scale(1.05);
   filter: brightness(1.1);
+  color: #ffcc00; /* Change text to yellow on hover */
+  border-color: #ffcc00; /* Change border to yellow on hover */
 }
 
 .trap-button:disabled {
@@ -83,7 +85,6 @@
   opacity: 0.3;
 }
 
-/* Selected Trap Button Highlight */
 .trap-button.selected {
   border: 2px solid white;
   box-shadow: 0 0 10px white, 0 0 6px white inset;
@@ -91,7 +92,6 @@
   z-index: 2;
 }
 
-/* Optional: pulsing aura effect */
 .trap-button.selected::after {
   content: "";
   position: absolute;
@@ -121,7 +121,6 @@
   }
 }
 
-/* Trap Button Inner Text */
 .trap-label {
   font-size: 0.75rem;
   text-align: center;
@@ -133,61 +132,100 @@
   opacity: 0.85;
 }
 
-/* ARM Trap Button */
-.arm-button-container {
+.arm-button-container,
+.reset-button-container,
+.quit-button-container {
   width: 100%;
-  margin-bottom: 25rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.arm-trap-button {
-  width: 90%;
-  padding: 0.8rem 1rem;
+.reset-button-container,
+.quit-button-container {
+  display: flex;
+  justify-content: center; /* Center buttons horizontally */
+  align-items: center; /* Center buttons vertically */
+  width: 100%; /* Ensure the container spans the full width */
+  text-align: center; /* Center text inside the container */
+}
+
+.arm-button-container {
+  margin-top: 0.5rem; /* Replace 'auto' with a smaller value */
+  margin-bottom: 20rem; /* Reduce the bottom margin */
+}
+
+.reset-button-container {
+  margin-top: 0.5rem; /* Reduce the top margin */
+}
+
+.quit-button-container {
+  margin-top: 0.5rem; /* Reduce the top margin */
+}
+
+.arm-trap-button,
+.reset-trap-button,
+.quit-trap-button {
+  width: 90%; /* Ensure buttons take up most of the container width */
+  padding: 1rem 2rem;
   border-radius: 20px;
   font-size: 1.2rem;
   font-family: "Iceland", serif;
-  background: #28a745;
-  color: white;
-  border: 2px solid #1e7e34;
-  transition: all 0.2s ease-in-out;
   text-align: center;
+  transition: all 0.2s ease-in-out;
+  border: 2px solid;
+  margin: 0.5rem; /* Add margin for spacing */
 }
 
-.arm-trap-button:hover:not(:disabled) {
-  background: #218838;
-  box-shadow: 0 0 15px #28a745;
-}
-
-/* RESET Button */
-.reset-button-container {
-  width: 100%;
+.arm-trap-button {
+  background: #000; /* Black background */
+  color: white; /* White text */
+  border-color: white; /* White border */
+  width: 10rem; /* Set a fixed width for the circle */
+  height: 10rem; /* Set the same height to make it circular */
+  border-radius: 50%; /* Make the button circular */
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 1.5rem; /* Adjust font size for the larger button */
+  transition: all 0.2s ease-in-out;
+}
+
+.arm-trap-button:hover:not(:disabled) {
+  color: #28a745; /* Change text to green on hover */
+  border-color: #28a745; /* Change border to green on hover */
+  transform: scale(1.1); /* Slight zoom effect on hover */
 }
 
 .reset-trap-button {
-  background-color: #222;
-  color: #fff;
-  border: 2px solid #999;
-  border-radius: 16px;
-  padding: 0.6rem 1rem;
-  font-family: "Iceland", serif;
-  font-size: 1.2rem;
-  width: 90%;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  background: #000; /* Black background */
+  color: white; /* White text */
+  border-color: white; /* White border */
 }
 
 .reset-trap-button:hover:not(:disabled) {
-  background-color: #444;
-  color: #ff6666;
-  border-color: #ff6666;
+  color: #ff8c00; /* Change text to orange on hover */
+  border-color: #ff8c00; /* Change border to orange on hover */
   transform: scale(1.05);
 }
 
-/* ✅ Responsive Adjustments */
+.quit-trap-button {
+  background: #000; /* Black background */
+  color: white; /* White text */
+  border-color: white; /* White border */
+}
+
+.quit-trap-button:hover:not(:disabled) {
+  color: #ff6666; /* Change text to red on hover */
+  border-color: #ff6666; /* Change border to red on hover */
+  transform: scale(1.05);
+}
+
+.quit-trap-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
 @media (max-width: 768px) {
   .trapbar {
     width: 70px;
@@ -212,7 +250,8 @@
   }
 
   .arm-trap-button,
-  .reset-trap-button {
+  .reset-trap-button,
+  .quit-trap-button {
     font-size: 0.65rem;
     padding: 0.4rem;
   }

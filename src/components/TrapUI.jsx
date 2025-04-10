@@ -22,7 +22,8 @@ const TrapUI = ({
   selectedTrapType,
   setSelectedTrapType,
   onArmTrap,
-  onResetGame, // ✅ Receive here
+  onResetGame,
+  onQuitGame,
   isPlacingTrap,
   prepTime,
   showIntro,
@@ -57,25 +58,21 @@ const TrapUI = ({
 
       <div className="arm-button-container">
         <button
-          className="arm-trap-button"
+          className="arm-trap-button styled-button"
           onClick={onArmTrap}
-          disabled={
-            !selectedTrapType || isPlacingTrap || prepTime <= 0 || showIntro
-          }
+          disabled={!selectedTrapType || isPlacingTrap || prepTime <= 0 || showIntro}
           style={{
             opacity: showIntro ? 0.3 : 1,
-            cursor:
-              selectedTrapType && prepTime > 0 ? "pointer" : "not-allowed",
+            cursor: selectedTrapType && prepTime > 0 ? "pointer" : "not-allowed",
           }}
         >
           ARM TRAP
         </button>
       </div>
 
-      {/* ✅ Reset Button */}
-      <div className="reset-button-container">
+      <div className="bottom-button-group spaced-button-group push-down">
         <button
-          className="reset-trap-button"
+          className="reset-trap-button styled-button"
           onClick={onResetGame}
           disabled={showIntro}
           style={{
@@ -84,6 +81,18 @@ const TrapUI = ({
           }}
         >
           RESET GAME
+        </button>
+
+        <button
+          className="quit-trap-button styled-button"
+          onClick={onQuitGame}
+          disabled={showIntro}
+          style={{
+            opacity: showIntro ? 0.3 : 1,
+            cursor: showIntro ? "not-allowed" : "pointer",
+          }}
+        >
+          QUIT GAME
         </button>
       </div>
     </div>

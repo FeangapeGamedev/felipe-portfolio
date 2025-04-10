@@ -7,7 +7,7 @@ import PropObject from "./propObjects.jsx";
 import SpotLightManager from "../state/SpotLightManager.jsx";
 import ThreeDText from "../../components/ThreeDText.jsx";
 
-const Room = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
+const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor }) => {
   const { currentRoom } = useGame();
   const wallThickness = 0.5;
   const floorThickness = 0.2;
@@ -94,6 +94,14 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
       : new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0, roughness: 1 });
   }, [backgroundTexture]);
 
+  const filteredItems = useMemo(() => {
+    if (!currentRoom) return [];
+    if (currentRoom.id === 3 && !showSurvivorDoor) {
+      return currentRoom.items.filter(item => item.id !== "door4"); // Hide Survivor exit door
+    }
+    return currentRoom.items;
+  }, [currentRoom, showSurvivorDoor]);
+
   return (
     <group>
       {/* Background Plane */}
@@ -136,7 +144,7 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame }) => {
       ))}
 
       {/* Interactive Items */}
-      {currentRoom.items.map((item) => (
+      {filteredItems.map((item) => (
         <InteractiveObject
           key={item.id}
           {...item}

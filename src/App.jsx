@@ -42,6 +42,8 @@ function App() {
   const [gameEnd, setGameEnd] = useState(false);
   const [isPlayerDead, setIsPlayerDead] = useState(false); // ✅ Track death state
   const [spawnedEnemies, setSpawnedEnemies] = useState([]);
+  const [showSurvivorDoor, setShowSurvivorDoor] = useState(true);
+  const [survivorGameActive, setSurvivorGameActive] = useState(true); // ✅ Add this state
 
   const { changeRoom, currentRoom } = useGame();
   const previousRoomId = useRef(null);
@@ -134,7 +136,7 @@ function App() {
 
       <Suspense fallback={null}>
         <Canvas shadows>
-          <Physics debug>
+          <Physics>
             <Scene
               isPaused={isPaused}
               onProjectSelect={(id) => {
@@ -151,6 +153,7 @@ function App() {
                 setShowLoadingScreen(true);
                 changeRoom(roomId);
               }}
+              showSurvivorDoor={showSurvivorDoor} // ✅ add this
               trapCharges={trapCharges}
               setTrapCharges={setTrapCharges}
               initialPosition={initialPosition}
@@ -171,8 +174,14 @@ function App() {
                 setGameEnd(true);
               }}
               characterRef={characterRef}
-              isPlayerDead={isPlayerDead} // ✅ Pass death state
-              setIsPlayerDead={setIsPlayerDead} // ✅ Pass setter
+              isPlayerDead={isPlayerDead} 
+              setIsPlayerDead={setIsPlayerDead} 
+              setSpawnedEnemies={setSpawnedEnemies} 
+              setSurvivorGameActive={setSurvivorGameActive}
+              setShowIntro={setShowIntro}
+              setPrepTime={setPrepTime}
+              setGameEnd={setGameEnd}
+              spawnedEnemies={spawnedEnemies}
             />
           </Physics>
         </Canvas>
@@ -261,6 +270,10 @@ function App() {
           isPlayerDead={isPlayerDead}
           spawnedEnemies={spawnedEnemies}
           gameEnd={gameEnd}
+          setShowSurvivorDoor={setShowSurvivorDoor}
+          setSurvivorGameActive={setSurvivorGameActive} 
+          setPlacedTraps={setPlacedTraps} 
+          setSpawnedEnemies={setSpawnedEnemies}
         />
       )}
 

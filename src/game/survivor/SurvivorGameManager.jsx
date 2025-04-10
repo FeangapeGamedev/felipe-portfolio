@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import SurvivorIntroPopup from "../../components/SurvivorIntroPopup";
 import TrapUI from "../../components/TrapUI";
 import WinPopup from "../../components/WinPopup";
@@ -21,33 +21,49 @@ const SurvivorGameManager = ({
   gameEnd,
   isPlayerDead,
   spawnedEnemies,
+  setSpawnedEnemies,
+  setPlacedTraps,
+  setShowSurvivorDoor,
+  setSurvivorGameActive,
 }) => {
   const { currentRoom } = useGame();
-  const [activeEndPopup, setActiveEndPopup] = useState(null); // "win" | "lose" | null
+  const [activeEndPopup, setActiveEndPopup] = useState(null);
+  const countdownRef = useRef(null);
+  const quittingRef = useRef(false); // 🆕 Used to block enemy spawn after quit
 
+  // Countdown logic
   useEffect(() => {
-    if (showIntro || prepTime <= 0) return;
-    const interval = setInterval(() => {
+    if (showIntro || prepTime <= 0 || gameEnd) return;
+
+    countdownRef.current = setInterval(() => {
       setPrepTime((prev) => prev - 1);
     }, 1000);
-    return () => clearInterval(interval);
-  }, [prepTime, showIntro, setPrepTime]);
 
+    return () => clearInterval(countdownRef.current);
+  }, [showIntro, prepTime, gameEnd]);
+
+  // Handle enemy spawn at end of prep time
   useEffect(() => {
-    if (prepTime === 0 && !isPlacingTrap && !gameEnd) {
-      if (currentRoom && currentRoom.id === 3) {
-        onEnemySpawn();
-      }
+    if (
+      prepTime === 0 &&
+      !isPlacingTrap &&
+      !gameEnd &&
+      currentRoom?.id === 3 &&
+      !quittingRef.current // ✅ Only spawn if not quitting
+    ) {
+      onEnemySpawn();
     }
-  }, [prepTime, currentRoom, isPlacingTrap, gameEnd, onEnemySpawn]);
+  }, [prepTime, isPlacingTrap, gameEnd, currentRoom, onEnemySpawn]);
 
-  const handleTrapArm = (trapType) => {
-    if (!trapType || isPlacingTrap) return;
-    console.log("🪤 Trap armed:", trapType);
-    onArmTrap(trapType);
-  };
+  // Hide door when prep begins
+  useEffect(() => {
+    if (prepTime < 20) {
+      setShowSurvivorDoor(false);
+    }
+  }, [prepTime]);
 
-  const allTrapChargesEmpty = Object.values(trapCharges).every((charge) => charge === 0);
+  // Win / lose logic
+  const allTrapChargesEmpty = Object.values(trapCharges).every((c) => c === 0);
   const enemiesRemain = spawnedEnemies.length > 0;
   const playerLost = isPlayerDead || (allTrapChargesEmpty && enemiesRemain);
   const playerWon = gameEnd && !playerLost;
@@ -56,44 +72,93 @@ const SurvivorGameManager = ({
     if (playerWon || playerLost) {
       const timeout = setTimeout(() => {
         setActiveEndPopup(playerWon ? "win" : "lose");
-      }, 2000);
 
+        // ✅ Clear traps if the player wins (for free roam consistency)
+        if (playerWon) {
+          setPlacedTraps([]);
+          setTrapCharges({
+            unity: 1,
+            unreal: 1,
+            react: 1,
+            blender: 1,
+            vr: 1,
+          });
+        }
+      }, 2000);
       return () => clearTimeout(timeout);
     }
   }, [playerWon, playerLost]);
+
+  // Show the door again on win
+  useEffect(() => {
+    if (gameEnd && !playerLost) {
+      setShowSurvivorDoor(true);
+    }
+  }, [gameEnd, playerLost]);
 
   useEffect(() => {
     setActiveEndPopup(null);
   }, [prepTime]);
 
+  const handleTrapArm = (trapType) => {
+    if (!trapType || isPlacingTrap) return;
+    console.log("🪤 Trap armed:", trapType);
+    onArmTrap(trapType);
+  };
+
+  // ✅ Quit the game and enter free roam mode
+  const handleQuitGame = () => {
+    console.log("🚪 Quitting Survivor Mode...");
+    quittingRef.current = true;
+  
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
+  
+    setSurvivorGameActive(false);
+    setSelectedTrapType(null);
+    setActiveEndPopup(null);
+  
+    setTrapCharges({
+      unity: 1,
+      unreal: 1,
+      react: 1,
+      blender: 1,
+      vr: 1,
+    });
+  
+    setPlacedTraps([]);
+    setSpawnedEnemies([]);
+    setPrepTime(0);
+  
+    // ✅ Delay re-showing door after everything settles
+    setTimeout(() => {
+      setShowSurvivorDoor(true);
+    }, 50);
+  };  
+
   return (
     <>
-      {/* Intro */}
+      {/* 🧠 Intro popup */}
       {showIntro && (
-        <SurvivorIntroPopup
-          onClose={() => {
-            console.log("🎬 Survivor intro closed.");
-            setShowIntro(false);
-          }}
-        />
+        <SurvivorIntroPopup onClose={() => setShowIntro(false)} />
       )}
 
-      {/* Trap UI */}
+      {/* 🧰 Trap UI with reset & quit buttons */}
       <TrapUI
         trapCharges={trapCharges}
         selectedTrapType={selectedTrapType}
-        setSelectedTrapType={(type) => {
-          console.log("🎯 Trap type selected:", type);
-          setSelectedTrapType(type);
-        }}
+        setSelectedTrapType={setSelectedTrapType}
         onArmTrap={handleTrapArm}
         isPlacingTrap={isPlacingTrap}
         prepTime={prepTime}
         showIntro={showIntro}
         onResetGame={restartSurvivorGame}
+        onQuitGame={handleQuitGame}
       />
 
-      {/* Timer */}
+      {/* ⏱️ Prep timer display */}
       {!showIntro && prepTime > 0 && (
         <div
           style={{
@@ -114,11 +179,10 @@ const SurvivorGameManager = ({
         </div>
       )}
 
-      {/* ✅ Render Popups */}
+      {/* 🎉 Win / Lose popups */}
       {activeEndPopup === "win" && (
         <WinPopup onClose={() => setActiveEndPopup(null)} />
       )}
-
       {activeEndPopup === "lose" && (
         <LosePopup onClose={() => setActiveEndPopup(null)} />
       )}

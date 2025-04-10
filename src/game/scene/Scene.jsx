@@ -50,6 +50,7 @@ const Scene = ({
   isPaused,
   onProjectSelect,
   onShowCodeFrame,
+  showSurvivorDoor,
   setTrapCharges,
   initialPosition,
   setInitialPosition,
@@ -67,6 +68,11 @@ const Scene = ({
   characterRef, // Add characterRef to props
   isPlayerDead,
   setIsPlayerDead,
+  setSpawnedEnemies,
+  setSurvivorGameActive,
+  setShowIntro,
+  setPrepTime,
+  setGameEnd,
 }) => {
   const { currentRoom, targetPosition, doorDirection, playerPosition } = useGame();
 
@@ -89,10 +95,25 @@ const Scene = ({
     if (!currentRoom) return;
 
     if (currentRoom.id !== 3) {
-      console.log("🚮 Leaving Survivor Mode. Clearing traps.");
+      console.log("🚮 Leaving Survivor Mode. Clearing traps and resetting game state.");
       setPlacedTraps([]); // Clear traps when leaving Survivor Mode
+      setSpawnedEnemies([]); // Clear spawned enemies
+      setTrapCharges({
+        unity: 1,
+        blender: 1,
+        react: 1,
+        unreal: 1,
+        vr: 1,
+      }); // Reset trap charges
+      setSurvivorGameActive(false); // Deactivate Survivor Mode
+      setShowIntro(true); // Show intro screen
+      setPrepTime(20); // Reset preparation time
+      setSelectedTrapType(null); // Clear selected trap type
+      setGameEnd(false); // Reset game end state
+      setIsPlayerDead(false); // Reset player death state
+      setIsPlacingTrap(false); // Reset trap placement state
     }
-  }, [currentRoom, setPlacedTraps]);
+  }, [currentRoom.id]);
 
   return (
     <>
@@ -129,6 +150,7 @@ const Scene = ({
         isPaused={isPaused}
         onProjectSelect={onProjectSelect}
         onShowCodeFrame={onShowCodeFrame}
+        showSurvivorDoor={showSurvivorDoor}
       />
 
       {initialPosition && (
