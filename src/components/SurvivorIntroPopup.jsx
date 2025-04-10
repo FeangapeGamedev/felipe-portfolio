@@ -16,6 +16,11 @@ const SurvivorIntroPopup = ({ onClose }) => {
             Lure the monsters into your deadly traps and outsmart the horde. Stay sharp, and may your wits keep you alive!
           </p>
           <hr style={{ width: "100%", margin: "1rem 0" }} />
+          <p style={{ fontSize: "13px" }}>
+            💡 <strong>Hotkeys:</strong><br />
+            Select Traps: <strong>1–5</strong><br />
+            Arm Trap: <strong>F</strong>
+          </p>
           <p style={{ fontSize: "12px", opacity: 0.8 }}>
             Time is ticking... Good luck!
           </p>

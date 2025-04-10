@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../styles/TrapUI.css";
 
 const trapColors = {
@@ -28,29 +28,67 @@ const TrapUI = ({
   prepTime,
   showIntro,
 }) => {
+  const trapKeys = ["1", "2", "3", "4", "5"];
+  const trapTypes = Object.keys(trapCharges); // ["unity", "unreal", "react", "blender", "vr"]
+
   const onToolClicked = (toolName) => {
-    if (trapCharges[toolName] > 0 && prepTime > 0) {
+    if (trapCharges[toolName] > 0 && prepTime > 0 && !showIntro) {
       setSelectedTrapType(toolName);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const key = e.key.toLowerCase();
+
+      // Trap hotkeys 1–5
+      const index = trapKeys.indexOf(key);
+      if (index !== -1 && trapTypes[index]) {
+        console.log(`Key ${key} pressed → selecting ${trapTypes[index]}`);
+        onToolClicked(trapTypes[index]);
+        return;
+      }
+
+      // Arm trap with F
+      if (key === "f") {
+        console.log("F key pressed");
+        if (selectedTrapType && !isPlacingTrap && prepTime > 0 && !showIntro) {
+          console.log("Triggering onArmTrap()");
+          onArmTrap(selectedTrapType); // ✅ Pass the trap type manually
+        } else {
+          console.log("F key blocked. Conditions:", {
+            selectedTrapType,
+            isPlacingTrap,
+            prepTime,
+            showIntro,
+          });
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [trapCharges, selectedTrapType, isPlacingTrap, prepTime, showIntro]);
 
   return (
     <div className="trapbar">
       <span>TRAPS</span>
       <ul>
-        {Object.entries(trapCharges).map(([trap, count]) => (
+        {trapTypes.map((trap, index) => (
           <li key={trap}>
             <button
               className={`trap-button ${selectedTrapType === trap ? "selected" : ""}`}
               onClick={() => onToolClicked(trap)}
-              disabled={count === 0 || prepTime <= 0 || showIntro}
+              disabled={trapCharges[trap] === 0 || prepTime <= 0 || showIntro}
               style={{
                 backgroundColor: trapColors[trap],
                 opacity: showIntro ? 0.3 : 1,
               }}
             >
-              <span className="trap-label">{trapNames[trap]}</span>
-              <span className="trap-count">({count} left)</span>
+              <span className="trap-label">
+                [{index + 1}] {trapNames[trap]}
+              </span>
+              <span className="trap-count">({trapCharges[trap]} left)</span>
             </button>
           </li>
         ))}
@@ -59,14 +97,14 @@ const TrapUI = ({
       <div className="arm-button-container">
         <button
           className="arm-trap-button styled-button"
-          onClick={onArmTrap}
+          onClick={() => onArmTrap(selectedTrapType)} // ✅ Also pass the trap type here
           disabled={!selectedTrapType || isPlacingTrap || prepTime <= 0 || showIntro}
           style={{
             opacity: showIntro ? 0.3 : 1,
             cursor: selectedTrapType && prepTime > 0 ? "pointer" : "not-allowed",
           }}
         >
-          ARM TRAP
+          [F] ARM TRAP
         </button>
       </div>
 

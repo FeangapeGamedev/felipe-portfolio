@@ -50,7 +50,7 @@
 .trap-button {
   position: relative;
   width: 90%;
-  padding: 1rem 1rem;
+  padding: 0.5rem 0.5rem;
   top: 1rem;
   border-radius: 12px;
   text-align: center;
@@ -151,8 +151,8 @@
 }
 
 .arm-button-container {
-  margin-top: 0.5rem; /* Replace 'auto' with a smaller value */
-  margin-bottom: 20rem; /* Reduce the bottom margin */
+  margin-top: -10rem; /* Replace 'auto' with a smaller value */
+  margin-bottom: 32rem; /* Reduce the bottom margin */
 }
 
 .reset-button-container {
