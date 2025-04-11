@@ -62,17 +62,13 @@ const Scene = ({
   setIsPlacingTrap,
   placedTraps,
   setPlacedTraps,
-  enemySpawned,
-  setEnemySpawned,
   onEnemyDeath,
-  characterRef, // Add characterRef to props
+  characterRef, 
   isPlayerDead,
   setIsPlayerDead,
+  spawnedEnemies, 
   setSpawnedEnemies,
-  setSurvivorGameActive,
-  setShowIntro,
-  setPrepTime,
-  setGameEnd,
+  resetSurvivorGameState,
 }) => {
   const { currentRoom, targetPosition, doorDirection, playerPosition } = useGame();
 
@@ -86,34 +82,17 @@ const Scene = ({
   };
 
   useEffect(() => {
-    if (!currentRoom || !targetPosition) return;
+    if (!currentRoom || !targetPosition || typeof targetPosition.clone !== 'function') return;
     setInitialPosition(targetPosition.clone());
     setForceTeleport(true);
-  }, [currentRoom]);
+  }, [currentRoom, targetPosition]); // Ensure targetPosition is in the dependency array
 
   useEffect(() => {
-    if (!currentRoom) return;
-
-    if (currentRoom.id !== 3) {
-      console.log("🚮 Leaving Survivor Mode. Clearing traps and resetting game state.");
-      setPlacedTraps([]); // Clear traps when leaving Survivor Mode
-      setSpawnedEnemies([]); // Clear spawned enemies
-      setTrapCharges({
-        unity: 1,
-        blender: 1,
-        react: 1,
-        unreal: 1,
-        vr: 1,
-      }); // Reset trap charges
-      setSurvivorGameActive(false); // Deactivate Survivor Mode
-      setShowIntro(true); // Show intro screen
-      setPrepTime(20); // Reset preparation time
-      setSelectedTrapType(null); // Clear selected trap type
-      setGameEnd(false); // Reset game end state
-      setIsPlayerDead(false); // Reset player death state
-      setIsPlacingTrap(false); // Reset trap placement state
+    if (currentRoom?.id !== 3) {
+      resetSurvivorGameState(); // ✅ reset when leaving Room 3
     }
-  }, [currentRoom.id]);
+  }, [currentRoom?.id]);
+  
 
   return (
     <>
@@ -221,20 +200,27 @@ const Scene = ({
           );
         })}
 
-      {currentRoom.id === 3 && enemySpawned && (
-        <EnemyComponent
-          playerPosition={playerPosition}
-          onDeath={() => {
-            setEnemySpawned?.(false); // ✅ Remove enemy from scene
-            onEnemyDeath?.(); // ✅ Notify App to trigger gameEnd
-          }}
-          onPlayerHit={() => {
-            if (!isPlayerDead) {
-              handlePlayerDeath(); // ✅ Trigger player death
-            }
-          }}
-        />
-      )}
+      {currentRoom.id === 3 &&
+        spawnedEnemies.map((enemy, i) => (
+          <EnemyComponent
+            key={enemy.id || i}
+            id={enemy.id || `enemy-${i}`}
+            playerPosition={playerPosition}
+            onDeath={() => {
+              // Remove this enemy from the list
+              setSpawnedEnemies((prev) =>
+                prev.filter((_, index) => index !== i)
+              );
+
+              onEnemyDeath?.(); // Notify that an enemy died
+            }}
+            onPlayerHit={() => {
+              if (!isPlayerDead) {
+                handlePlayerDeath();
+              }
+            }}
+          />
+        ))}
     </>
   );
 };

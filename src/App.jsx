@@ -40,15 +40,16 @@ function App() {
   const [placedTraps, setPlacedTraps] = useState([]);
   const [enemySpawned, setEnemySpawned] = useState(false);
   const [gameEnd, setGameEnd] = useState(false);
-  const [isPlayerDead, setIsPlayerDead] = useState(false); // ✅ Track death state
+  const [isPlayerDead, setIsPlayerDead] = useState(false);
   const [spawnedEnemies, setSpawnedEnemies] = useState([]);
   const [showSurvivorDoor, setShowSurvivorDoor] = useState(true);
-  const [survivorGameActive, setSurvivorGameActive] = useState(true); // ✅ Add this state
+  const [survivorGameActive, setSurvivorGameActive] = useState(true);
 
   const { changeRoom, currentRoom } = useGame();
   const previousRoomId = useRef(null);
   const loadingStartTime = useRef(null);
   const characterRef = useRef();
+  const hasSpawnedRef = useRef(false);
 
   const isPaused = activeSection !== "game" || showWelcomePopup;
 
@@ -107,13 +108,15 @@ function App() {
     });
 
     setPlacedTraps([]);
+    setSpawnedEnemies([]); // ✅ Kill all active enemies
     setPrepTime(20);
     setShowIntro(true);
     setSelectedTrapType(null);
     setIsPlacingTrap(false);
-    setEnemySpawned(false);
+    setEnemySpawned(false); // optional, for legacy
     setGameEnd(false);
     setIsPlayerDead(false); // ✅ Reset death state
+    hasSpawnedRef.current = false;
 
     setTimeout(() => {
       const spawn = new THREE.Vector3(...roomData[2].spawnPositionForward);
@@ -124,6 +127,26 @@ function App() {
         characterRef.current?.revive?.();
       }, 100);
     }, 300);
+  };
+
+  const resetSurvivorGameState = () => {
+    console.log("🔄 Resetting Survivor Game to initial state...");
+    setPlacedTraps([]);
+    setSpawnedEnemies([]);
+    setTrapCharges({
+      unity: 1,
+      blender: 1,
+      react: 1,
+      unreal: 1,
+      vr: 1,
+    });
+    setSurvivorGameActive(false);
+    setShowIntro(true); // ✅ show intro again
+    setPrepTime(20);
+    setSelectedTrapType(null);
+    setGameEnd(false);
+    setIsPlayerDead(false);
+    setIsPlacingTrap(false);
   };
 
   return (
@@ -174,14 +197,15 @@ function App() {
                 setGameEnd(true);
               }}
               characterRef={characterRef}
-              isPlayerDead={isPlayerDead} 
-              setIsPlayerDead={setIsPlayerDead} 
-              setSpawnedEnemies={setSpawnedEnemies} 
+              isPlayerDead={isPlayerDead}
+              setIsPlayerDead={setIsPlayerDead}
+              setSpawnedEnemies={setSpawnedEnemies}
               setSurvivorGameActive={setSurvivorGameActive}
               setShowIntro={setShowIntro}
               setPrepTime={setPrepTime}
               setGameEnd={setGameEnd}
               spawnedEnemies={spawnedEnemies}
+              resetSurvivorGameState={resetSurvivorGameState}
             />
           </Physics>
         </Canvas>
@@ -251,6 +275,7 @@ function App() {
 
       {!showLoadingScreen && currentRoom?.id === 3 && (
         <SurvivorGameManager
+          characterRef={characterRef}
           trapCharges={trapCharges}
           setTrapCharges={setTrapCharges}
           prepTime={prepTime}
@@ -266,14 +291,32 @@ function App() {
             setIsPlacingTrap(true);
             console.log(`🪤 Placing trap of type: ${type}`);
           }}
-          onEnemySpawn={() => setEnemySpawned(true)}
+          onEnemySpawn={() => {
+            console.log("👾 Spawning enemy!");
+
+            const newEnemy = {
+              id: `enemy-${Date.now()}`, // give it a unique ID
+              position: new THREE.Vector3(
+                Math.random() * 10 - 5, // x: -5 to 5
+                0,
+                Math.random() * 10 - 5 // z: -5 to 5
+              ),
+            };
+
+            setSpawnedEnemies((prev) => [...prev, newEnemy]);
+          }}
           isPlayerDead={isPlayerDead}
+          setIsPlayerDead={setIsPlayerDead}
           spawnedEnemies={spawnedEnemies}
+          setEnemySpawned={setEnemySpawned}
+          setIsPlacingTrap={setIsPlacingTrap}
           gameEnd={gameEnd}
           setShowSurvivorDoor={setShowSurvivorDoor}
-          setSurvivorGameActive={setSurvivorGameActive} 
-          setPlacedTraps={setPlacedTraps} 
+          setSurvivorGameActive={setSurvivorGameActive}
+          setPlacedTraps={setPlacedTraps}
           setSpawnedEnemies={setSpawnedEnemies}
+          hasSpawnedRef={hasSpawnedRef}
+          setGameEnd={setGameEnd}
         />
       )}
 

@@ -22,7 +22,18 @@ const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
       setEnemyInstance(enemy);
     }
     initEnemy();
+  
+    return () => {
+      // 🧼 Cleanup: kill logic, reset refs, remove model
+      isOverlappingRef.current = false;
+      collisionStartTimeRef.current = null;
+  
+      if (enemyInstance) {
+        enemyInstance.dispose?.(); // if you have a custom dispose method
+      }
+    };
   }, []);
+  
 
   useEffect(() => {
     if (enemyInstance && rigidBodyRef.current && !enemyInstance.rigidBody) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import * as THREE from "three";
 import SurvivorIntroPopup from "../../components/SurvivorIntroPopup";
 import TrapUI from "../../components/TrapUI";
 import WinPopup from "../../components/WinPopup";
@@ -6,6 +7,7 @@ import LosePopup from "../../components/LosePopup";
 import { useGame } from "../state/GameContext.jsx";
 
 const SurvivorGameManager = ({
+  characterRef,
   trapCharges,
   setTrapCharges,
   prepTime,
@@ -17,19 +19,38 @@ const SurvivorGameManager = ({
   setSelectedTrapType,
   onArmTrap,
   isPlacingTrap,
+  setIsPlacingTrap,
   onEnemySpawn,
   gameEnd,
+  setGameEnd,
   isPlayerDead,
+  setIsPlayerDead,
   spawnedEnemies,
   setSpawnedEnemies,
   setPlacedTraps,
   setShowSurvivorDoor,
   setSurvivorGameActive,
+  hasSpawnedRef
 }) => {
   const { currentRoom } = useGame();
   const [activeEndPopup, setActiveEndPopup] = useState(null);
   const countdownRef = useRef(null);
   const quittingRef = useRef(false); // 🆕 Used to block enemy spawn after quit
+
+
+  const handleEnemySpawn = () => {
+    const newEnemy = {
+      id: crypto.randomUUID?.() || `enemy-${Date.now()}-${Math.floor(Math.random() * 10000)}`, // ✅ Unique ID
+      position: new THREE.Vector3(
+        Math.random() * 10 - 5,
+        0,
+        Math.random() * 10 - 5
+      ),
+    };
+
+    setSpawnedEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
+    console.log("👾 New enemy spawned:", newEnemy);
+  };
 
   // Countdown logic
   useEffect(() => {
@@ -42,6 +63,13 @@ const SurvivorGameManager = ({
     return () => clearInterval(countdownRef.current);
   }, [showIntro, prepTime, gameEnd]);
 
+  // Reset quittingRef if we are starting fresh
+  useEffect(() => {
+    if (!showIntro && prepTime === 20 && !gameEnd) {
+      quittingRef.current = false;
+    }
+  }, [showIntro, prepTime, gameEnd]);
+
   // Handle enemy spawn at end of prep time
   useEffect(() => {
     if (
@@ -49,9 +77,12 @@ const SurvivorGameManager = ({
       !isPlacingTrap &&
       !gameEnd &&
       currentRoom?.id === 3 &&
-      !quittingRef.current // ✅ Only spawn if not quitting
+      !quittingRef.current &&
+      !hasSpawnedRef.current // ✅ only once
     ) {
-      onEnemySpawn();
+      console.log("👾 Spawning enemies after prep time...");
+      handleEnemySpawn(); // Use the updated function
+      hasSpawnedRef.current = true;
     }
   }, [prepTime, isPlacingTrap, gameEnd, currentRoom, onEnemySpawn]);
 
@@ -110,16 +141,16 @@ const SurvivorGameManager = ({
   const handleQuitGame = () => {
     console.log("🚪 Quitting Survivor Mode...");
     quittingRef.current = true;
-  
+    hasSpawnedRef.current = false;
+
     if (countdownRef.current) {
       clearInterval(countdownRef.current);
       countdownRef.current = null;
     }
-  
-    setSurvivorGameActive(false);
+
+    setSurvivorGameActive(false); // free roam enabled
     setSelectedTrapType(null);
     setActiveEndPopup(null);
-  
     setTrapCharges({
       unity: 1,
       unreal: 1,
@@ -127,16 +158,20 @@ const SurvivorGameManager = ({
       blender: 1,
       vr: 1,
     });
-  
     setPlacedTraps([]);
     setSpawnedEnemies([]);
-    setPrepTime(0);
-  
-    // ✅ Delay re-showing door after everything settles
+    setPrepTime(0); // no timer
+    setGameEnd(false);
+    setIsPlayerDead(false);
+    setIsPlacingTrap(false);
+
+    characterRef.current?.revive?.();
+
     setTimeout(() => {
       setShowSurvivorDoor(true);
     }, 50);
-  };  
+  };
+
 
   return (
     <>
