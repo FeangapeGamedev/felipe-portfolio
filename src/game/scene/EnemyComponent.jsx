@@ -76,7 +76,7 @@ const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
         collisionStartTimeRef.current = performance.now();
       } else {
         const now = performance.now();
-        const elapsed = (now - collisionStartTimeRef.current) / 1000;
+        const elapsed = (now - collisionStartTimeRef.current) / 900;
         if (elapsed >= ATTACK_OVERLAP_THRESHOLD) {
           onPlayerHit?.(); // ✅ Player dies after sustained attack contact
           isOverlappingRef.current = false; // prevent multiple triggers
