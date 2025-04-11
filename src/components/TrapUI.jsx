@@ -73,6 +73,7 @@ const TrapUI = ({
   return (
     <div className="trapbar">
       <span>TRAPS</span>
+  
       <ul>
         {trapTypes.map((trap, index) => (
           <li key={trap}>
@@ -80,61 +81,39 @@ const TrapUI = ({
               className={`trap-button ${selectedTrapType === trap ? "selected" : ""}`}
               onClick={() => onToolClicked(trap)}
               disabled={trapCharges[trap] === 0 || prepTime <= 0 || showIntro}
-              style={{
-                backgroundColor: trapColors[trap],
-                opacity: showIntro ? 0.3 : 1,
-              }}
+              style={{ backgroundColor: trapColors[trap] }}
             >
-              <span className="trap-label">
-                [{index + 1}] {trapNames[trap]}
-              </span>
+              <span className="trap-label">[{index + 1}] {trapNames[trap]}</span>
               <span className="trap-count">({trapCharges[trap]} left)</span>
             </button>
           </li>
         ))}
       </ul>
-
-      <div className="arm-button-container">
+  
+      <div className="trap-controls">
         <button
-          className="arm-trap-button styled-button"
-          onClick={() => onArmTrap(selectedTrapType)} // ✅ Also pass the trap type here
+          className="arm-trap-button"
+          onClick={() => onArmTrap(selectedTrapType)}
           disabled={!selectedTrapType || isPlacingTrap || prepTime <= 0 || showIntro}
-          style={{
-            opacity: showIntro ? 0.3 : 1,
-            cursor: selectedTrapType && prepTime > 0 ? "pointer" : "not-allowed",
-          }}
         >
           [F] ARM TRAP
         </button>
-      </div>
-
-      <div className="bottom-button-group spaced-button-group push-down">
         <button
-          className="reset-trap-button styled-button"
+          className="reset-trap-button"
           onClick={onResetGame}
           disabled={showIntro}
-          style={{
-            opacity: showIntro ? 0.3 : 1,
-            cursor: showIntro ? "not-allowed" : "pointer",
-          }}
         >
           RESET GAME
         </button>
-
         <button
-          className="quit-trap-button styled-button"
+          className="quit-trap-button"
           onClick={onQuitGame}
           disabled={showIntro}
-          style={{
-            opacity: showIntro ? 0.3 : 1,
-            cursor: showIntro ? "not-allowed" : "pointer",
-          }}
         >
           QUIT GAME
         </button>
       </div>
     </div>
-  );
-};
-
+  );  
+}  
 export default TrapUI;
