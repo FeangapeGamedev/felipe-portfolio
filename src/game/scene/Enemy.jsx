@@ -64,6 +64,10 @@ export default class Enemy {
     this.wasBlocked = false;
     this.attackCooldown = 0;
 
+    // 🔋 Add health properties
+    this.maxHealth = 100;
+    this.currentHealth = 100;
+
     this.playAnimation("idle");
   }
 
@@ -198,6 +202,18 @@ export default class Enemy {
     setTimeout(() => callback?.(), 4000);
   }
 
+  // 💥 Add takeDamage() method
+  takeDamage(amount, onDeathCallback) {
+    if (this.state === "dead") return;
+
+    this.currentHealth -= amount;
+    this.currentHealth = Math.max(0, this.currentHealth);
+
+    if (this.currentHealth === 0) {
+      this.die(onDeathCallback);
+    }
+  }
+
   handleWanderCollision() {
     if (this.state === "wander") {
       console.log("🚧 Wander collision detected, redirecting");
@@ -212,4 +228,11 @@ export default class Enemy {
     const randomZ = Math.random() * (maxZ - minZ) + minZ;
     return new THREE.Vector3(randomX, 0, randomZ);
   }
+
+  getWorldPosition(offsetY = 0) {
+    if (!this.rigidBody) return new THREE.Vector3(0, 0, 0);
+    const pos = this.rigidBody.translation();
+    return new THREE.Vector3(pos.x, pos.y + offsetY, pos.z);
+  }
+  
 }
