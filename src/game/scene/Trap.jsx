@@ -12,6 +12,14 @@ const trapColors = {
   vr: "#3d1f1f",
 };
 
+const trapDamage = {
+  unity: 25,
+  unreal: 25,
+  blender: 15,
+  vr: 15,
+  react: 10,
+};
+
 const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
   const meshRef = useRef();
   const clock = useRef(0);
@@ -50,9 +58,14 @@ const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
             name="trap"
             type="sensor"
             args={[0.25, 1, 0.25]}
+            userData={{
+              name: "trap",
+              trapType: type,
+              damage: trapDamage[type] || 10,
+            }}
             collisionGroups={GlobalConstants.createInteractionGroup(
               GlobalConstants.TRAP_GROUP,
-              GlobalConstants.CHARACTER_GROUP // Interacts with everything except characters
+              GlobalConstants.CHARACTER_GROUP
             )}
             onCollisionEnter={(event) => {
               const otherName =
@@ -61,9 +74,8 @@ const Trap = ({ position, type = "unity", index, onTrapConsumed }) => {
               if (otherName !== "enemy") return;
 
               console.log(`🔥 Trap triggered by: ${otherName}`);
-              setExploded(true); // Trigger explosion visual
+              setExploded(true);
 
-              // Delay trap removal by 1 second to allow explosion effect
               setTimeout(() => {
                 console.log(`🧯 Removing trap index ${index}`);
                 if (onTrapConsumed) onTrapConsumed(index);

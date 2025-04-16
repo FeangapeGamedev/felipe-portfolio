@@ -45,9 +45,13 @@ const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
 
   const handleCollision = (event) => {
     const otherName = event.colliderObject.name?.toLowerCase();
+  
     if (otherName?.includes("trap")) {
+      const trapData = event.colliderObject.userData;
+      const damage = trapData?.damage ?? 10;
+  
       if (enemyInstance && enemyInstance.state !== "dead") {
-        enemyInstance.takeDamage(100, () => {
+        enemyInstance.takeDamage(damage, () => {
           console.log("☠️ Enemy died from trap, removing from scene");
           setIsDead(true);
           onDeath?.();
@@ -55,6 +59,7 @@ const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
       }
     }
   };
+  
 
   useFrame((_, delta) => {
     if (!enemyInstance || !rigidBodyReady || isDead) return;
