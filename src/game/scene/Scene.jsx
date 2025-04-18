@@ -149,14 +149,20 @@ const Scene = ({
           onTrapPlaced={(trapType, position) => {
             if (currentRoom.id !== 3) return;
 
+            const newTrap = {
+              trapId: `trap-${trapType}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, // 👈 renamed to trapId
+              type: trapType,
+              position,
+            };
+
             setTrapCharges((prev) => ({
               ...prev,
               [trapType]: Math.max(0, prev[trapType] - 1),
             }));
 
-            setPlacedTraps((prev) => [...prev, { type: trapType, position }]);
+            setPlacedTraps((prev) => [...prev, newTrap]);
 
-            console.log("🚩 Trap placed:", { trapType, position });
+            console.log("🪤 Trap created:", newTrap);
 
             setIsPlacingTrap(false);
             setSelectedTrapType(null);
@@ -168,24 +174,27 @@ const Scene = ({
       <CharacterController isPaused={isPaused || isPlacingTrap} />
 
       {currentRoom.id === 3 &&
-        placedTraps.map((trap, i) => {
+        placedTraps.map((trap) => {
           const position = new THREE.Vector3(trap.position.x, 0.5, trap.position.z);
 
           return (
             <Trap
-              key={`trap-${trap.type}-${i}`}
+              key={trap.trapId}       // Use unique ID as key
+              trapId={trap.trapId}    // Pass ID to Trap component
               type={trap.type}
               position={position}
-              index={i}
-              onTrapConsumed={(index) => {
+              onTrapConsumed={(trapId) => {
                 setPlacedTraps((prevTraps) => {
-                  console.log("Current traps:", prevTraps); // Log current traps
-                  const newTraps = [...prevTraps];
-                  const removedTrap = newTraps.splice(index, 1)[0];
-                  console.log("Updated traps:", newTraps); // Log updated traps
-                  console.log(`Removed trap: ${removedTrap.type} at index: ${index}`); // Log removed trap details
+                  const trapIndex = prevTraps.findIndex((t) => t.trapId === trapId);
+                  if (trapIndex === -1) return prevTraps;
 
-                  // ♻️ Recharge one trap of that type
+                  const newTraps = [...prevTraps];
+                  const removedTrap = newTraps.splice(trapIndex, 1)[0];
+
+                  console.log("Current traps:", prevTraps);
+                  console.log("Updated traps:", newTraps);
+                  console.log(`Removed trap: ${removedTrap.type} with trapId: ${trapId}`);
+
                   setTrapCharges((charges) => ({
                     ...charges,
                     [removedTrap.type]: (charges[removedTrap.type] || 0) + 1,

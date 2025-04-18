@@ -12,6 +12,7 @@ import * as THREE from "three";
 import { AnimationMixer, LoopRepeat, LoopOnce } from "three";
 import { useGame } from "../state/GameContext.jsx";
 import GlobalConstants from "../utils/GlobalConstants.js";
+import { v4 as uuidv4 } from "uuid"; // ✅ Import UUID
 
 export const Character = forwardRef(({
   initialPosition,
@@ -483,6 +484,28 @@ export const Character = forwardRef(({
           ref={modelRef}
           object={characterModel}
           scale={1}
+          onTrapPlaced={(trapType, position) => {
+            if (currentRoom.id !== 3) return;
+
+            setTrapCharges((prev) => ({
+              ...prev,
+              [trapType]: Math.max(0, prev[trapType] - 1),
+            }));
+
+            setPlacedTraps((prev) => [
+              ...prev,
+              {
+                trapId: uuidv4(), // ✅ Add unique trapId
+                type: trapType,
+                position,
+              },
+            ]);
+
+            console.log("🚩 Trap placed:", { trapType, position });
+
+            setIsPlacingTrap(false);
+            setSelectedTrapType(null);
+          }}
         />
       ) : (
         <mesh>

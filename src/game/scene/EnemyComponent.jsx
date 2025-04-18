@@ -4,6 +4,7 @@ import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import Enemy from "./Enemy";
 import * as THREE from "three";
 import HealthBar from "../../components/HealthBar"; // ✅ Import the new health bar
+import { getTrapData } from "../utils/trapRegistry"; // ✅ Import the getTrapData utility
 
 const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
   const rigidBodyRef = useRef();
@@ -45,11 +46,17 @@ const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
 
   const handleCollision = (event) => {
     const otherName = event.colliderObject.name?.toLowerCase();
-  
+
     if (otherName?.includes("trap")) {
-      const trapData = event.colliderObject.userData;
-      const damage = trapData?.damage ?? 10;
-  
+      const trapId =
+        event.colliderObject?.userData?.trapId || 
+        event.colliderObject?.parent?.userData?.trapId; // 👈 catch parent RigidBody userData
+
+      const trapInfo = trapId ? getTrapData(trapId) : null;
+      const damage = trapInfo?.damage ?? 10;
+
+      console.log("💥 Trap hit! ID:", trapId, "Damage:", damage); // ✅ Add debug log
+
       if (enemyInstance && enemyInstance.state !== "dead") {
         enemyInstance.takeDamage(damage, () => {
           console.log("☠️ Enemy died from trap, removing from scene");
@@ -59,7 +66,6 @@ const EnemyComponent = ({ playerPosition, onDeath, onPlayerHit }) => {
       }
     }
   };
-  
 
   useFrame((_, delta) => {
     if (!enemyInstance || !rigidBodyReady || isDead) return;
