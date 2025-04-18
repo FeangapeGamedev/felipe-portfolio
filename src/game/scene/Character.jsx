@@ -318,9 +318,12 @@ export const Character = forwardRef(({
       const pos = characterRef.current.translation();
       const trapPosition = new THREE.Vector3(pos.x, 0.5, pos.z);
       trapToPlaceRef.current = { type: selectedTrapType, position: trapPosition };
-      setTargetPosition(trapPosition);
 
-      // Start crouch
+      // Freeze character movement
+      characterRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true); // Zero linear velocity
+      characterRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true); // Zero angular velocity
+
+      // Start crouch animation
       if (standToCrouchActionRef.current && mixerRef.current) {
         blendTo(standToCrouchActionRef.current);
         idleActionRef.current.weight = 0;
