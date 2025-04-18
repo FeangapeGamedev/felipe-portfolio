@@ -49,6 +49,7 @@ export const Character = forwardRef(({
   const [showTrapTimer, setShowTrapTimer] = useState(false)
   const [trapTotalTime, setTrapTotalTime] = useState(1000) // fallback
   const [trapStartTime, setTrapStartTime] = useState(null); // 🆕 Add this state
+  const [trapTimerPos, setTrapTimerPos] = useState(new THREE.Vector3()); // 🆕 Add this state
   const hasStartedPlacingRef = useRef(false);
 
   const { targetPosition, setTargetPosition, spawnRotationY, setPlayerPosition } = useGame();
@@ -223,6 +224,11 @@ export const Character = forwardRef(({
     }
 
     modelRef.current.quaternion.slerp(targetQuaternion, turnSpeed * delta);
+
+    if (characterRef.current && isPlacingTrap) {
+      const pos = characterRef.current.translation();
+      setTrapTimerPos(new THREE.Vector3(pos.x, pos.y + 2, pos.z)); // Offset Y for visibility
+    }
   });
 
   useEffect(() => {
@@ -489,13 +495,6 @@ export const Character = forwardRef(({
       mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
     }
   }, [isPlacingTrap, selectedTrapType]);
-
-  const getWorldPosition = (yOffset = 0) => {
-    if (!modelRef.current) return new THREE.Vector3(0, yOffset, 0);
-    const worldPos = new THREE.Vector3();
-    modelRef.current.getWorldPosition(worldPos);
-    return worldPos.add(new THREE.Vector3(0, yOffset, 0));
-  };
   
 
   return (
@@ -572,7 +571,7 @@ export const Character = forwardRef(({
           key={trapStartTime}
           startTime={trapStartTime}
           totalTime={trapTotalTime}
-          getWorldPosition={getWorldPosition} // Pass the callback here
+          position={trapTimerPos} // Pass the precomputed position
         />
       )}
     </RigidBody>
