@@ -13,6 +13,7 @@ import { AnimationMixer, LoopRepeat, LoopOnce } from "three";
 import { useGame } from "../state/GameContext.jsx";
 import GlobalConstants from "../utils/GlobalConstants.js";
 import { v4 as uuidv4 } from "uuid"; // ✅ Import UUID
+import TrapTimerBar from "../../components/TrapTimerBar.jsx"; // Import the component
 
 export const Character = forwardRef(({
   initialPosition,
@@ -36,6 +37,7 @@ export const Character = forwardRef(({
   const dieActionRef = useRef(null);
   const hasPlacedTrapRef = useRef(false);
   const trapToPlaceRef = useRef(null);
+  const trapPlacementStartTimeRef = useRef(null); // ⏱️ Track start time of trap placement
 
   const [justTeleported, setJustTeleported] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
@@ -44,6 +46,9 @@ export const Character = forwardRef(({
   const [isColliding, setIsColliding] = useState(false);
   const [disableMovement, setDisableMovement] = useState(false);
   const [modelInstanceKey, setModelInstanceKey] = useState(0);
+  const [showTrapTimer, setShowTrapTimer] = useState(false)
+  const [trapTotalTime, setTrapTotalTime] = useState(1000) // fallback
+  const [trapStartTime, setTrapStartTime] = useState(null); // 🆕 Add this state
   const hasStartedPlacingRef = useRef(false);
 
   const { targetPosition, setTargetPosition, spawnRotationY, setPlayerPosition } = useGame();
@@ -53,6 +58,7 @@ export const Character = forwardRef(({
   const stopThreshold = 0.25;
   const lerpFactor = 1;
   const turnSpeed = 7;
+
 
   const { scene: characterModel, animations } = useGLTF(
     "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Character.glb"
@@ -220,7 +226,9 @@ export const Character = forwardRef(({
   });
 
   useEffect(() => {
-    if (isPlacingTrap) return;
+    if (!isPlacingTrap) {
+      trapPlacementStartTimeRef.current = null; // 🧹 Reset timer
+    }
     if (!idleActionRef.current || !walkActionRef.current || !runActionRef.current) return;
 
     idleActionRef.current.setEffectiveWeight(isIdle ? 1 : isWalking ? 0.2 : 0);
@@ -237,7 +245,6 @@ export const Character = forwardRef(({
     } else if (finishedAction === crouchIdleActionRef.current) {
       console.log("🎥 Finished: crouch idle");
 
-      // ✅ Retrieve trap data from ref
       const trapToPlace = trapToPlaceRef.current;
       if (trapToPlace && !hasPlacedTrapRef.current) {
         console.log("📦 Placing trap DURING crouch idle:", trapToPlace);
@@ -245,7 +252,6 @@ export const Character = forwardRef(({
         hasPlacedTrapRef.current = true;
       }
 
-      // Now fade out idle and stand up
       crouchIdleActionRef.current.fadeOut(0.2);
 
       crouchToStandingActionRef.current.reset();
@@ -275,7 +281,8 @@ export const Character = forwardRef(({
       hasStartedPlacingRef.current = false;
       hasPlacedTrapRef.current = false;
 
-      // Step 4: Unlock movement after animation finishes
+      setShowTrapTimer(false); // ✅ HIDE TIMER
+
       setDisableMovement(false);
     }
   };
@@ -293,16 +300,55 @@ export const Character = forwardRef(({
       characterRef.current &&
       !hasStartedPlacingRef.current
     ) {
-      // Step 3: Lock movement during trap placement
+      hasStartedPlacingRef.current = true;
       setDisableMovement(true);
 
-      const pos = characterRef.current.translation();
-      const trapPosition = new THREE.Vector3(pos.x, 0.5, pos.z); // 🔥 Force Y to 0.5
+      const now = Date.now();
+      trapPlacementStartTimeRef.current = now;
+      setTrapStartTime(now);
+      setShowTrapTimer(true);
 
+      // Position trap to place
+      const pos = characterRef.current.translation();
+      const trapPosition = new THREE.Vector3(pos.x, 0.5, pos.z);
+      trapToPlaceRef.current = { type: selectedTrapType, position: trapPosition };
       setTargetPosition(trapPosition);
-      trapToPlaceRef.current = { type: selectedTrapType, position: trapPosition }; // ✅ Use ref instead of state
+
+      // Start crouch
+      if (standToCrouchActionRef.current && mixerRef.current) {
+        blendTo(standToCrouchActionRef.current);
+        idleActionRef.current.weight = 0;
+        walkActionRef.current.weight = 0;
+        runActionRef.current.weight = 0;
+
+        mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
+        mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
+      }
+
+      // ⏳ Delay full trap placement until timer finishes
+      setTimeout(() => {
+        if (!hasPlacedTrapRef.current && trapToPlaceRef.current) {
+          console.log("🧨 Timer finished. Placing trap:", trapToPlaceRef.current);
+          onTrapPlaced?.(trapToPlaceRef.current.type, trapToPlaceRef.current.position);
+          hasPlacedTrapRef.current = true;
+
+          // Now transition to standing up
+          if (crouchIdleActionRef.current && crouchToStandingActionRef.current) {
+            crouchIdleActionRef.current.fadeOut(0.2);
+
+            crouchToStandingActionRef.current.reset();
+            crouchToStandingActionRef.current.setLoop(LoopOnce, 1);
+            crouchToStandingActionRef.current.clampWhenFinished = true;
+            crouchToStandingActionRef.current.setEffectiveWeight(1);
+            crouchToStandingActionRef.current.play();
+
+            mixerRef.current.removeEventListener("finished", onCrouchAnimationFinished);
+            mixerRef.current.addEventListener("finished", onCrouchAnimationFinished);
+          }
+        }
+      }, trapTotalTime); // Wait for full timer duration
     }
-  }, [isPlacingTrap, selectedTrapType]);
+  }, [isPlacingTrap, selectedTrapType, trapTotalTime]);
 
   useEffect(() => {
     if (teleport && initialPosition && characterRef.current) {
@@ -337,7 +383,7 @@ export const Character = forwardRef(({
 
       stopAllAnimations();
       zeroAllWeights();
-      
+
       dieActionRef.current.reset();
       dieActionRef.current.setLoop(LoopOnce, 1);
       dieActionRef.current.clampWhenFinished = true;
@@ -444,6 +490,14 @@ export const Character = forwardRef(({
     }
   }, [isPlacingTrap, selectedTrapType]);
 
+  const getWorldPosition = (yOffset = 0) => {
+    if (!modelRef.current) return new THREE.Vector3(0, yOffset, 0);
+    const worldPos = new THREE.Vector3();
+    modelRef.current.getWorldPosition(worldPos);
+    return worldPos.add(new THREE.Vector3(0, yOffset, 0));
+  };
+  
+
   return (
     <RigidBody
       ref={characterRef}
@@ -512,6 +566,14 @@ export const Character = forwardRef(({
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color="red" />
         </mesh>
+      )}
+      {showTrapTimer && trapStartTime && (
+        <TrapTimerBar
+          key={trapStartTime}
+          startTime={trapStartTime}
+          totalTime={trapTotalTime}
+          getWorldPosition={getWorldPosition} // Pass the callback here
+        />
       )}
     </RigidBody>
   );
