@@ -438,7 +438,14 @@ export const Character = forwardRef(({
       setIsIdle(true);
       setIsWalking(false);
       setIsRunning(false);
-    }
+    },
+
+    prepareTrapPlacement: (trapType) => {
+      if (!trapType || isPlacingTrap || hasStartedPlacingRef.current) return;
+
+      console.log("⚙️ Starting trap placement via imperative call:", trapType);
+      setIsPlacingTrap(true); // This triggers the full useEffect trap placement sequence
+    },
   }));
 
   useEffect(() => {
@@ -541,8 +548,6 @@ export const Character = forwardRef(({
           object={characterModel}
           scale={1}
           onTrapPlaced={(trapType, position) => {
-            if (currentRoom.id !== 3) return;
-
             setTrapCharges((prev) => ({
               ...prev,
               [trapType]: Math.max(0, prev[trapType] - 1),
@@ -557,9 +562,6 @@ export const Character = forwardRef(({
               },
             ]);
 
-            console.log("🚩 Trap placed:", { trapType, position });
-
-            setIsPlacingTrap(false);
             setSelectedTrapType(null);
           }}
         />

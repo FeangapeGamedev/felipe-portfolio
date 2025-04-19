@@ -70,21 +70,20 @@ const SurvivorGameManager = ({
     }
   }, [showIntro, prepTime, gameEnd]);
 
-  // Handle enemy spawn at end of prep time
+  // Spawn enemies after 3-second prep (trap placement disabled during prep)
   useEffect(() => {
     if (
       prepTime === 0 &&
-      !isPlacingTrap &&
-      !gameEnd &&
       currentRoom?.id === 3 &&
+      !hasSpawnedRef.current &&
       !quittingRef.current &&
-      !hasSpawnedRef.current // ✅ only once
+      !gameEnd
     ) {
-      console.log("👾 Spawning enemies after prep time...");
-      handleEnemySpawn(); // Use the updated function
+      console.log("👾 Spawning enemies after prep!");
+      handleEnemySpawn();
       hasSpawnedRef.current = true;
     }
-  }, [prepTime, isPlacingTrap, gameEnd, currentRoom, onEnemySpawn]);
+  }, [prepTime, currentRoom, gameEnd]);
 
   // Hide door when prep begins
   useEffect(() => {

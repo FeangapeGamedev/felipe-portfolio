@@ -31,7 +31,7 @@ function App() {
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const [doorPassKey] = useState("1958");
 
-  const [prepTime, setPrepTime] = useState(20);
+  const [prepTime, setPrepTime] = useState(3); // ⏱️ short Bomberman-style prep
   const [showIntro, setShowIntro] = useState(true);
   const [forceTeleport, setForceTeleport] = useState(false);
   const [initialPosition, setInitialPosition] = useState(null);
@@ -109,7 +109,7 @@ function App() {
 
     setPlacedTraps([]);
     setSpawnedEnemies([]); // ✅ Kill all active enemies
-    setPrepTime(20);
+    setPrepTime(3); // ⏱️ short Bomberman-style prep
     setShowIntro(true);
     setSelectedTrapType(null);
     setIsPlacingTrap(false);
@@ -142,11 +142,18 @@ function App() {
     });
     setSurvivorGameActive(false);
     setShowIntro(true); // ✅ show intro again
-    setPrepTime(20);
+    setPrepTime(3); // ⏱️ short Bomberman-style prep
     setSelectedTrapType(null);
     setGameEnd(false);
     setIsPlayerDead(false);
     setIsPlacingTrap(false);
+  };
+
+  const handleArmTrap = (trapType) => {
+    if (!trapType || isPlacingTrap) return;
+    setIsPlacingTrap(true);
+    console.log(`🪤 Preparing trap placement of type: ${trapType}`);
+    characterRef.current?.prepareTrapPlacement?.(trapType); // Call the method on characterRef
   };
 
   return (
@@ -286,11 +293,7 @@ function App() {
           selectedTrapType={selectedTrapType}
           setSelectedTrapType={setSelectedTrapType}
           isPlacingTrap={isPlacingTrap}
-          onArmTrap={(type) => {
-            if (!type || isPlacingTrap) return;
-            setIsPlacingTrap(true);
-            console.log(`🪤 Placing trap of type: ${type}`);
-          }}
+          onArmTrap={handleArmTrap} // Use the new function here
           onEnemySpawn={() => {
             console.log("👾 Spawning enemy!");
 
