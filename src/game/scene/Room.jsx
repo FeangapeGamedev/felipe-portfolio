@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { RigidBody } from "@react-three/rapier";
 import * as THREE from "three";
 import { useGame } from "../state/GameContext.jsx";
@@ -15,6 +15,9 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor }) 
   const [wallTextures, setWallTextures] = useState({});
   const [floorTexture, setFloorTexture] = useState(null);
   const [backgroundTexture, setBackgroundTexture] = useState(null);
+
+  const wallRefs = useRef([]);
+  wallRefs.current = []; // Reset on re-render
 
   useEffect(() => {
     const loader = new THREE.TextureLoader();
@@ -131,7 +134,13 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor }) 
         { pos: [0, currentRoom.height / 2, currentRoom.depth / 2], rot: [0, Math.PI, 0], size: [currentRoom.width, currentRoom.height, wallThickness], wall: "front" },
       ].map(({ pos, rot, size, wall }, index) => (
         <RigidBody key={index} type="fixed" colliders="cuboid">
-          <mesh position={pos} rotation={rot} userData={{ raycastable: currentRoom.walls[wall].visible }}>
+          <mesh
+            ref={(el) => el && wallRefs.current.push(el)} // Push each wall mesh to the ref
+            name={`wall-${wall}`}
+            position={pos}
+            rotation={rot}
+            userData={{ raycastable: true, isWall: true }}
+          >
             <boxGeometry args={size} />
             {wallTextures[wall] && (
               <primitive

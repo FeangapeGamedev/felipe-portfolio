@@ -64,7 +64,12 @@ export const CharacterController = ({ isPaused }) => {
           }
 
           if (object.userData?.type === "floor" && !firstFloorHit) {
-            firstFloorHit = { object, point };
+            const hitNormal = intersections[i].face?.normal;
+
+            // 🧠 Check if the surface is pointing up (e.g., avoid side walls or weird angles)
+            if (hitNormal && hitNormal.y > 0.7) {
+              firstFloorHit = { object, point };
+            }
           }
         }
       }
@@ -93,6 +98,20 @@ export const CharacterController = ({ isPaused }) => {
 
         setCurrentInteractive(firstInteractive.object.userData);
       } else if (firstFloorHit) {
+        // ✅ Prevent setting targetPosition if the clicked point is inside or near any wall box
+        const clickedPoint = firstFloorHit.point;
+        const margin = 0.01; // 🧱 prevent clicks *near* walls too
+
+        const isTooCloseToWall = (window.wallBoxes || []).some((box) => {
+          const expandedBox = box.clone().expandByScalar(margin);
+          return expandedBox.containsPoint(clickedPoint);
+        });
+
+        if (isTooCloseToWall) {
+          console.log("🚫 Click too close to a wall – ignoring move");
+          return;
+        }
+
         setLastClickedObject(null);
         if (isPausedRef.current) {
           return;
