@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import Explosion from "../effects/Explosion";
 import GlobalConstants from "../utils/GlobalConstants.js";
-import { registerTrap, unregisterTrap } from "../utils/trapRegistry";
+import { registerTrap, unregisterTrap, getTrapMeta } from "../utils/trapRegistry";
 
 const trapColors = {
   unity: "#224b55",
@@ -13,14 +13,6 @@ const trapColors = {
   vr: "#3d1f1f",
 };
 
-const trapDamage = {
-  unity: 25,
-  unreal: 25,
-  blender: 15,
-  vr: 15,
-  react: 10,
-};
-
 export default function Trap({ trapId, position, type = "unity", onTrapConsumed }) {
   const meshRef = useRef();
   const clock = useRef(0);
@@ -28,14 +20,15 @@ export default function Trap({ trapId, position, type = "unity", onTrapConsumed 
   const [exploded, setExploded] = useState(false);
 
   useEffect(() => {
-    const data = {
+    const { damage, armTime } = getTrapMeta(type);
+
+    registerTrap(trapId, {
       trapId,
       trapType: type,
-      damage: trapDamage[type] || 10,
+      damage,
+      armTime,
       position,
-    };
-
-    registerTrap(trapId, data);
+    });
 
     return () => unregisterTrap(trapId);
   }, [trapId, type, position]);
@@ -58,7 +51,7 @@ export default function Trap({ trapId, position, type = "unity", onTrapConsumed 
           position={[position.x, position.y, position.z]}
           colliders={false}
           name="trap"
-          userData={{ trapId }} // ✅ Attach trapId to the parent RigidBody
+          userData={{ trapId }}
         >
           <mesh ref={meshRef} castShadow>
             <boxGeometry args={[0.5, 0.5, 0.5]} />

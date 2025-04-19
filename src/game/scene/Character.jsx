@@ -14,6 +14,7 @@ import { useGame } from "../state/GameContext.jsx";
 import GlobalConstants from "../utils/GlobalConstants.js";
 import { v4 as uuidv4 } from "uuid"; // ✅ Import UUID
 import TrapTimerBar from "../../components/TrapTimerBar.jsx"; // Import the component
+import { getTrapMeta } from "../utils/trapRegistry"; // ✅ Add this at the top
 
 export const Character = forwardRef(({
   initialPosition,
@@ -38,6 +39,7 @@ export const Character = forwardRef(({
   const hasPlacedTrapRef = useRef(false);
   const trapToPlaceRef = useRef(null);
   const trapPlacementStartTimeRef = useRef(null); // ⏱️ Track start time of trap placement
+  const trapArmTimeRef = useRef(1); // 🆕 Add this ref
 
   const [justTeleported, setJustTeleported] = useState(false);
   const [isWalking, setIsWalking] = useState(false);
@@ -247,6 +249,10 @@ export const Character = forwardRef(({
 
     if (finishedAction === standToCrouchActionRef.current) {
       console.log("🎥 Finished: stand → crouch");
+
+      // 🆕 Adjust crouchIdle playback duration based on armTime
+      crouchIdleActionRef.current.setDuration(trapArmTimeRef.current);
+
       blendTo(crouchIdleActionRef.current);
     } else if (finishedAction === crouchIdleActionRef.current) {
       console.log("🎥 Finished: crouch idle");
@@ -444,7 +450,11 @@ export const Character = forwardRef(({
       if (!trapType || isPlacingTrap || hasStartedPlacingRef.current) return;
 
       console.log("⚙️ Starting trap placement via imperative call:", trapType);
-      setIsPlacingTrap(true); // This triggers the full useEffect trap placement sequence
+
+      const trapMeta = getTrapMeta(trapType); // ✅ Lookup actual armTime
+      trapArmTimeRef.current = trapMeta?.armTime || 1; // 🆕 Store armTime
+      setTrapTotalTime(1500 + trapArmTimeRef.current * 1000); // ✅ Adjust total time
+      setIsPlacingTrap(true);
     },
   }));
 
