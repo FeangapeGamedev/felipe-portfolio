@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import "../styles/TrapUI.css";
+import { getTrapMeta } from "../game/utils/trapRegistry"; // ✅ Import metadata
 
 const trapColors = {
   unity: "#224b55",
@@ -32,7 +33,7 @@ const TrapUI = ({
   const trapTypes = Object.keys(trapCharges); // ["unity", "unreal", "react", "blender", "vr"]
 
   const onToolClicked = (toolName) => {
-    if (trapCharges[toolName] > 0 && prepTime <= 0 && !showIntro) { // Allow selecting traps after prep
+    if (trapCharges[toolName] > 0 && prepTime <= 0 && !showIntro) {
       setSelectedTrapType(toolName);
     }
   };
@@ -41,27 +42,15 @@ const TrapUI = ({
     const handleKeyDown = (e) => {
       const key = e.key.toLowerCase();
 
-      // Trap hotkeys 1–5
       const index = trapKeys.indexOf(key);
       if (index !== -1 && trapTypes[index]) {
-        console.log(`Key ${key} pressed → selecting ${trapTypes[index]}`);
         onToolClicked(trapTypes[index]);
         return;
       }
 
-      // Arm trap with F
       if (key === "f") {
-        console.log("F key pressed");
-        if (selectedTrapType && !isPlacingTrap && prepTime <= 0 && !showIntro) { // Updated condition
-          console.log("Triggering onArmTrap()");
-          onArmTrap(selectedTrapType); // ✅ Pass the trap type manually
-        } else {
-          console.log("F key blocked. Conditions:", {
-            selectedTrapType,
-            isPlacingTrap,
-            prepTime,
-            showIntro,
-          });
+        if (selectedTrapType && !isPlacingTrap && prepTime <= 0 && !showIntro) {
+          onArmTrap(selectedTrapType);
         }
       }
     };
@@ -73,28 +62,46 @@ const TrapUI = ({
   return (
     <div className="trapbar">
       <span>TRAPS</span>
-  
+
       <ul>
-        {trapTypes.map((trap, index) => (
-          <li key={trap}>
-            <button
-              className={`trap-button ${selectedTrapType === trap ? "selected" : ""}`}
-              onClick={() => onToolClicked(trap)}
-              disabled={trapCharges[trap] === 0 || prepTime > 0 || showIntro} // Updated condition
-              style={{ backgroundColor: trapColors[trap] }}
-            >
-              <span className="trap-label">[{index + 1}] {trapNames[trap]}</span>
-              <span className="trap-count">({trapCharges[trap]} left)</span>
-            </button>
-          </li>
-        ))}
+        {trapTypes.map((trap, index) => {
+          const meta = getTrapMeta(trap);
+
+          // Correct calculation for totalTime
+          const totalTime = Math.floor(1.5 + meta.armTime + 1.5); // Ensure it calculates correctly as 8 seconds
+
+          return (
+            <li key={trap}>
+              <button
+                className={`trap-button ${selectedTrapType === trap ? "selected" : ""}`}
+                onClick={() => onToolClicked(trap)}
+                disabled={trapCharges[trap] === 0 || prepTime > 0 || showIntro}
+                style={{ backgroundColor: trapColors[trap] }}
+              >
+                <span className="trap-label">
+                  [{index + 1}] {trapNames[trap]}
+                </span>
+
+                <div className="trap-meta">
+                  <span>⏱ {totalTime} secs</span>
+                  <br />
+                  <span>💥 {meta.damage} dmg</span>
+                </div>
+
+                <span className="trap-count">
+                  ({trapCharges[trap]} left)
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
-  
+
       <div className="trap-controls">
         <button
           className="arm-trap-button"
           onClick={() => onArmTrap(selectedTrapType)}
-          disabled={!selectedTrapType || isPlacingTrap || prepTime > 0 || showIntro} // Updated condition
+          disabled={!selectedTrapType || isPlacingTrap || prepTime > 0 || showIntro}
         >
           [F] ARM TRAP
         </button>
@@ -114,6 +121,7 @@ const TrapUI = ({
         </button>
       </div>
     </div>
-  );  
-}  
+  );
+};
+
 export default TrapUI;
