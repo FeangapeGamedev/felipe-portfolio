@@ -7,7 +7,7 @@ import PropObject from "./propObjects.jsx";
 import SpotLightManager from "../state/SpotLightManager.jsx";
 import ThreeDText from "../../components/ThreeDText.jsx";
 
-const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor }) => {
+const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor, loadingManager }) => {
   const { currentRoom } = useGame();
   const wallThickness = 0.5;
   const floorThickness = 0.2;
@@ -20,7 +20,7 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor }) 
   wallRefs.current = []; // Reset on re-render
 
   useEffect(() => {
-    const loader = new THREE.TextureLoader();
+    const loader = new THREE.TextureLoader(loadingManager); // Use the loadingManager here
 
     const wallTexturePromises = Object.entries(currentRoom.walls).map(([wall, { texture }]) =>
       new Promise((resolve, reject) => {
@@ -67,7 +67,7 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor }) 
         (error) => console.error("Error loading background texture", error)
       );
     }
-  }, [currentRoom]);
+  }, [currentRoom, loadingManager]);
 
   const wallMaterials = useMemo(() => {
     return Object.entries(wallTextures).reduce((acc, [wall, texture]) => {

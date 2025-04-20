@@ -69,6 +69,7 @@ const Scene = ({
   spawnedEnemies, 
   setSpawnedEnemies,
   resetSurvivorGameState,
+  loadingManager, // Add loadingManager prop
 }) => {
   const { currentRoom, targetPosition, doorDirection, playerPosition } = useGame();
 
@@ -130,6 +131,7 @@ const Scene = ({
         onProjectSelect={onProjectSelect}
         onShowCodeFrame={onShowCodeFrame}
         showSurvivorDoor={showSurvivorDoor}
+        loadingManager={loadingManager} // Pass loadingManager to Room
       />
 
       {initialPosition && (
@@ -183,6 +185,7 @@ const Scene = ({
               trapId={trap.trapId}    // Pass ID to Trap component
               type={trap.type}
               position={position}
+              loadingManager={loadingManager} // Pass loadingManager to Trap
               onTrapConsumed={(trapId) => {
                 setPlacedTraps((prevTraps) => {
                   const trapIndex = prevTraps.findIndex((t) => t.trapId === trapId);
@@ -215,6 +218,7 @@ const Scene = ({
             key={enemy.id || i}
             id={enemy.id || `enemy-${i}`}
             playerPosition={playerPosition}
+            loadingManager={loadingManager} // Pass loadingManager to EnemyComponent
             onDeath={() => {
               // Remove this enemy from the list
               setSpawnedEnemies((prev) =>

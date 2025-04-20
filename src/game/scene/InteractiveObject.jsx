@@ -19,7 +19,7 @@ const InteractiveObject = ({
   onProjectSelect,
   targetRoomId, // Add targetRoomId prop
   onShowCodeFrame, // Add onShowCodeFrame prop
-
+  loadingManager, // Add loadingManager prop
 }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
@@ -27,8 +27,8 @@ const InteractiveObject = ({
   const [labelVisible, setLabelVisible] = useState(true); // Track label visibility
   const { changeRoom } = useGame(); // ✅ Use changeRoom from GameContext
 
-  // ✅ Load the model
-  const { scene } = useGLTF(model, true);
+  // ✅ Load the model using useGLTF with loadingManager
+  const { scene } = useGLTF(model, true, loadingManager);
   if (!scene) {
     console.error(`❌ Failed to load model for InteractiveObject with ID: ${id}`);
     return null;

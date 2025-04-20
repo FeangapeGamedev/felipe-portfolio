@@ -50,6 +50,7 @@ function App() {
   const loadingStartTime = useRef(null);
   const characterRef = useRef();
   const hasSpawnedRef = useRef(false);
+  const loadingManager = useRef(new THREE.LoadingManager());
 
   const isPaused = activeSection !== "game" || showWelcomePopup;
 
@@ -95,6 +96,29 @@ function App() {
       return () => clearTimeout(timer);
     }
   }, [currentRoom]);
+
+  useEffect(() => {
+    // Show loading screen while assets are loading
+    loadingManager.current.onStart = () => {
+      console.log("Loading started...");
+      setShowLoadingScreen(true);
+    };
+
+    // Hide loading screen when all assets are loaded
+    loadingManager.current.onLoad = () => {
+      console.log("All assets loaded!");
+      setShowLoadingScreen(false);
+    };
+
+    // Optional: Log progress
+    loadingManager.current.onProgress = (url, itemsLoaded, itemsTotal) => {
+      console.log(`Loading ${url} (${itemsLoaded}/${itemsTotal})`);
+    };
+
+    loadingManager.current.onError = (url) => {
+      console.error(`Error loading ${url}`);
+    };
+  }, []);
 
   const restartSurvivorGame = () => {
     changeRoom(3);
@@ -169,6 +193,7 @@ function App() {
           <Canvas shadows>
             <Physics>
               <Scene
+                loadingManager={loadingManager.current}
                 isPaused={isPaused}
                 onProjectSelect={(id) => {
                   const project = projects.find((p) => p.id === id);

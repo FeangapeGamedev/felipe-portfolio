@@ -3,13 +3,13 @@ import { RigidBody, MeshCollider } from "@react-three/rapier";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as THREE from "three";
 
-const PropObject = ({ id, type, position, rotation, scale, model }) => {
+const PropObject = ({ id, type, position, rotation, scale, model, loadingManager }) => {
   const [gltf, setGltf] = useState(null);
   const boundingBox = useRef(new THREE.Box3());
   const size = useRef([1, 1, 1]); // Default size
 
   useEffect(() => {
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader(loadingManager); // Use the loadingManager here
     loader.load(
       model,
       (loadedGltf) => {
@@ -35,7 +35,7 @@ const PropObject = ({ id, type, position, rotation, scale, model }) => {
         console.error(`Error loading model ${id}:`, error);
       }
     );
-  }, [model]);
+  }, [model, loadingManager]);
 
   return (
     <>
