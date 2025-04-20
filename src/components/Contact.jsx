@@ -100,7 +100,7 @@ const Contact = ({ onClose }) => {
                         <span>Download Resume</span>
                         <div className="resume-container" onClick={() => {
                             const link = document.createElement("a");
-                            link.href = `${import.meta.env.BASE_URL}documents/felipe-CV-2025.pdf`;
+                            link.href = `${import.meta.env.BASE_URL}documents/Professional CV Resume .pdf`;
                             link.download = "felipe-CV-2025.pdf"; // Suggested filename for the download
                             link.click();
                         }}>
