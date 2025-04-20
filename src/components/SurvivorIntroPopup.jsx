@@ -9,11 +9,12 @@ const SurvivorIntroPopup = ({ onClose }) => {
         <PopupPanel title="Survivor Mode" onClose={onClose}>
           <p>Welcome, Survivor!</p>
           <p>
-            In each round, you have <strong>20 seconds</strong> to set your traps.
-            Race around the room, position yourself strategically, and use the buttons on the left panel to select and arm your traps.
+            A relentless enemy is chasing you! Use your wits to place traps and outsmart your pursuer.
+            You can select traps using the hotkeys <strong>1–5</strong> or the buttons on the right panel.
           </p>
           <p>
-            Lure the monsters into your deadly traps and outsmart the horde. Stay sharp, and may your wits keep you alive!
+            Once a trap is selected, arm it using the <strong>F</strong> key or the arm button on the right panel.
+            Strategize quickly and stay one step ahead of your enemy!
           </p>
           <hr style={{ width: "100%", margin: "1rem 0" }} />
           <p style={{ fontSize: "13px" }}>
@@ -22,7 +23,7 @@ const SurvivorIntroPopup = ({ onClose }) => {
             Arm Trap: <strong>F</strong>
           </p>
           <p style={{ fontSize: "12px", opacity: 0.8 }}>
-            Time is ticking... Good luck!
+            Stay sharp and good luck!
           </p>
         </PopupPanel>
       </div>
