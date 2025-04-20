@@ -165,120 +165,122 @@ function App() {
       )}
 
       <Suspense fallback={null}>
-        <Canvas shadows>
-          <Physics>
-            <Scene
-              isPaused={isPaused}
-              onProjectSelect={(id) => {
-                const project = projects.find((p) => p.id === id);
-                setSelectedProject(project);
-                setActiveSection("project-details");
-                setDisableBackButton(true);
-              }}
-              onShowCodeFrame={() => {
-                setShowCodeFrame(true);
-                setActiveSection("code-frame");
-              }}
-              onRoomChange={(roomId) => {
-                setShowLoadingScreen(true);
-                changeRoom(roomId);
-              }}
-              showSurvivorDoor={showSurvivorDoor} // ✅ add this
-              trapCharges={trapCharges}
-              setTrapCharges={setTrapCharges}
-              initialPosition={initialPosition}
-              setInitialPosition={setInitialPosition}
-              forceTeleport={forceTeleport}
-              setForceTeleport={setForceTeleport}
-              selectedTrapType={selectedTrapType}
-              setSelectedTrapType={setSelectedTrapType}
-              isPlacingTrap={isPlacingTrap}
-              setIsPlacingTrap={setIsPlacingTrap}
-              placedTraps={placedTraps}
-              setPlacedTraps={setPlacedTraps}
-              restartSurvivorGame={restartSurvivorGame}
-              enemySpawned={enemySpawned}
-              setEnemySpawned={setEnemySpawned}
-              onEnemyDeath={() => {
-                setEnemySpawned(false);
-                setGameEnd(true);
-              }}
-              characterRef={characterRef}
-              isPlayerDead={isPlayerDead}
-              setIsPlayerDead={setIsPlayerDead}
-              setSpawnedEnemies={setSpawnedEnemies}
-              setSurvivorGameActive={setSurvivorGameActive}
-              setShowIntro={setShowIntro}
-              setPrepTime={setPrepTime}
-              setGameEnd={setGameEnd}
-              spawnedEnemies={spawnedEnemies}
-              resetSurvivorGameState={resetSurvivorGameState}
-            />
-          </Physics>
-        </Canvas>
-
-        <div className="ui-layer">
-          <Navbar
-            onInventoryClick={() =>
-              setActiveSection(activeSection === "inventory" ? "game" : "inventory")
-            }
-            onProjectsClick={() =>
-              setActiveSection(activeSection === "projects" ? "game" : "projects")
-            }
-            onContactClick={() => setActiveSection("contact")}
-          />
-
-          {activeSection === "project-details" && selectedProject && (
-            <ProjectDetails
-              project={selectedProject}
-              onClose={() => {
-                setSelectedProject(null);
-                setActiveSection("game");
-              }}
-              onBack={() => {
-                setSelectedProject(null);
-                setActiveSection("projects");
-              }}
-              disableBackButton={disableBackButton}
-            />
-          )}
-
-          {activeSection === "inventory" && <Inventory onClose={() => setActiveSection("game")} />}
-          {activeSection === "contact" && <Contact onClose={() => setActiveSection("game")} />}
-          {activeSection === "projects" && (
-            <Projects
-              onClose={() => setActiveSection("game")}
-              onProjectClick={(project) => {
-                setSelectedProject(project);
-                setActiveSection("project-details");
-                setDisableBackButton(false);
-              }}
-            />
-          )}
-          {activeSection === "code-frame" && (
-            <CodeFrame
-              className="popup-frame"
-              doorPassKey={doorPassKey}
-              onCorrectPassKey={() => {
-                setShowCodeFrame(false);
-                setActiveSection("game");
-                setShowLoadingScreen(true);
-                changeRoom(3);
-              }}
-              onClose={() => {
-                setActiveSection("game");
-                setShowErrorPopup(true);
-              }}
-            />
-          )}
-          {showErrorPopup && (
-            <ErrorCodePopup
-              message="ACCESS DENIED – TRY AGAIN"
-              onClose={() => setShowErrorPopup(false)}
-            />
-          )}
+        <div className="canvas-container">
+          <Canvas shadows>
+            <Physics>
+              <Scene
+                isPaused={isPaused}
+                onProjectSelect={(id) => {
+                  const project = projects.find((p) => p.id === id);
+                  setSelectedProject(project);
+                  setActiveSection("project-details");
+                  setDisableBackButton(true);
+                }}
+                onShowCodeFrame={() => {
+                  setShowCodeFrame(true);
+                  setActiveSection("code-frame");
+                }}
+                onRoomChange={(roomId) => {
+                  setShowLoadingScreen(true);
+                  changeRoom(roomId);
+                }}
+                showSurvivorDoor={showSurvivorDoor} // ✅ add this
+                trapCharges={trapCharges}
+                setTrapCharges={setTrapCharges}
+                initialPosition={initialPosition}
+                setInitialPosition={setInitialPosition}
+                forceTeleport={forceTeleport}
+                setForceTeleport={setForceTeleport}
+                selectedTrapType={selectedTrapType}
+                setSelectedTrapType={setSelectedTrapType}
+                isPlacingTrap={isPlacingTrap}
+                setIsPlacingTrap={setIsPlacingTrap}
+                placedTraps={placedTraps}
+                setPlacedTraps={setPlacedTraps}
+                restartSurvivorGame={restartSurvivorGame}
+                enemySpawned={enemySpawned}
+                setEnemySpawned={setEnemySpawned}
+                onEnemyDeath={() => {
+                  setEnemySpawned(false);
+                  setGameEnd(true);
+                }}
+                characterRef={characterRef}
+                isPlayerDead={isPlayerDead}
+                setIsPlayerDead={setIsPlayerDead}
+                setSpawnedEnemies={setSpawnedEnemies}
+                setSurvivorGameActive={setSurvivorGameActive}
+                setShowIntro={setShowIntro}
+                setPrepTime={setPrepTime}
+                setGameEnd={setGameEnd}
+                spawnedEnemies={spawnedEnemies}
+                resetSurvivorGameState={resetSurvivorGameState}
+              />
+            </Physics>
+          </Canvas>
         </div>
       </Suspense>
+
+      <div className="ui-layer">
+        <Navbar
+          onInventoryClick={() =>
+            setActiveSection(activeSection === "inventory" ? "game" : "inventory")
+          }
+          onProjectsClick={() =>
+            setActiveSection(activeSection === "projects" ? "game" : "projects")
+          }
+          onContactClick={() => setActiveSection("contact")}
+        />
+
+        {activeSection === "project-details" && selectedProject && (
+          <ProjectDetails
+            project={selectedProject}
+            onClose={() => {
+              setSelectedProject(null);
+              setActiveSection("game");
+            }}
+            onBack={() => {
+              setSelectedProject(null);
+              setActiveSection("projects");
+            }}
+            disableBackButton={disableBackButton}
+          />
+        )}
+
+        {activeSection === "inventory" && <Inventory onClose={() => setActiveSection("game")} />}
+        {activeSection === "contact" && <Contact onClose={() => setActiveSection("game")} />}
+        {activeSection === "projects" && (
+          <Projects
+            onClose={() => setActiveSection("game")}
+            onProjectClick={(project) => {
+              setSelectedProject(project);
+              setActiveSection("project-details");
+              setDisableBackButton(false);
+            }}
+          />
+        )}
+        {activeSection === "code-frame" && (
+          <CodeFrame
+            className="popup-frame"
+            doorPassKey={doorPassKey}
+            onCorrectPassKey={() => {
+              setShowCodeFrame(false);
+              setActiveSection("game");
+              setShowLoadingScreen(true);
+              changeRoom(3);
+            }}
+            onClose={() => {
+              setActiveSection("game");
+              setShowErrorPopup(true);
+            }}
+          />
+        )}
+        {showErrorPopup && (
+          <ErrorCodePopup
+            message="ACCESS DENIED – TRY AGAIN"
+            onClose={() => setShowErrorPopup(false)}
+          />
+        )}
+      </div>
 
       {!showLoadingScreen && currentRoom?.id === 3 && (
         <SurvivorGameManager
