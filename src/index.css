@@ -16,6 +16,26 @@ body {
   position: relative;
 }
 
+/* 🔹 CRT Scanlines Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+}
+
 /* 🔹 Titles & Subtitles (Keep Bright White) */
 h1, h2, h3 {
   color: white; /* Keeps strong contrast for headings */
@@ -26,21 +46,6 @@ h1, h2, h3 {
 body, p, span, li {
   color: #CCCCCC; /* Softer gray for general text */
 }
-
-/* 🔹 Subtle, Static Grayish Fog */
-body::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(120, 120, 120, 0.15) 15%, transparent 50%), 
-              linear-gradient(0deg, rgba(50, 50, 50, 0.3), rgba(26, 26, 26, 0.6));
-  opacity: 0.6;
-  pointer-events: none;
-}
-
 
 /* 🔹 Root container */
 #root {
