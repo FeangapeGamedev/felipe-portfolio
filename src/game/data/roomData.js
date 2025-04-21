@@ -32,7 +32,7 @@ export const roomData = [
       {
         id: "car",
         type: "prop",
-        position: [-4, 1, 5],
+        position: [-4, 1, 4.5],
         rotation: [0, 6, 0],
         scale: [3, 3, 3],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/1987_Mercedes_Benz_b_0304010346_texture.glb",
@@ -40,7 +40,7 @@ export const roomData = [
       {
         id: "suv",
         type: "prop",
-        position: [5.5, 1.4, 5],
+        position: [5.5, 1.4, 4.5],
         rotation: [0, 6, 0],
         scale: [3, 3, 3],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/suv_truck.glb",
@@ -157,7 +157,7 @@ export const roomData = [
       {
         id: "project1",
         type: "project",
-        position: [-5, 0.5, -5],
+        position: [-5, 1, -5],
         rotation: [0, 0, 0],
         label: "View Trimble Virtual World? Y/N",
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Construction.glb",
@@ -169,9 +169,9 @@ export const roomData = [
       {
         id: "stand_1",
         type: "prop",
-        position: [-5.2, 0.2, -5.2],
+        position: [-5.2, 0.5, -5.2],
         rotation: [0, 0, 0],
-        scale: [1.5, 0.2, 1.5],
+        scale: [1.5, 0.5, 1.5],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/display_stand.glb",
       },
       {
@@ -186,15 +186,15 @@ export const roomData = [
         id: "plant_1",
         type: "prop",
         position: [0, 1, -6.5],
-        rotation: [0, 0, 0],
+        rotation: [0, 135, 0],
         scale: [1 ,1 ,1],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_one.glb",
       },
       {
         id: "plant_2",
         type: "prop",
-        position: [0, 1, 6.5],
-        rotation: [0, 0, 0],
+        position: [0, 1, 7],
+        rotation: [0, 45, 0],
         scale: [1 ,1 ,1],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_one.glb",
       },
@@ -202,15 +202,15 @@ export const roomData = [
         id: "plant_3",
         type: "prop",
         position: [-6.5, 1, 0],
-        rotation: [0, 0, 0],
+        rotation: [0, 120, 0],
         scale: [1 ,1 ,1],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_two.glb",
       },
       {
         id: "plant_4",
         type: "prop",
-        position: [6.5, 1, 0],
-        rotation: [0, 0, 0],
+        position: [7, 1, 0],
+        rotation: [0, 45, 0],
         scale: [1 ,1 ,1],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_two.glb",
       }
@@ -258,7 +258,64 @@ export const roomData = [
         userData: { raycastable: true, isInteractive: true, id: "door4" },
       },
     ],
-    props: [], // Ensure props is an array
+    props: [
+      {
+        id: "testTube",
+        type: "prop",
+        position: [3, 1, 0],
+        rotation: [0, 0, 0],
+        scale: [3.5, 1, 3.5],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_single_large_sci_fi_0421050019_texture.glb",
+      },
+      {
+        id: "testTube1",
+        type: "prop",
+        position: [-3, 1, 0],
+        rotation: [0, 0, 0],
+        scale: [3.5, 1, 3.5],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_single_large_sci_fi_0421050019_texture.glb",
+      },
+      {
+        id: "LabEquipment",
+        type: "prop",
+        position: [-4.5, 0.5, -6],
+        rotation: [0, 0, 0],
+        scale: [2, 2, 2],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_modular_set_of_futu_0421050418_texture.glb",
+      },
+      {
+        id: "LabEquipment1",
+        type: "prop",
+        position: [4.5, 0.5, -6],
+        rotation: [0, 0, 0],
+        scale: [2, 2, 2],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_modular_set_of_futu_0421050418_texture.glb",
+      },
+      {
+        id: "LabEquipment2",
+        type: "prop",
+        position: [-5, 0.5, 6],
+        rotation: [0, 135, 0],
+        scale: [2, 2, 2],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_modular_set_of_futu_0421050418_texture.glb",
+      },
+      {
+        id: "coolDevice",
+        type: "prop",
+        position: [1, 1, -6],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_large_sci_fi_coolin_0421064541_texture.glb",
+      },
+      {
+        id: "coolDevice1",
+        type: "prop",
+        position: [-1, 1, -6],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_large_sci_fi_coolin_0421064541_texture.glb",
+      },
+    ], // Ensure props is an array
     lights: [
       {
         position: [0, 4.5, 0], // Center of the room, elevated

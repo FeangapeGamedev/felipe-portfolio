@@ -56,7 +56,7 @@ export default class Enemy {
     });
 
     this.state = "wander";
-    this.followThreshold = 7;
+    this.followThreshold = 5;
     this.attackThreshold = 1.2;
     this.wanderTarget = this._getRandomWanderPoint();
     this.currentAnimation = null;
@@ -218,6 +218,11 @@ export default class Enemy {
     if (this.state === "wander") {
       console.log("🚧 Wander collision detected, redirecting");
       this.wasBlocked = true;
+
+      // Immediately stop the enemy's velocity
+      if (this.rigidBody) {
+        this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      }
     }
   }
 
