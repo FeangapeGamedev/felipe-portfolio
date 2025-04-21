@@ -262,17 +262,9 @@ export const roomData = [
       {
         id: "testTube",
         type: "prop",
-        position: [3, 1, 0],
+        position: [-6, 1, -0.5],
         rotation: [0, 0, 0],
-        scale: [2, 1, 2],
-        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_single_large_sci_fi_0421050019_texture.glb",
-      },
-      {
-        id: "testTube1",
-        type: "prop",
-        position: [-3, 1, 0],
-        rotation: [0, 0, 0],
-        scale: [2, 1, 2],
+        scale: [3.5, 1, 3.5],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_single_large_sci_fi_0421050019_texture.glb",
       },
       {

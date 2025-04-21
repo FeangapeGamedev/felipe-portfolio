@@ -1,4 +1,3 @@
-// Enemy.jsx
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js';
@@ -64,9 +63,15 @@ export default class Enemy {
     this.wasBlocked = false;
     this.attackCooldown = 0;
 
-    // 🔋 Add health properties
     this.maxHealth = 100;
     this.currentHealth = 100;
+
+    // 🧠 Add stuck & cooldown tracking
+    this.stuckTime = 0;
+    this.lastPosition = new THREE.Vector3();
+    this.lastCollisionTime = 0;
+    this.collisionCooldown = 0;
+    this.chaseRecoveryCooldown = 0;
 
     this.playAnimation("idle");
   }
@@ -81,7 +86,7 @@ export default class Enemy {
           console.log("💥 Enemy collided with a trap!");
           this.die(() => console.log("☠️ Enemy died from trap collision"));
         } else {
-          this.handleWanderCollision();
+          this.handleWanderCollision(event);
         }
       };
     }
@@ -100,6 +105,8 @@ export default class Enemy {
   update(delta) {
     this.mixer.update(delta);
     if (this.attackCooldown > 0) this.attackCooldown -= delta;
+    if (this.collisionCooldown > 0) this.collisionCooldown -= delta;
+    if (this.chaseRecoveryCooldown > 0) this.chaseRecoveryCooldown -= delta;
   }
 
   updateBehavior(playerPosition, delta) {
@@ -110,6 +117,36 @@ export default class Enemy {
     const direction = new THREE.Vector3().subVectors(playerPosition, position);
     const distance = direction.length();
 
+    // 🧠 Check if stuck
+    const distMoved = position.distanceTo(this.lastPosition);
+    if (distMoved < 0.01) {
+      this.stuckTime += delta;
+    } else {
+      this.stuckTime = 0;
+      this.lastPosition.copy(position);
+    }
+
+    if (this.stuckTime >= 1.5 && (this.state === "wander" || this.state === "chase")) {
+      console.warn("🪤 Enemy stuck too long, rerouting...");
+      this.stuckTime = 0;
+      this.wasBlocked = false;
+
+      if (this.state === "chase") {
+        this.chaseRecoveryCooldown = 1.5;
+      }
+
+      this.state = "wander";
+      this.wanderTarget = this._getRandomWanderPoint(position);
+      this.playAnimation("walk");
+
+      if (this.rigidBody) {
+        this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      }
+
+      return;
+    }
+
+    // 🚫 Do NOT modify this block (attack logic untouched)
     if (distance < this.attackThreshold) {
       if (this.state !== "attack" && this.attackCooldown <= 0) {
         console.log("⚔️ State: ATTACK");
@@ -121,7 +158,8 @@ export default class Enemy {
       return;
     }
 
-    if (distance < this.followThreshold) {
+    // ✅ Respect chase recovery cooldown
+    if (distance < this.followThreshold && this.chaseRecoveryCooldown <= 0) {
       if (this.state !== "chase") {
         console.log("🏃 State: CHASE");
         this.state = "chase";
@@ -156,10 +194,12 @@ export default class Enemy {
     }
 
     if (this.wasBlocked) {
-      this.wasBlocked = false;
-      this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
-      this.wanderTarget = this._getRandomWanderPoint();
-      return;
+      if (this.collisionCooldown <= 0) {
+        this.wasBlocked = false;
+        this.wanderTarget = this._getRandomWanderPoint(position);
+      } else {
+        return;
+      }
     }
 
     const wanderDirection = new THREE.Vector3().subVectors(this.wanderTarget, position);
@@ -202,7 +242,6 @@ export default class Enemy {
     setTimeout(() => callback?.(), 4000);
   }
 
-  // 💥 Add takeDamage() method
   takeDamage(amount, onDeathCallback) {
     if (this.state === "dead") return;
 
@@ -214,24 +253,43 @@ export default class Enemy {
     }
   }
 
-  handleWanderCollision() {
-    if (this.state === "wander") {
-      console.log("🚧 Wander collision detected, redirecting");
-      this.wasBlocked = true;
+  handleWanderCollision(event = null) {
+    const now = performance.now();
+    const otherName = event?.colliderObject?.name?.toLowerCase();
 
-      // Immediately stop the enemy's velocity
+    if (otherName?.includes("player") || otherName?.includes("trap")) {
+      return; // ✅ Ignore collisions with player or trap
+    }
+
+    if (this.state === "wander" && now - this.lastCollisionTime > 1000) {
+      this.lastCollisionTime = now;
+      this.wasBlocked = true;
+      this.collisionCooldown = 1;
+
       if (this.rigidBody) {
         this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
       }
+
+      this.stuckTime += 0.5;
     }
   }
 
-  _getRandomWanderPoint() {
+  _getRandomWanderPoint(basePosition = null) {
     const minX = -10, maxX = 10;
     const minZ = -10, maxZ = 10;
-    const randomX = Math.random() * (maxX - minX) + minX;
-    const randomZ = Math.random() * (maxZ - minZ) + minZ;
-    return new THREE.Vector3(randomX, 0, randomZ);
+    const offset = 3;
+
+    const refX = basePosition?.x ?? 0;
+    const refZ = basePosition?.z ?? 0;
+
+    const randomX = refX + (Math.random() * 2 - 1) * offset;
+    const randomZ = refZ + (Math.random() * 2 - 1) * offset;
+
+    return new THREE.Vector3(
+      THREE.MathUtils.clamp(randomX, minX, maxX),
+      0,
+      THREE.MathUtils.clamp(randomZ, minZ, maxZ)
+    );
   }
 
   getWorldPosition(offsetY = 0) {
@@ -239,5 +297,4 @@ export default class Enemy {
     const pos = this.rigidBody.translation();
     return new THREE.Vector3(pos.x, pos.y + offsetY, pos.z);
   }
-  
 }
