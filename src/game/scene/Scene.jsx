@@ -63,10 +63,10 @@ const Scene = ({
   placedTraps,
   setPlacedTraps,
   onEnemyDeath,
-  characterRef, 
+  characterRef,
   isPlayerDead,
   setIsPlayerDead,
-  spawnedEnemies, 
+  spawnedEnemies,
   setSpawnedEnemies,
   resetSurvivorGameState,
   loadingManager, // Add loadingManager prop
@@ -93,7 +93,7 @@ const Scene = ({
       resetSurvivorGameState(); // ✅ reset when leaving Room 3
     }
   }, [currentRoom?.id]);
-  
+
 
   return (
     <>
@@ -218,14 +218,13 @@ const Scene = ({
             key={enemy.id || i}
             id={enemy.id || `enemy-${i}`}
             playerPosition={playerPosition}
-            loadingManager={loadingManager} // Pass loadingManager to EnemyComponent
+            spawnPosition={new THREE.Vector3(-4, 1, 0)} // ✅ force position here
+            loadingManager={loadingManager}
             onDeath={() => {
-              // Remove this enemy from the list
               setSpawnedEnemies((prev) =>
                 prev.filter((_, index) => index !== i)
               );
-
-              onEnemyDeath?.(); // Notify that an enemy died
+              onEnemyDeath?.();
             }}
             onPlayerHit={() => {
               if (!isPlayerDead) {

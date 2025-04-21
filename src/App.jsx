@@ -191,7 +191,7 @@ function App() {
       <Suspense fallback={null}>
         <div className="canvas-container">
           <Canvas shadows>
-            <Physics>
+            <Physics debug>
               <Scene
                 loadingManager={loadingManager.current}
                 isPaused={isPaused}

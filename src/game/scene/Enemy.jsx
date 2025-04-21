@@ -23,37 +23,39 @@ export default class Enemy {
     });
   }
 
-  constructor() {
+  constructor(initialPosition = new THREE.Vector3(0, 0, 0)) {
     if (!Enemy.model) {
       throw new Error('Enemy model not loaded. Call Enemy.load() before creating an instance.');
     }
-
+  
     const clonedModel = clone(Enemy.model.scene);
     clonedModel.updateMatrixWorld(true);
-
+  
     const box = new THREE.Box3().setFromObject(clonedModel);
     const size = new THREE.Vector3();
     box.getSize(size);
     const minY = box.min.y;
-
+    const center = box.getCenter(new THREE.Vector3());
+  
+    // ✅ Properly apply spawn position
     clonedModel.position.set(
-      clonedModel.position.x - box.getCenter(new THREE.Vector3()).x,
-      clonedModel.position.y - minY,
-      clonedModel.position.z - box.getCenter(new THREE.Vector3()).z
-    );
-
+      -center.x,
+      -minY,
+      -center.z
+    ); // ✅ Center model inside its group — let RigidBody move the whole group
+    
     this.group = new THREE.Group();
     this.group.add(clonedModel);
-
+  
     this.colliderSize = [0.5, 1, 0.5];
     this.colliderPosition = [0, size.y / 2, 0];
-
+  
     this.mixer = new THREE.AnimationMixer(clonedModel);
     this.animations = {};
     Enemy.model.animations.forEach((clip) => {
       this.animations[clip.name.toLowerCase()] = this.mixer.clipAction(clip);
     });
-
+  
     this.state = "wander";
     this.followThreshold = 6;
     this.attackThreshold = 1.2;
@@ -62,20 +64,19 @@ export default class Enemy {
     this.rigidBody = null;
     this.wasBlocked = false;
     this.attackCooldown = 0;
-
+  
     this.maxHealth = 100;
     this.currentHealth = 100;
-
-    // 🧠 Add stuck & cooldown tracking
+  
     this.stuckTime = 0;
     this.lastPosition = new THREE.Vector3();
     this.lastCollisionTime = 0;
     this.collisionCooldown = 0;
     this.chaseRecoveryCooldown = 0;
-
+  
     this.playAnimation("idle");
   }
-
+  
   setPhysicsControl(rigidBodyRef) {
     this.rigidBody = rigidBodyRef.current;
     if (this.rigidBody) {
