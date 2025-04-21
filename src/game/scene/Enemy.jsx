@@ -56,7 +56,7 @@ export default class Enemy {
     });
 
     this.state = "wander";
-    this.followThreshold = 5;
+    this.followThreshold = 6;
     this.attackThreshold = 1.2;
     this.wanderTarget = this._getRandomWanderPoint();
     this.currentAnimation = null;

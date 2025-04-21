@@ -36,6 +36,36 @@ body::before {
   mix-blend-mode: multiply;
 }
 
+/* 🔹 Floating Dust Particles Overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9997; /* Just below scanlines */
+  background-image: 
+    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px;
+  animation: dustDrift 30s linear infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes dustDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-10px, -10px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
 /* 🔹 Titles & Subtitles (Keep Bright White) */
 h1, h2, h3 {
   color: white; /* Keeps strong contrast for headings */
@@ -106,5 +136,3 @@ body, p, span, li {
   overflow: hidden;
   z-index: 0; /* ensure it's below your UI layer */
 }
-
-

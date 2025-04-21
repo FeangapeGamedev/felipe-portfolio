@@ -93,9 +93,7 @@ const SurvivorGameManager = ({
   }, [prepTime]);
 
   // Win / lose logic
-  const allTrapChargesEmpty = Object.values(trapCharges).every((c) => c === 0);
-  const enemiesRemain = spawnedEnemies.length > 0;
-  const playerLost = isPlayerDead || (allTrapChargesEmpty && enemiesRemain);
+  const playerLost = isPlayerDead; // Remove trap-related conditions
   const playerWon = gameEnd && !playerLost;
 
   useEffect(() => {

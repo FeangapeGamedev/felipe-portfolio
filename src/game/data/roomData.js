@@ -264,7 +264,7 @@ export const roomData = [
         type: "prop",
         position: [3, 1, 0],
         rotation: [0, 0, 0],
-        scale: [3.5, 1, 3.5],
+        scale: [2, 1, 2],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_single_large_sci_fi_0421050019_texture.glb",
       },
       {
@@ -272,7 +272,7 @@ export const roomData = [
         type: "prop",
         position: [-3, 1, 0],
         rotation: [0, 0, 0],
-        scale: [3.5, 1, 3.5],
+        scale: [2, 1, 2],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/A_single_large_sci_fi_0421050019_texture.glb",
       },
       {
