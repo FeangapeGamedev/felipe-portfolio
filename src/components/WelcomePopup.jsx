@@ -9,7 +9,7 @@ const WelcomePopup = ({ onClose }) => {
         <PopupPanel title="Lali-ho" onClose={onClose}>
           <p>Welcome to my portfolio.</p>
           <p>
-            Use the Navbar above to quickly explore my work,<br />
+            Use the Navbar to quickly explore my work,<br />
             or dive into the interactive experience below.
           </p>
           <hr style={{ width: "100%", margin: "1rem 0" }} />
