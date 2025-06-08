@@ -131,14 +131,16 @@ const ProjectDetails = ({ project, onClose, onBack, disableBackButton }) => {
                 )}
 
                 {activeCategory === "media" && (
-                  <div>
                     <div className="media-link">
-                      <a href="https://www.youtube.com/playlist?list=PLFZuofY8ahtdBD438Uat_QqovD9h6tLpz" target="_blank" rel="noopener noreferrer">
-                        Watch more on YouTube
-                      </a>
+                      {project.media?.startsWith("http") ? (
+                        <a href={project.media} target="_blank" rel="noopener noreferrer">
+                          {project.media.includes("youtube") ? "Watch more on YouTube" : "Visit live project"}
+                        </a>
+                      ) : (
+                        <img src={project.media} alt="Project media" loading="lazy" />
+                      )}
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           </div>

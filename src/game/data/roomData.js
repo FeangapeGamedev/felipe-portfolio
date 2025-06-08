@@ -164,6 +164,16 @@ export const roomData = [
         scale: [0.52, 0.52, 0.52],
         userData: { raycastable: true, isInteractive: true },
       },
+      {
+        id: "project2",
+        type: "project",
+        position: [5.7, 0.81, 5.7],
+        rotation: [0, 60, 0],
+        label: "View Websites? Y/N",
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/desktop.glb",
+        scale: [1, 1, 1],
+        userData: { raycastable: true, isInteractive: true },
+      },
     ],
     props: [
       {
@@ -213,7 +223,23 @@ export const roomData = [
         rotation: [0, 45, 0],
         scale: [1 ,1 ,1],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Indoor_Plant_two.glb",
-      }
+      },
+      {
+        id: "stand_2",
+        type: "prop",
+        position: [5.7, 0.7, 5.7],
+        rotation: [0, 0, 0],
+        scale: [0.6, 0.7, 0.6],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/display_stand.glb",
+      },
+      {
+        id: "ceilingLight_2",
+        type: "prop",
+        position: [5, 5, 5],
+        rotation: [3.15, 0, 0],
+        scale: [2, 2, 2],
+        model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Octagonal%20concrete%20lamp.glb",
+      },
     ], 
     lights: [
       {
@@ -226,7 +252,26 @@ export const roomData = [
         decay: 5,                   // Light fades naturally
         distance: 40,               // Reasonable range for room lighting
       },
+      {
+        position: [5, 4.5, 5],       // Elevated, like a ceiling/streetlight
+        targetPosition: [5, 0, 5], // Aiming downwards towards the floor
+        intensity: 20,             // Bright but not overpowering
+        color: 0xffcc88,            // Warm yellow light
+        angle: Math.PI / 2,         // Narrower beam for a focused effect
+        penumbra: 0.4,              // Soft edges
+        decay: 5,                   // Light fades naturally
+        distance: 40,               // Reasonable range for room lighting
+      },
     ],
+     text: {
+      content: "1958", // Text to display
+      position: [8.5, 16, -7255], // Position on the back wall
+      rotation: [0.01, -0.01, 0.], // No rotation
+      color: "black", // white color
+      size: 1.5, // Text size
+      height: 1, // Extrusion depth
+      isNeon: true, // Enable neon effect
+    },
   },
   {
     id: 3,

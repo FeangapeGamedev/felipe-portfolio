@@ -293,6 +293,76 @@ Integrated interactive feedback for accuracy tracking.
       }
     },
 
-    media: "/images/project1_gallery.jpg"
-  }
+    media: "https://www.youtube.com/watch?v=DUN1N0Vg8bs"
+  },
+
+
+  {
+  id: "project2",
+  title: "Full Stack Projects",
+  description: "Web Development Projects",
+  image: "/images/project2_thumbnail.jpg",
+
+  overview: `
+This small projects are a creative blend of two web development exercises, each exploring a different nostalgic aesthetic.
+The projects explore the intersection of creative design and modern development tools while paying homage to nostalgic digital aesthetics.
+
+1. **PS1-Style Portfolio Game** — A personal portfolio built using React and Three.js, styled like a survival horror game from the PlayStation 1 era.
+
+2. **Retro Archive Landing Page** — A fictional startup landing page designed using HTML and Bootstrap, made to feel like an old 90s internet archive.
+  `,
+
+
+  disclaimer: "This project is a personal creative exploration, combining retro aesthetics with web development skills using both React/Three.js and HTML/CSS.",
+
+  my_contributions: {
+    portfolio_game: {
+      title: "PS1-Inspired Portfolio Game",
+      short_description: "An interactive 3D portfolio built using React and Three.js.",
+      content: [
+        {
+          type: "text",
+          value: `
+#### Overview
+
+Built using React Three Fiber, Cannon.js, and Vanilla JS/CSS for UI overlays.
+Inspired by PS1 survival horror games like Silent Hill, with low-poly graphics and fixed camera angles.
+
+**Key Features:**
+- Custom 3D navigation
+- Stylized retro UI menus
+- Physics-based character interactions
+
+**Stack:**
+- React, React Three Fiber, Drei
+- HTML/CSS/JS for UI logic
+- Cannon.js for physics
+          `
+        }
+      ]
+    },
+    landing_page: {
+      title: "90s-Inspired Landing Page",
+      short_description: "A modern website designed to look like a 90s archive using HTML and Bootstrap.",
+      content: [
+        {
+          type: "text",
+          value: `
+#### Overview
+
+A small project for a fictional startup that archives retro websites.
+Built using HTML and Bootstrap, with creative CSS to match the old-school vibe.
+
+**Key Features:**
+- Pixel fonts, marquee text, and low-res iconography
+- Fully responsive layout
+- Clean HTML-only structure
+          `
+        }
+      ]
+    }
+  },
+
+  media: "https://feangapegamedev.github.io/Startup-website/"
+}
 ];
