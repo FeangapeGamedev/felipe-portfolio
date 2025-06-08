@@ -17,22 +17,32 @@ const InteractiveObject = ({
   label = "Press Y to activate",
   isPaused,
   onProjectSelect,
-  targetRoomId, // Add targetRoomId prop
-  onShowCodeFrame, // Add onShowCodeFrame prop
-  loadingManager, // Add loadingManager prop
+  targetRoomId,
+  onShowCodeFrame,
+  loadingManager,
 }) => {
   const objectRef = useRef();
   const [isNear, setIsNear] = useState(false);
-  const [isHovered, setIsHovered] = useState(false); // ✅ Track hover state
-  const [labelVisible, setLabelVisible] = useState(true); // Track label visibility
-  const { changeRoom } = useGame(); // ✅ Use changeRoom from GameContext
+  const [isHovered, setIsHovered] = useState(false);
+  const [labelVisible, setLabelVisible] = useState(true);
+  const { changeRoom } = useGame();
 
-  // ✅ Load the model using useGLTF with loadingManager
   const { scene } = useGLTF(model, true, loadingManager);
   if (!scene) {
     console.error(`❌ Failed to load model for InteractiveObject with ID: ${id}`);
     return null;
   }
+
+  // Shader material for hover effect
+  const shaderMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      transparency: { value: transparency },
+      isHovered: { value: false },
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true,
+  });
 
   useEffect(() => {
     if (scene) {
@@ -42,7 +52,7 @@ const InteractiveObject = ({
         label,
         raycastable: true,
         isInteractive: true,
-        targetRoomId, // Add targetRoomId to userData
+        targetRoomId,
       };
 
       scene.userData = userData;
@@ -50,23 +60,21 @@ const InteractiveObject = ({
       scene.traverse((child) => {
         if (child.isMesh) {
           child.userData = { ...userData };
+          child.renderOrder = type === "project" ? 999 : 0;
+
+          if (!child.userData.originalMaterial) {
+            child.userData.originalMaterial = child.material;
+          }
+
+          if (type === "project" && child.material) {
+            child.material.depthTest = false;
+            child.material.depthWrite = false;
+          }
         }
       });
     }
   }, [scene, id, type, label, targetRoomId]);
 
-  // ✅ Shader Material for Hover Effect
-  const shaderMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      transparency: { value: transparency }, // ✅ Keeps object transparency
-      isHovered: { value: false }, // ✅ Toggles hover effect
-    },
-    vertexShader,
-    fragmentShader,
-    transparent: true,
-  });
-
-  // ✅ Apply Hover Effect
   useEffect(() => {
     if (!scene) return;
 
@@ -75,22 +83,31 @@ const InteractiveObject = ({
         if (!child.userData.originalMaterial) {
           child.userData.originalMaterial = child.material;
         }
-        // Restore original material when not hovered
+
         child.material = isHovered ? shaderMaterial : child.userData.originalMaterial;
         child.material.transparent = true;
         child.material.opacity = transparency;
+
+        if (type === "project" && child.material) {
+          child.material.depthTest = false;
+          child.material.depthWrite = false;
+        }
       }
     });
 
-    // Reset hover state when leaving room
     return () => {
       scene.traverse((child) => {
         if (child.isMesh && child.userData.originalMaterial) {
           child.material = child.userData.originalMaterial;
+
+          if (type === "project" && child.material) {
+            child.material.depthTest = false;
+            child.material.depthWrite = false;
+          }
         }
       });
     };
-  }, [scene, shaderMaterial, isHovered, transparency]);
+  }, [scene, shaderMaterial, isHovered, transparency, type]);
 
   const handleInteraction = () => {
     if (!isNear) return;
@@ -103,9 +120,9 @@ const InteractiveObject = ({
       }
     } else if (type === "door") {
       if (id === "door2") {
-        onShowCodeFrame(); // Show CodeFrame instead of changing room
+        onShowCodeFrame();
       } else if (targetRoomId) {
-        changeRoom(targetRoomId); // ✅ Change room using targetRoomId
+        changeRoom(targetRoomId);
       } else {
         console.error(`❌ targetRoomId is not defined for door: ${id}`);
       }
@@ -140,16 +157,14 @@ const InteractiveObject = ({
         scale={scale}
         onCollisionEnter={(event) => {
           if (event.other.rigidBodyObject?.name === "character") {
-            console.log(`✅ Collision Detected with: ${id}`);
             setIsNear(true);
-            setLabelVisible(true); // Re-enable label on collision enter
+            setLabelVisible(true);
           }
         }}
         onCollisionExit={() => {
-          console.log(`❌ Collision Lost with: ${id}`);
           setIsNear(false);
         }}
-        onPointerEnter={() => setIsHovered(true)} // ✅ Hover Effect
+        onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={() => setIsHovered(false)}
       >
         <primitive object={scene} scale={scale} />

@@ -160,6 +160,7 @@ const Room = ({ isPaused, onProjectSelect, onShowCodeFrame, showSurvivorDoor, lo
           isPaused={isPaused}
           onProjectSelect={item.type === "project" ? onProjectSelect : undefined}
           onShowCodeFrame={item.type === "door" && item.id === "door2" ? onShowCodeFrame : undefined}
+          renderOrder={item.type === "project" ? 999 : 0}
         />
       ))}
 

@@ -167,11 +167,11 @@ export const roomData = [
       {
         id: "project2",
         type: "project",
-        position: [5.7, 0.81, 5.7],
-        rotation: [0, 60, 0],
+        position: [4.8, 1.2, 4.8], // raised Y
+        rotation: [0, -90, 0], // radians
         label: "View Websites? Y/N",
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/desktop.glb",
-        scale: [1, 1, 1],
+        scale: [1, 1, 1], // larger size
         userData: { raycastable: true, isInteractive: true },
       },
     ],
@@ -227,9 +227,9 @@ export const roomData = [
       {
         id: "stand_2",
         type: "prop",
-        position: [5.7, 0.7, 5.7],
+        position: [5.7, 0.5, 5.7],
         rotation: [0, 0, 0],
-        scale: [0.6, 0.7, 0.6],
+        scale: [1, 0.5, 1],
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/display_stand.glb",
       },
       {

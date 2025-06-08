@@ -189,7 +189,7 @@ function App() {
                   loadingScreenManagerRef.current?.triggerRoomChangeLoading();
                   changeRoom(roomId);
                 }}
-                showSurvivorDoor={showSurvivorDoor} // ✅ add this
+                showSurvivorDoor={showSurvivorDoor} 
                 trapCharges={trapCharges}
                 setTrapCharges={setTrapCharges}
                 initialPosition={initialPosition}
