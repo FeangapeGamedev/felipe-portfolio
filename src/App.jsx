@@ -2,11 +2,13 @@
 import { useState, useEffect, Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
+import * as THREE from "three";
 import "./index.css";
 
 import { projects } from "./game/data/projectsData";
 import { useGame } from "./game/state/GameContext";
 import SurvivorGameManager from "./game/survivor/SurvivorGameManager";
+import LoadingScreenManager from "./game/utils/LoadingScreenManager";
 
 import Scene from "./game/scene/Scene";
 import Navbar from "./components/Navbar";
@@ -17,8 +19,9 @@ import ProjectDetails from "./components/ProjectDetails";
 import CodeFrame from "./components/CodeFrame";
 import ErrorCodePopup from "./components/ErrorCodePopup";
 import WelcomePopup from "./components/WelcomePopup";
-import * as THREE from "three";
 import { roomData } from "./game/data/roomData";
+
+
 
 function App() {
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -47,10 +50,10 @@ function App() {
 
   const { changeRoom, currentRoom } = useGame();
   const previousRoomId = useRef(null);
-  const loadingStartTime = useRef(null);
+  // const loadingStartTime = useRef(null);
   const characterRef = useRef();
   const hasSpawnedRef = useRef(false);
-  const loadingManager = useRef(new THREE.LoadingManager());
+  const loadingScreenManagerRef = useRef(null);
 
   const isPaused = activeSection !== "game" || showWelcomePopup;
 
@@ -61,6 +64,12 @@ function App() {
     blender: 1,
     vr: 1,
   });
+
+  useEffect(() => {
+    loadingScreenManagerRef.current = new LoadingScreenManager({
+      setLoading: setShowLoadingScreen,
+    });
+  }, []);
 
   useEffect(() => {
     if (!hasMounted && !showLoadingScreen) {
@@ -80,45 +89,16 @@ function App() {
     const from = previousRoomId.current;
     const to = currentRoom?.id;
 
-    if (to && to !== from) {
+    if (to && to !== from && loadingScreenManagerRef.current) {
       previousRoomId.current = to;
-      loadingStartTime.current = Date.now();
-      setShowLoadingScreen(true);
 
-      const MIN_LOADING_DURATION = 800;
-      const elapsed = Date.now() - loadingStartTime.current;
-      const remaining = Math.max(MIN_LOADING_DURATION - elapsed, 0);
+      loadingScreenManagerRef.current.triggerRoomChangeLoading();
 
-      const timer = setTimeout(() => {
-        setShowLoadingScreen(false);
-      }, remaining);
-
-      return () => clearTimeout(timer);
+      loadingScreenManagerRef.current.waitUntilAssetsLoaded(() => {
+        // Optional: console.log("✅ Room loaded and assets ready");
+      });
     }
   }, [currentRoom]);
-
-  useEffect(() => {
-    // Show loading screen while assets are loading
-    loadingManager.current.onStart = () => {
-      console.log("Loading started...");
-      setShowLoadingScreen(true);
-    };
-
-    // Hide loading screen when all assets are loaded
-    loadingManager.current.onLoad = () => {
-      console.log("All assets loaded!");
-      setShowLoadingScreen(false);
-    };
-
-    // Optional: Log progress
-    loadingManager.current.onProgress = (url, itemsLoaded, itemsTotal) => {
-      console.log(`Loading ${url} (${itemsLoaded}/${itemsTotal})`);
-    };
-
-    loadingManager.current.onError = (url) => {
-      console.error(`Error loading ${url}`);
-    };
-  }, []);
 
   const restartSurvivorGame = () => {
     changeRoom(3);
@@ -193,7 +173,7 @@ function App() {
           <Canvas shadows>
             <Physics>
               <Scene
-                loadingManager={loadingManager.current}
+                loadingManager={loadingScreenManagerRef.current?.getManager()}
                 isPaused={isPaused}
                 onProjectSelect={(id) => {
                   const project = projects.find((p) => p.id === id);
@@ -206,7 +186,7 @@ function App() {
                   setActiveSection("code-frame");
                 }}
                 onRoomChange={(roomId) => {
-                  setShowLoadingScreen(true);
+                  loadingScreenManagerRef.current?.triggerRoomChangeLoading();
                   changeRoom(roomId);
                 }}
                 showSurvivorDoor={showSurvivorDoor} // ✅ add this
@@ -290,7 +270,7 @@ function App() {
             onCorrectPassKey={() => {
               setShowCodeFrame(false);
               setActiveSection("game");
-              setShowLoadingScreen(true);
+              loadingScreenManagerRef.current?.triggerRoomChangeLoading();
               changeRoom(3);
             }}
             onClose={() => {

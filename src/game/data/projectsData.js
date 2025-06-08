@@ -296,15 +296,15 @@ Integrated interactive feedback for accuracy tracking.
     media: "https://www.youtube.com/watch?v=DUN1N0Vg8bs"
   },
 
-
-  {
+  
+{
   id: "project2",
   title: "Full Stack Projects",
   description: "Web Development Projects",
-  image: "/images/project2_thumbnail.jpg",
+  image: "/Websites90s.jpg",
 
   overview: `
-This small projects are a creative blend of two web development exercises, each exploring a different nostalgic aesthetic.
+These small projects are a creative blend of two web development exercises, each exploring a different nostalgic aesthetic.
 The projects explore the intersection of creative design and modern development tools while paying homage to nostalgic digital aesthetics.
 
 1. **PS1-Style Portfolio Game** — A personal portfolio built using React and Three.js, styled like a survival horror game from the PlayStation 1 era.
