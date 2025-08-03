@@ -157,11 +157,11 @@ export const roomData = [
       {
         id: "project1",
         type: "project",
-        position: [-5, 1, -5],
+        position: [-4.9, 1.2, -4.9],
         rotation: [0, 0, 0],
         label: "View Trimble Virtual World? Y/N",
         model: "https://pub-b249382bbc784cb189eee9b1d3002799.r2.dev/3dModels/Construction.glb",
-        scale: [0.52, 0.52, 0.52],
+        scale: [0.6, 0.6, 0.66],
         userData: { raycastable: true, isInteractive: true },
       },
       {

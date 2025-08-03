@@ -33,7 +33,6 @@ const InteractiveObject = ({
     return null;
   }
 
-  // Shader material for hover effect
   const shaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
       transparency: { value: transparency },
@@ -60,15 +59,25 @@ const InteractiveObject = ({
       scene.traverse((child) => {
         if (child.isMesh) {
           child.userData = { ...userData };
-          child.renderOrder = type === "project" ? 999 : 0;
+
+          // Project-specific rendering rules
+          if (id === "project2") {
+            child.material.depthTest = false;
+            child.material.depthWrite = false;
+            child.renderOrder = 999;
+          } else {
+            child.material.depthTest = true;
+            child.material.depthWrite = true;
+            child.renderOrder = 0;
+          }
+
+          // Manual Y offset fix for project1 if needed
+          if (id === "project1") {
+            child.position.y -= 0.6;
+          }
 
           if (!child.userData.originalMaterial) {
             child.userData.originalMaterial = child.material;
-          }
-
-          if (type === "project" && child.material) {
-            child.material.depthTest = false;
-            child.material.depthWrite = false;
           }
         }
       });
@@ -88,9 +97,15 @@ const InteractiveObject = ({
         child.material.transparent = true;
         child.material.opacity = transparency;
 
-        if (type === "project" && child.material) {
+        // Reapply depth rules based on ID
+        if (id === "project2") {
           child.material.depthTest = false;
           child.material.depthWrite = false;
+          child.renderOrder = 999;
+        } else {
+          child.material.depthTest = true;
+          child.material.depthWrite = true;
+          child.renderOrder = 0;
         }
       }
     });
@@ -99,15 +114,10 @@ const InteractiveObject = ({
       scene.traverse((child) => {
         if (child.isMesh && child.userData.originalMaterial) {
           child.material = child.userData.originalMaterial;
-
-          if (type === "project" && child.material) {
-            child.material.depthTest = false;
-            child.material.depthWrite = false;
-          }
         }
       });
     };
-  }, [scene, shaderMaterial, isHovered, transparency, type]);
+  }, [scene, shaderMaterial, isHovered, transparency, id]);
 
   const handleInteraction = () => {
     if (!isNear) return;
